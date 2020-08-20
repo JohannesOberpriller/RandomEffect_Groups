@@ -106,22 +106,24 @@ for(i in 1:3){
   if(i == 1){
     hist(results_lm[[i]][,1], 
          main = paste("number of levels:", i+1),
-         xlab = "estimated intercept",
+         xlab = "mean estimated intercept",
          breaks = 40, xlim = c(10,110), col = "grey",
-         las = 1,ylim = c(0, 0.04), prob = T)
+         las = 1,ylim = c(0, 0.04), prob = T, cex.main = 1.8)
     curve(dnorm(x, mean=66, sd=13.2), 
           col="darkblue", lwd=2, add=TRUE, yaxt="n")
-    mtext(substitute(paste(italic("a) estimate of"))), side = 3, at = -42,
+    mtext(substitute(paste(italic("a) estimate of fixed"))), side = 3, at = -36,
           line = -1, cex = 1.5)
-    mtext(substitute(paste(italic("fixed intercept"))), side = 3, at = -34,
+    mtext(substitute(paste(italic("intercept in a"))), side = 3, at = -37,
           line = -3, cex = 1.5)
+    mtext(substitute(paste(italic("linear model"))), side = 3, at = -38,
+          line = -5, cex = 1.5)
   }
   else{
     hist(results_lm[[i]][,1], 
          main = paste("number of levels:", i+1),
-         xlab = "estimated intercept",
+         xlab = "mean estimated intercept",
          breaks = 40, xlim = c(10,110), col = "grey",
-         las = 1,ylim = c(0, 0.04), prob = T)
+         las = 1,ylim = c(0, 0.04), prob = T, cex.main = 1.8)
     curve(dnorm(x, mean=66, sd=13.2), 
           col="darkblue", lwd=2, add=TRUE, yaxt="n")
   }
@@ -134,9 +136,9 @@ results_glm = readRDS("./Results/results_intercept_glmer.Rds")
   for(i in 1:3){
     if(i == 1){
       hist(results_glm[[i]][,1],
-           xlab = "estimated p-value",
-           breaks = 20, xlim = c(0,4), col = "grey", cex.main = 2,
-           prob = T, main = "", ylim = c(0,1.7))
+           xlab = "mean estimated intercept",
+           breaks = 40, xlim = c(0,4), col = "grey", cex.main = 4,
+           prob = T, main = "", ylim = c(0,2.))
       curve(dnorm(x, mean=2, sd=0.4), 
             col="darkblue", lwd=2, add=TRUE, yaxt="n")
       #mtext("a)", side = 3, at = -0.1, line = -2, cex =2)
@@ -149,9 +151,9 @@ results_glm = readRDS("./Results/results_intercept_glmer.Rds")
     }
     else{
       hist(results_glm[[i]][,1],
-           xlab = "estimated p-value",
-           breaks = 20, xlim = c(0,4), col = "grey", cex.main = 2,
-           prob = T, main ="", ylim = c(0,1.7))
+           xlab = "mean estimated intercept",
+           breaks = 40, xlim = c(0,4), col = "grey", cex.main = 2,
+           prob = T, main ="", ylim = c(0,2.))
       curve(dnorm(x, mean=2, sd=0.4), 
             col="darkblue", lwd=2, add=TRUE, yaxt="n")
     }
