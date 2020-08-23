@@ -99,14 +99,14 @@ saveRDS(result_list_slope, file = "Results/results_slope_lme4.Rds")
 library(lme4)
 library(lmerTest)
 set.seed(1)
-n <- 10000L
+n <- 1000L
 
 inv.logit <- function(p){return(exp(p)/(1 + exp(p)))}
 ## The data generating process ### 
 x <- runif(n, -1, 1)
 X <- matrix(c(rep(1, n), x), nrow = n) # 
 beta <- c(2,0.3)
-sd_randeff = 0.2*beta[2]
+sd_randeff = 0.2*beta[1] # I changed beta[2] to beta[1]
 result_list = list()
 for(number_groups in 2:10){
   n_groups <- number_groups
