@@ -12,13 +12,14 @@ X <- matrix(c(rep(1, n), x), nrow = n) #
 beta <- c(66, 3)
 sd_randeff = 0.2*beta[1]
 result_list = list()
-for(number_groups in 2:10){
+for(number_groups in 2:5){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol =5)
+  results = matrix(nrow = number_experiments, ncol =7)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
+                        "se_intercept", "se_effect",
                         "stddev_randeff")
   
   for(experiment in 1:number_experiments){
@@ -39,7 +40,10 @@ for(number_groups in 2:10){
   results[experiment,2] = summary(fit_lmm)$coefficients["x","Estimate"]
   results[experiment,3] = summary(fit_lmm)$coefficients["(Intercept)","Pr(>|t|)"]
   results[experiment,4] = summary(fit_lmm)$coefficients["x","Pr(>|t|)"]
-  results[experiment,5] = attr(summary(fit_lmm)$varcor$group, "stddev")
+  results[experiment,5] = summary(fit_lmm)$coefficients["(Intercept)","Std. Error"]
+  results[experiment,6] = summary(fit_lmm)$coefficients["x","Std. Error"]
+  
+  results[experiment,7] = attr(summary(fit_lmm)$varcor$group, "stddev")
   
   }
   
@@ -53,13 +57,14 @@ saveRDS(result_list, file = "Results/results_intercept_lme4.Rds")
 
 sd_randslope = 0.2*beta[2]
 result_list_slope = list()
-for(number_groups in 2:10){
+for(number_groups in 2:5){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol =5)
+  results = matrix(nrow = number_experiments, ncol =7)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
+                        "se_intercept", "se_effect",
                         "stddev_randeff")
   
   for(experiment in 1:number_experiments){
@@ -81,7 +86,10 @@ for(number_groups in 2:10){
     results[experiment,2] = summary(fit_lmm)$coefficients["x","Estimate"]
     results[experiment,3] = summary(fit_lmm)$coefficients["(Intercept)","Pr(>|t|)"]
     results[experiment,4] = summary(fit_lmm)$coefficients["x","Pr(>|t|)"]
-    results[experiment,5] = attr(summary(fit_lmm)$varcor$group, "stddev")
+    results[experiment,5] = summary(fit_lmm)$coefficients["(Intercept)","Std. Error"]
+    results[experiment,6] = summary(fit_lmm)$coefficients["x","Std. Error"]
+    
+    results[experiment,7] = attr(summary(fit_lmm)$varcor$group, "stddev")
     
   }
   
@@ -108,13 +116,14 @@ X <- matrix(c(rep(1, n), x), nrow = n) #
 beta <- c(2,0.3)
 sd_randeff = 0.2*beta[1] # I changed beta[2] to beta[1]
 result_list = list()
-for(number_groups in 2:10){
+for(number_groups in 2:5){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol =5)
+  results = matrix(nrow = number_experiments, ncol =7)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
+                        "se_intercept", "se_effect",
                         "stddev_randeff")
   
   for(experiment in 1:number_experiments){
@@ -134,7 +143,10 @@ for(number_groups in 2:10){
     results[experiment,2] = summary(fit_lmm)$coefficients["x","Estimate"]
     results[experiment,3] = summary(fit_lmm)$coefficients["(Intercept)","Pr(>|z|)"]
     results[experiment,4] = summary(fit_lmm)$coefficients["x","Pr(>|z|)"]
-    results[experiment,5] = attr(summary(fit_lmm)$varcor$group, "stddev")
+    results[experiment,5] = summary(fit_lmm)$coefficients["(Intercept)","Std. Error"]
+    results[experiment,6] = summary(fit_lmm)$coefficients["x","Std. Error"]
+    
+    results[experiment,7] = attr(summary(fit_lmm)$varcor$group, "stddev")
     
   }
   
@@ -150,13 +162,14 @@ x <- runif(n, -1, 1)
 X <- matrix(c(rep(1, n), x), nrow = n) # 
 sd_randslope = 0.2*beta[2]
 result_list_slope = list()
-for(number_groups in 2:10){
+for(number_groups in 2:5){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol =5)
+  results = matrix(nrow = number_experiments, ncol =7)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
+                        "se_intercept", "se_effect",
                         "stddev_randeff")
   
   for(experiment in 1:number_experiments){
@@ -176,7 +189,10 @@ for(number_groups in 2:10){
     results[experiment,2] = summary(fit_lmm)$coefficients["x","Estimate"]
     results[experiment,3] = summary(fit_lmm)$coefficients["(Intercept)","Pr(>|z|)"]
     results[experiment,4] = summary(fit_lmm)$coefficients["x","Pr(>|z|)"]
-    results[experiment,5] = attr(summary(fit_lmm)$varcor$group, "stddev")
+    results[experiment,5] = summary(fit_lmm)$coefficients["(Intercept)","Std. Error"]
+    results[experiment,6] = summary(fit_lmm)$coefficients["x","Std. Error"]
+    
+    results[experiment,7] = attr(summary(fit_lmm)$varcor$group, "stddev")
     
   }
   
