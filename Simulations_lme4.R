@@ -16,11 +16,11 @@ for(number_groups in 2:5){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol =7)
+  results = matrix(nrow = number_experiments, ncol = 8)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
                         "se_intercept", "se_effect",
-                        "stddev_randeff")
+                        "stddev_randeff", "Singularity")
   
   for(experiment in 1:number_experiments){
   
@@ -44,6 +44,7 @@ for(number_groups in 2:5){
   results[experiment,6] = summary(fit_lmm)$coefficients["x","Std. Error"]
   
   results[experiment,7] = attr(summary(fit_lmm)$varcor$group, "stddev")
+  results[experiment,8] = !is.null(fit_lmm@optinfo$conv$lme4$messages)
   
   }
   
@@ -61,11 +62,11 @@ for(number_groups in 2:5){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol =7)
+  results = matrix(nrow = number_experiments, ncol = 8)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
                         "se_intercept", "se_effect",
-                        "stddev_randeff")
+                        "stddev_randeff", "Singularity")
   
   for(experiment in 1:number_experiments){
     
@@ -90,6 +91,7 @@ for(number_groups in 2:5){
     results[experiment,6] = summary(fit_lmm)$coefficients["x","Std. Error"]
     
     results[experiment,7] = attr(summary(fit_lmm)$varcor$group, "stddev")
+    results[experiment,8] = !is.null(fit_lmm@optinfo$conv$lme4$messages)
     
   }
   
@@ -120,11 +122,11 @@ for(number_groups in 2:5){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol =7)
+  results = matrix(nrow = number_experiments, ncol = 8)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
                         "se_intercept", "se_effect",
-                        "stddev_randeff")
+                        "stddev_randeff", "Singularity")
   
   for(experiment in 1:number_experiments){
     
@@ -147,6 +149,7 @@ for(number_groups in 2:5){
     results[experiment,6] = summary(fit_lmm)$coefficients["x","Std. Error"]
     
     results[experiment,7] = attr(summary(fit_lmm)$varcor$group, "stddev")
+    results[experiment,8] = !is.null(fit_lmm@optinfo$conv$lme4$messages)
     
   }
   
@@ -166,11 +169,11 @@ for(number_groups in 2:5){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol =7)
+  results = matrix(nrow = number_experiments, ncol =8)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
                         "se_intercept", "se_effect",
-                        "stddev_randeff")
+                        "stddev_randeff", "Singularity")
   
   for(experiment in 1:number_experiments){
     
@@ -193,6 +196,7 @@ for(number_groups in 2:5){
     results[experiment,6] = summary(fit_lmm)$coefficients["x","Std. Error"]
     
     results[experiment,7] = attr(summary(fit_lmm)$varcor$group, "stddev")
+    results[experiment,8] = !is.null(fit_lmm@optinfo$conv$lme4$messages)
     
   }
   
@@ -200,4 +204,3 @@ for(number_groups in 2:5){
 }
 saveRDS(result_list_slope, file = "Results/results_slope_glmer.Rds")
 
-hist(result_list_slope[[2]][,4])

@@ -16,10 +16,10 @@ for(number_groups in 2:10){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol =5)
+  results = matrix(nrow = number_experiments, ncol = 6)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
-                        "stddev_randeff")
+                        "stddev_randeff", "Convergence")
   
   for(experiment in 1:number_experiments){
     
@@ -40,6 +40,7 @@ for(number_groups in 2:10){
     results[experiment,3] = summary(fit_glmmtmb)$coefficients$cond["(Intercept)","Pr(>|z|)"]
     results[experiment,4] = summary(fit_glmmtmb)$coefficients$cond["x","Pr(>|z|)"]
     results[experiment,5] = attr(summary(fit_glmmtmb)$varcor$cond$group,"stddev")
+    results[experiment,6] = as.integer(!fit_glmmtmb$sdr$pdHess)
     
   }
   
@@ -74,10 +75,10 @@ for(number_groups in 2:10){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol =5)
+  results = matrix(nrow = number_experiments, ncol = 6)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
-                        "stddev_randeff")
+                        "stddev_randeff", "Convergence")
   
   for(experiment in 1:number_experiments){
     
@@ -99,6 +100,7 @@ for(number_groups in 2:10){
     results[experiment,3] = summary(fit_glmmtmb)$coefficients$cond["(Intercept)","Pr(>|z|)"]
     results[experiment,4] = summary(fit_glmmtmb)$coefficients$cond["x","Pr(>|z|)"]
     results[experiment,5] = attr(summary(fit_glmmtmb)$varcor$cond$group,"stddev")
+    results[experiment,6] = as.integer(!fit_glmmtmb$sdr$pdHess)
     
   }
   

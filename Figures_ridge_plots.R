@@ -43,165 +43,188 @@ sbin$N_levels <- fct_relevel(sbin$N_levels, "2", "3", "4", "5")
 
 
 ### NORMAL PLOTS --------
+plots_normal = list()
+plots_binomial = list()
+for(i in c(0, 1)) {
+  # 1 := Singularity
+  # 0 := W/o singular values
+  
+  plots_list = list()
+  
+  com.theme <- theme(legend.position = "none",
+                     axis.line.y = element_blank(),
+                     axis.text.y = element_blank(),
+                     axis.ticks.y = element_blank())
+  
+  p1 <- ggplot(res.int %>% filter(Singularity == i), aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) +
+    geom_vline(xintercept = 13.2, col="black", linetype="dotted") +
+    xlim(0,40) +
+    scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    xlab("SD random intercept") +
+    theme(legend.position = "none",
+          axis.line.y = element_blank()) +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    labs(tag="A)") 
+  
+  p2 <-  ggplot(res.int %>% filter(Singularity == i), aes(x=estimate_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) +
+    scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    geom_vline(xintercept = 66, col="black", linetype="dotted") +
+    com.theme +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    xlab("Estimate intercept") 
+  
+  p3 <-  ggplot(res.int %>% filter(Singularity == i), aes(x=se_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) + 
+    scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    #geom_vline(xintercept = 0.05, col="black", linetype="dotted") +
+    com.theme +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    xlab("SE intercept") 
+  
+  p1s <- ggplot(snorm %>% filter(Singularity == i), aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) +
+    scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    geom_vline(xintercept = 0.4, col="black", linetype="dotted") +
+    xlab("SD random slope") +
+    theme(legend.position = "none", axis.line.y = element_blank()) +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    labs(tag="B)")
+  
+  p2s <-  ggplot(snorm %>% filter(Singularity == i), aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) +
+    scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    geom_vline(xintercept = 3, col="black", linetype="dotted") +
+    com.theme +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    xlab("Estimate slope") 
+  
+  p3s <- ggplot(snorm %>% filter(Singularity == i), aes(x=se_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) +
+    scale_y_discrete(name="", 
+                     expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    #geom_vline(xintercept = 0.05, col="black", linetype="dotted") +
+    com.theme +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    xlab("SE slope") 
+  
+  plots_normal[[i+1]] = (p1+p2+p3)/(p1s+p2s+p3s) ## option 1
+  
+  
+  ## PLOTS ----
+  com.theme <- theme(legend.position = "none",
+                     axis.line.y = element_blank(),
+                     axis.text.y = element_blank(),
+                     axis.ticks.y = element_blank())
 
-com.theme <- theme(legend.position = "none",
-                   axis.line.y = element_blank(),
-                   axis.text.y = element_blank(),
-                   axis.ticks.y = element_blank())
-
-p1 <- ggplot(res.int, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) +
-  geom_vline(xintercept = 13.2, col="black", linetype="dotted") +
-  xlim(0,40) +
-  scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  xlab("SD random intercept") +
-  theme(legend.position = "none",
-        axis.line.y = element_blank()) +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  labs(tag="A)") 
-
-p2 <-  ggplot(res.int, aes(x=estimate_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) +
-  scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  geom_vline(xintercept = 66, col="black", linetype="dotted") +
-  com.theme +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  xlab("Estimate intercept") 
-
-p3 <-  ggplot(res.int, aes(x=se_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) + 
-  scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  #geom_vline(xintercept = 0.05, col="black", linetype="dotted") +
-  com.theme +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  xlab("SE intercept") 
-
-p1s <- ggplot(snorm, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) +
-  scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  geom_vline(xintercept = 0.4, col="black", linetype="dotted") +
-  xlab("SD random slope") +
-  theme(legend.position = "none", axis.line.y = element_blank()) +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  labs(tag="B)")
-
-p2s <-  ggplot(snorm, aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) +
-  scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  geom_vline(xintercept = 3, col="black", linetype="dotted") +
-  com.theme +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  xlab("Estimate slope") 
-
-p3s <- ggplot(snorm, aes(x=se_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=25, alpha=0.5, scale=1.5) +
+  
+  g1 <- ggplot(res.glmm %>% filter(Singularity == i), aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
+    geom_vline(xintercept = 0.4, col="black", linetype="dotted") +
+    theme(legend.position = "none", axis.line.y = element_blank()) +
+    xlab("SD random intercept")  + 
+    scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    labs(tag="A)")
+  
+  g2 <- ggplot(res.glmm %>% filter(Singularity == i), aes(x=estimate_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
+    geom_vline(xintercept = 2, col="black", linetype="dotted") +
+    com.theme + 
+    scale_y_discrete(name="", 
+                     expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    xlab("Estimate intercept") 
+  
+  g3 <- ggplot(res.glmm %>% filter(Singularity == i), aes(x=se_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
+    com.theme +
+    scale_y_discrete(name="", 
+                     expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    xlab("SE intercept") 
+  
+  g1s <- ggplot(sbin %>% filter(Singularity == i), aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
+    geom_vline(xintercept = 0.06, col="black", linetype="dotted") +
+    theme(legend.position = "none", axis.line.y = element_blank()) +
+    xlab("SD random slope")  + 
+    scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    labs(tag="B)")
+  
+  g2s <- ggplot(sbin %>% filter(Singularity == i), aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
+    geom_vline(xintercept = 0.3, col="black", linetype="dotted") +
+    com.theme + 
   scale_y_discrete(name="", 
                    expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  #geom_vline(xintercept = 0.05, col="black", linetype="dotted") +
-  com.theme +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  xlab("SE slope") 
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    xlab("Estimate slope") 
+  
+  g3s <- ggplot(sbin %>% filter(Singularity == i), aes(x=se_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
+    geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
+    com.theme +
+    scale_y_discrete(name="", 
+                     expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+    scale_fill_viridis_d() +
+    scale_color_viridis_d() +
+    #scale_fill_manual(values=cbPalette) +
+    #scale_color_manual(values=cbPalette) +
+    xlab("SE slope") 
+  
+  
+  plots_binomial[[i+1]] = (g1+g2+g3)/(g1s+g2s+g3s) ## option 1
+}
 
-jpeg("Figures/RE_normal_ridgesplot_V2.jpeg",width=860, height = 650)
-(p1+p2+p3)/(p1s+p2s+p3s) ## option 1
+
+jpeg(paste0("Figures/RE_normal_ridgesplot_V3_without_singularity.jpeg" ,abb),width=860, height = 650)
+plots_normal[[1]] ## option 1
+dev.off()
+
+jpeg(paste0("Figures/RE_normal_ridgesplot_V3_singularity.jpeg"),width=860, height = 650)
+plots_normal[[2]] ## option 1
 dev.off()
 
 
-## PLOTS ----
-com.theme <- theme(legend.position = "none",
-                   axis.line.y = element_blank(),
-                   axis.text.y = element_blank(),
-                   axis.ticks.y = element_blank())
+jpeg(paste0("Figures/RE_binomial_ridgesplot_V3_without_singularity.jpeg"),width=860, height = 650)
+plots_binomial[[1]]
+dev.off()
 
-g1 <- ggplot(res.glmm, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
-  geom_vline(xintercept = 0.4, col="black", linetype="dotted") +
-  theme(legend.position = "none", axis.line.y = element_blank()) +
-  xlab("SD random intercept")  + 
-  scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  labs(tag="A)")
-
-g2 <- ggplot(res.glmm, aes(x=estimate_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
-  geom_vline(xintercept = 2, col="black", linetype="dotted") +
-  com.theme + 
-  scale_y_discrete(name="", 
-                   expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  xlab("Estimate intercept") 
-
-g3 <- ggplot(res.glmm, aes(x=se_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
-  com.theme +
-  scale_y_discrete(name="", 
-                   expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  xlab("SE intercept") 
-
-g1s <- ggplot(sbin, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
-  geom_vline(xintercept = 0.06, col="black", linetype="dotted") +
-  theme(legend.position = "none", axis.line.y = element_blank()) +
-  xlab("SD random slope")  + 
-  scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  labs(tag="B)")
-
-g2s <- ggplot(sbin, aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
-  geom_vline(xintercept = 0.3, col="black", linetype="dotted") +
-  com.theme + 
-scale_y_discrete(name="", 
-                 expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  xlab("Estimate slope") 
-
-g3s <- ggplot(sbin, aes(x=se_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
-  geom_density_ridges(stat="binline", bins=30, alpha=0.5, scale=1.2) +
-  com.theme +
-  scale_y_discrete(name="", 
-                   expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
-  scale_fill_viridis_d() +
-  scale_color_viridis_d() +
-  #scale_fill_manual(values=cbPalette) +
-  #scale_color_manual(values=cbPalette) +
-  xlab("SE slope") 
-
-
-jpeg("Figures/RE_binomial_ridgesplot_V2.jpeg",width=860, height = 600)
-(g1+g2+g3)/(g1s+g2s+g3s) ## option 1
+jpeg(paste0("Figures/RE_binomial_ridgesplot_V3_singularity.jpeg"),width=860, height = 650)
+plots_binomial[[2]]
 dev.off()
