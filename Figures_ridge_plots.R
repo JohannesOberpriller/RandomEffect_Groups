@@ -212,7 +212,7 @@ for(i in c(0, 1)) {
 }
 
 
-jpeg(paste0("Figures/RE_normal_ridgesplot_V3_without_singularity.jpeg" ,abb),width=860, height = 650)
+jpeg(paste0("Figures/RE_normal_ridgesplot_V3_without_singularity.jpeg" ),width=860, height = 650)
 plots_normal[[1]] ## option 1
 dev.off()
 
