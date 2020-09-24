@@ -2,10 +2,12 @@ library(tidyverse); library(cowplot)
 library(patchwork)
 
 set.seed(1)
+
 ### NORMAL -----
 
 
 ### RANDOM INTERCEPT ------
+
 n <- 100
 n_groups <- 4
 x <- runif(n, -1, 1)
@@ -77,12 +79,14 @@ dev.off()
 ### RANDOM INTERCEPT -----
 
 n <- 1000L
+n_groups <- 4
 
 inv.logit <- function(p){return(exp(p)/(1 + exp(p)))}
+
 ## The data generating process ### 
 x <- runif(n, -1, 1)
 X <- matrix(c(rep(1, n), x), nrow = n) # 
-beta <- c(2,0.3)     ## suggestion c(0.1, 1)
+beta <- c(0.1,1)     ## suggestion c(0.1, 1)
 sd_randeff = 0.2*beta[1]
 
 g <- sort(sample.int(n_groups, size = n, replace = T))
@@ -129,7 +133,7 @@ inv.logit <- function(p){return(exp(p)/(1 + exp(p)))}
 ## The data generating process ### 
 x <- runif(n, -1, 1)
 X <- matrix(c(rep(1, n), x), nrow = n) # 
-beta <- c(2,0.3)
+beta <- c(0.1,1)
 sd_randslope = 0.2*beta[2]
 
 g <- sort(sample.int(n_groups, size = n, replace = T))
@@ -165,7 +169,7 @@ brs <- ggplot(data, aes(x=x,y=y)) +
 brs
 
 ### PLOT ----
-jpeg("Figures/ex_data_binomial.jpeg", width=800)
+jpeg("Figures/ex_data_binomial_2.jpeg", width=800)
 bri + ggtitle("random intercept") + brs + ggtitle("random slope")
 dev.off()
 

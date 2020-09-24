@@ -3,22 +3,27 @@
 # with groups g and observations i
 library(glmmTMB)
 set.seed(1)
-n <- 100
 
+
+#### NORMAL Random intercept -----------------------------------------------
+
+n <- 100
 
 ## The data generating process ### 
 x <- runif(n, -1, 1)
 X <- matrix(c(rep(1, n), x), nrow = n) # 
 beta <- c(66, 3)
 sd_randeff = 0.2*beta[1]
+
 result_list = list()
-for(number_groups in 2:10){
+for(number_groups in 2:8){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol = 6)
+  results = matrix(nrow = number_experiments, ncol = 8)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
+                        "se_intercept", "se_effect",
                         "stddev_randeff", "Convergence")
   
   for(experiment in 1:number_experiments){
@@ -39,8 +44,10 @@ for(number_groups in 2:10){
     results[experiment,2] = summary(fit_glmmtmb)$coefficients$cond["x","Estimate"]
     results[experiment,3] = summary(fit_glmmtmb)$coefficients$cond["(Intercept)","Pr(>|z|)"]
     results[experiment,4] = summary(fit_glmmtmb)$coefficients$cond["x","Pr(>|z|)"]
-    results[experiment,5] = attr(summary(fit_glmmtmb)$varcor$cond$group,"stddev")
-    results[experiment,6] = as.integer(!fit_glmmtmb$sdr$pdHess)
+    results[experiment,5] = summary(fit_glmmtmb)$coefficients$cond["(Intercept)","Std. Error"]
+    results[experiment,6] = summary(fit_glmmtmb)$coefficients$cond["x","Std. Error"]
+    results[experiment,7] = attr(summary(fit_glmmtmb)$varcor$cond$group,"stddev")
+    results[experiment,8] = as.integer(!fit_glmmtmb$sdr$pdHess)
     
   }
   
@@ -49,35 +56,37 @@ for(number_groups in 2:10){
 
 saveRDS(result_list, file = "Results/results_intercept_glmmtmb.Rds")
 
-par(mfrow = c(2,3))
-for(i in 1:3){
-  hist(result_list[[i]][,3], 
-       main = paste("number of groups:", i+1),
-       xlab = "estimated p-value",
-       breaks = 100  )
-  abline(v = 0.05, col = "red")
-}
+# par(mfrow = c(2,3))
+# for(i in 1:3){
+#   hist(result_list[[i]][,3], 
+#        main = paste("number of groups:", i+1),
+#        xlab = "estimated p-value",
+#        breaks = 100  )
+#   abline(v = 0.05, col = "red")
+# }
+# 
+# for(i in 1:3){
+#   hist(result_list[[i]][,5], 
+#        main = "",
+#        xlab = "estimated standard deviation of random intercept",
+#        breaks = 100  )
+#   abline(v = 0.2*66, col = "red")
+# }
 
-for(i in 1:3){
-  hist(result_list[[i]][,5], 
-       main = "",
-       xlab = "estimated standard deviation of random intercept",
-       breaks = 100  )
-  abline(v = 0.2*66, col = "red")
-}
 
+#### NORMAL Random slope -----------------------------------------------
 
-######### random slope #########
 
 sd_randslope = 0.2*beta[2]
 result_list_slope = list()
-for(number_groups in 2:10){
+for(number_groups in 2:8){
   n_groups <- number_groups
   
   number_experiments = 1000
-  results = matrix(nrow = number_experiments, ncol = 6)
+  results = matrix(nrow = number_experiments, ncol = 8)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
+                        "se_intercept", "se_effect",
                         "stddev_randeff", "Convergence")
   
   for(experiment in 1:number_experiments){
@@ -99,8 +108,11 @@ for(number_groups in 2:10){
     results[experiment,2] = summary(fit_glmmtmb)$coefficients$cond["x","Estimate"]
     results[experiment,3] = summary(fit_glmmtmb)$coefficients$cond["(Intercept)","Pr(>|z|)"]
     results[experiment,4] = summary(fit_glmmtmb)$coefficients$cond["x","Pr(>|z|)"]
-    results[experiment,5] = attr(summary(fit_glmmtmb)$varcor$cond$group,"stddev")
-    results[experiment,6] = as.integer(!fit_glmmtmb$sdr$pdHess)
+    results[experiment,5] = summary(fit_glmmtmb)$coefficients$cond["(Intercept)","Std. Error"]
+    results[experiment,6] = summary(fit_glmmtmb)$coefficients$cond["x","Std. Error"]
+    
+    results[experiment,7] = attr(summary(fit_glmmtmb)$varcor$cond$group,"stddev")
+    results[experiment,8] = as.integer(!fit_glmmtmb$sdr$pdHess)
     
   }
   
@@ -109,20 +121,20 @@ for(number_groups in 2:10){
 
 saveRDS(result_list_slope, file = "Results/results_slope_glmmtmb.Rds")
 
-par(mfrow = c(2,3))
-for(i in 1:3){
-  hist(result_list_slope[[i]][,4], 
-       main = paste("number of groups:", i+1),
-       xlab = "p-value of effect", 
-       breaks = 30)
-  abline(v = 0.05, col = "red")
-}
-
-
-for(i in 1:3){
-  hist(result_list_slope[[i]][,5], 
-       xlab = "estimated standard deviation of random slope", 
-       main = "",
-       breaks = 30)
-  abline(v = 0.2*3, col = "red")
-}
+# par(mfrow = c(2,3))
+# for(i in 1:3){
+#   hist(result_list_slope[[i]][,4], 
+#        main = paste("number of groups:", i+1),
+#        xlab = "p-value of effect", 
+#        breaks = 30)
+#   abline(v = 0.05, col = "red")
+# }
+# 
+# 
+# for(i in 1:3){
+#   hist(result_list_slope[[i]][,5], 
+#        xlab = "estimated standard deviation of random slope", 
+#        main = "",
+#        breaks = 30)
+#   abline(v = 0.2*3, col = "red")
+# }

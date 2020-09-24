@@ -4,6 +4,10 @@
 library(lme4)
 library(lmerTest)
 set.seed(1)
+
+
+#### NORMAL Random intercept ---------------------------------------------
+
 n <- 100
 
 ## The data generating process ### 
@@ -11,8 +15,9 @@ x <- runif(n, -1, 1)
 X <- matrix(c(rep(1, n), x), nrow = n) # 
 beta <- c(66, 3)
 sd_randeff = 0.2*beta[1]
+
 result_list = list()
-for(number_groups in 2:5){
+for(number_groups in 2:8){
   n_groups <- number_groups
   
   number_experiments = 1000
@@ -54,11 +59,11 @@ for(number_groups in 2:5){
 saveRDS(result_list, file = "Results/results_intercept_lme4.Rds")
 
 
-######### random slope #########
+#### NORMAL Random slope -----------------------------------------------
 
 sd_randslope = 0.2*beta[2]
 result_list_slope = list()
-for(number_groups in 2:5){
+for(number_groups in 2:8){
   n_groups <- number_groups
   
   number_experiments = 1000
@@ -100,25 +105,21 @@ for(number_groups in 2:5){
 
 saveRDS(result_list_slope, file = "Results/results_slope_lme4.Rds")
 
-### GLLMs #### 
 
-
-# Simulation --------------------------------------------------------------
-# y_i = a + (β_g)*x_i + ε_i
-# with groups g and observations i
-library(lme4)
-library(lmerTest)
-set.seed(1)
-n <- 1000L
+#### Binomial Random intercept -----------------------------------------------
 
 inv.logit <- function(p){return(exp(p)/(1 + exp(p)))}
+
+n <- 1000L
+
 ## The data generating process ### 
 x <- runif(n, -1, 1)
 X <- matrix(c(rep(1, n), x), nrow = n) # 
 beta <- c(2,0.3)
-sd_randeff = 0.2*beta[1] # I changed beta[2] to beta[1]
+sd_randeff = 0.2*beta[1]
+
 result_list = list()
-for(number_groups in 2:5){
+for(number_groups in 2:8){
   n_groups <- number_groups
   
   number_experiments = 1000
@@ -157,18 +158,21 @@ for(number_groups in 2:5){
 }
 saveRDS(result_list, file = "Results/results_intercept_glmer.Rds")
 
+
+#### Binomial Random slope -----------------------------------------------
+
 n <- 1000L
 
-inv.logit <- function(p){return(exp(p)/(1 + exp(p)))}
 ## The data generating process ### 
 x <- runif(n, -1, 1)
 X <- matrix(c(rep(1, n), x), nrow = n) # 
-sd_randslope = 0.2*beta[2]
+sd_randslope = 0.8*beta[2]
+
 result_list_slope = list()
 for(number_groups in 2:5){
   n_groups <- number_groups
   
-  number_experiments = 1000
+  number_experiments = 10000 # increase 10000
   results = matrix(nrow = number_experiments, ncol =8)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",

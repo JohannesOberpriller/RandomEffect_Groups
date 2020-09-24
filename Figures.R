@@ -132,7 +132,7 @@ for(i in 1:3){
 ### example glmer
 
 
-results_glm = readRDS("./Results/results_intercept_glmer.Rds")
+results_glm = readRDS("Results/results_glm_fixed_effect.Rds")
   for(i in 1:3){
     if(i == 1){
       hist(results_glm[[i]][,1],
