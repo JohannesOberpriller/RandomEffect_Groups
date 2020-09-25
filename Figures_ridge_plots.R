@@ -1,7 +1,8 @@
 ## Ridge plot figures ## 
 
 library(tidyverse)
-library(cowplot); library(patchwork)
+library(cowplot)
+library(patchwork)
 library(ggridges)
 library(ggpubr) # include table in the plot
 library(viridis)
@@ -109,7 +110,10 @@ bslop <- ggtexttable(sing %>% filter(model=="binomial", estimate=="slope") %>%
                      ))
 
 
-
+com.theme <- theme(legend.position = "none",
+                   axis.line.y = element_blank(),
+                   axis.text.y = element_blank(),
+                   axis.ticks.y = element_blank())
 ### PLOTS --------
 
 plots_normal = list()
@@ -120,10 +124,7 @@ for(i in c(0, 1)) {
   
   plots_list = list()
   
-  com.theme <- theme(legend.position = "none",
-                     axis.line.y = element_blank(),
-                     axis.text.y = element_blank(),
-                     axis.ticks.y = element_blank())
+
 
 ## NORMAL ----
 p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
@@ -137,7 +138,7 @@ p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y
           axis.line.y = element_blank()) +
     scale_fill_viridis_d() +
     scale_color_viridis_d() +
-    labs(tag="A)") 
+    labs(tag="A)") +xlim(0,45)
   
   p2 <-  ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=estimate_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
     geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
@@ -156,7 +157,7 @@ p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y
     com.theme +
     scale_fill_viridis_d() +
     scale_color_viridis_d() +
-    xlab("SE intercept") 
+    xlab("SE intercept") + xlim(0,32)
   
   p1s <- ggplot(snorm %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
     geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
@@ -167,7 +168,7 @@ p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y
     theme(legend.position = "none", axis.line.y = element_blank()) +
     scale_fill_viridis_d() +
     scale_color_viridis_d() +
-    labs(tag="B)")
+    labs(tag="B)") +xlim(0,2.2)
   
   p2s <-  ggplot(snorm %>% filter(Singularity %in% c(0,i)), aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
     geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
@@ -187,7 +188,7 @@ p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y
     com.theme +
     scale_fill_viridis_d() +
     scale_color_viridis_d() +
-    xlab("SE slope") 
+    xlab("SE slope") + xlim(0,1.5)
   
   if(i==0){
     plots_normal[[i+1]] = (p1+p2+p3+lint+plot_layout(ncol=4))/(p1s+p2s+p3s+lslop+ plot_layout(ncol=4))
@@ -209,7 +210,7 @@ p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y
     scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
     scale_fill_viridis_d() +
     scale_color_viridis_d() +
-    labs(tag="A)")
+    labs(tag="A)")  +xlim(0,1.2)
   
   g2 <- ggplot(res.glmm %>% filter(Singularity %in% c(0,i)), aes(x=estimate_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
     geom_density_ridges(alpha=0.5, scale=1.2, quantile_lines=TRUE, 
@@ -230,7 +231,7 @@ p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y
                      expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
     scale_fill_viridis_d() +
     scale_color_viridis_d() +
-    xlab("SE intercept") 
+    xlab("SE intercept") +xlim(0,0.8)
   
   g1s <- ggplot(sbin %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
     geom_density_ridges(alpha=0.5, scale=1.2, quantile_lines=TRUE, 
@@ -241,7 +242,7 @@ p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y
     scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
     scale_fill_viridis_d() +
     scale_color_viridis_d() +
-    labs(tag="B)")
+    labs(tag="B)") +xlim(0,1)
   
   g2s <- ggplot(sbin %>% filter(Singularity %in% c(0,i)), aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
     geom_density_ridges(alpha=0.5, scale=1.2, quantile_lines=TRUE, 
@@ -262,7 +263,7 @@ p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y
                      expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
     scale_fill_viridis_d() +
     scale_color_viridis_d() +
-    xlab("SE slope") 
+    xlab("SE slope")  +xlim(0,0.6)
   
   if(i==0){
     plots_binomial[[i+1]] = (g1+g2+g3+bint+plot_layout(ncol=4))/(g1s+g2s+g3s+bslop+ plot_layout(ncol=4))
@@ -411,3 +412,99 @@ jpeg("Figures/RE_normal_glmmTMB.jpeg",width=860, height = 650)
 (p1+p2+p3+lint+plot_layout(ncol=4))/(p1s+p2s+p3s+lslo+ plot_layout(ncol=4))
 dev.off()
 
+
+
+## Results treating it as a fixed effect
+
+
+fixed_intercept_normal <- readRDS("./Results/results_intercept_fixed_effect.Rds")
+fixed_slope_normal <- readRDS("./Results/results_slope_fixed_effect.Rds")
+
+names(fixed_intercept_normal) <- rep(2:8)
+fixed_intercept_normal <- lapply(fixed_intercept_normal, as.data.frame)
+fixed.int_normal <- bind_rows(fixed_intercept_normal, .id="N_levels")
+fixed.int_normal <- filter(fixed.int_normal, N_levels %in% c("2","3","4","5"))
+
+
+names(fixed_slope_normal) <- rep(2:8)
+fixed_slope_normal <- lapply(fixed_slope_normal, as.data.frame)
+fixed.slope_normal <- bind_rows(fixed_slope_normal, .id="N_levels")
+fixed.slope_normal <- filter(fixed.int_normal, N_levels %in% c("2","3","4","5"))
+
+
+fixed_intercept_glm <- readRDS(result_list, file = "Results/results_glm_fixed_effect.Rds")
+fixed_slope_glm <- readRDS(result_list, file = "Results/results_glm_fixed_effect.Rds")
+
+
+names(fixed_intercept_glm) <- rep(2:8)
+fixed_intercept_glm <- lapply(fixed_intercept_glm, as.data.frame)
+fixed.int_glm <- bind_rows(fixed_intercept_glm, .id="N_levels")
+fixed.int_glm <- filter(fixed.int_glm, N_levels %in% c("2","3","4","5"))
+
+names(fixed_slope_glm) <- rep(2:8)
+fixed_slope_glm <- lapply(fixed_slope_glm, as.data.frame)
+fixed.slope_glm <- bind_rows(fixed_slope_glm, .id="N_levels")
+fixed.slope_glm <- filter(fixed.int_glm, N_levels %in% c("2","3","4","5"))
+
+
+p1 <- ggplot(fixed.int_normal, aes(x=estimate_intercept, y = N_levels, fill=N_levels,col=N_levels))+
+  ggtitle("Normal model") +
+  geom_density_ridges(alpha=0.5, scale=1.5, quantile_lines=TRUE, 
+                      quantiles=2) +
+  # geom_ridgeline(mapping = aes( x= rep(seq(0,132-0.132,0.132),4), 
+  #                                    y = N_levels),height = norm, 
+  #                      color = "black", scale =1.5) +
+  geom_vline(xintercept = 66, col="black", linetype="dotted") +
+  scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+  xlab("Estimated intercept") +
+  theme(legend.position = "none",
+        axis.line.y = element_blank()) +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d() + xlim(20,112)
+
+
+
+p2 <- ggplot(fixed.slope_normal, aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
+  geom_density_ridges(alpha=0.5, scale=1.5, quantile_lines=TRUE, 
+                      quantiles=2) +
+  geom_vline(xintercept = 3, col="black", linetype="dotted") +
+  # xlim(0,40) +
+  scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+  xlab("Estimated slope") +
+  theme(legend.position = "none",
+        axis.line.y = element_blank()) +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d() + xlim(2.5,3.5)
+
+
+p3 <- ggplot(fixed.int_glm, aes(x=estimate_intercept, y = N_levels, fill=N_levels,col=N_levels))+
+  ggtitle("Binomial model") +
+  geom_density_ridges(alpha=0.5, scale=1.5, quantile_lines=TRUE, 
+                      quantiles=2) +
+  geom_vline(xintercept = 2, col="black", linetype="dotted") +
+  # xlim(0,40) +
+  scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+  xlab("Estimated intercept") +
+  theme(legend.position = "none",
+        axis.line.y = element_blank()) +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d() + xlim(0,4)
+
+p4 <- ggplot(fixed.slope_glm, aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
+  geom_density_ridges(alpha=0.5, scale=1.5, quantile_lines=TRUE, 
+                      quantiles=2) +
+  geom_vline(xintercept = 0.3, col="black", linetype="dotted") +
+  # xlim(0,40) +
+  scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+  xlab("Estimated slope") +
+  theme(legend.position = "none",
+        axis.line.y = element_blank()) +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d()+ xlim(-0.4,1.0)
+
+
+
+
+jpeg("Figures/Fixed_effects.jpeg",width=860, height = 650)
+(p1+p2+plot_layout(ncol=2))/(p3+p4+plot_layout(ncol=2))
+dev.off()

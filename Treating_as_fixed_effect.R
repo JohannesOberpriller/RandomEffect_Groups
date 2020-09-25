@@ -96,7 +96,7 @@ result_list = list()
 for(number_groups in 2:10){
   n_groups <- number_groups
   
-  number_experiments = 1000
+  number_experiments = 10000
   results = matrix(nrow = number_experiments, ncol =5)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
@@ -137,12 +137,12 @@ x <- runif(n, -1, 1)
 X <- matrix(c(rep(1, n), x), nrow = n) # 
 
 beta <- c(2,0.3)
-sd_randslope = 0.2*beta[2]
+sd_randslope = 0.8*beta[2]
 result_list = list()
 for(number_groups in 2:10){
   n_groups <- number_groups
   
-  number_experiments = 1000
+  number_experiments = 10000
   results = matrix(nrow = number_experiments, ncol =5)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect",
