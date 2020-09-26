@@ -2,10 +2,11 @@
 
 library(tidyverse)
 library(cowplot)
+theme_set(theme_cowplot())
 library(patchwork)
 library(ggridges)
 library(ggpubr) # include table in the plot
-library(viridis)
+library(viridis) # color blind pallete
 
 ## Color-blind-friendly palette
 #cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
@@ -414,7 +415,9 @@ dev.off()
 
 
 
-## Results treating it as a fixed effect
+## FIXED EFFECTS -------------
+
+# Results treating RE groups as a fixed effect
 
 
 fixed_intercept_normal <- readRDS("./Results/results_intercept_fixed_effect.Rds")
@@ -432,8 +435,8 @@ fixed.slope_normal <- bind_rows(fixed_slope_normal, .id="N_levels")
 fixed.slope_normal <- filter(fixed.int_normal, N_levels %in% c("2","3","4","5"))
 
 
-fixed_intercept_glm <- readRDS(result_list, file = "Results/results_glm_fixed_effect.Rds")
-fixed_slope_glm <- readRDS(result_list, file = "Results/results_glm_fixed_effect.Rds")
+fixed_intercept_glm <- readRDS("Results/results_glm_fixed_effect.Rds")
+fixed_slope_glm <- readRDS("Results/results_glm_fixed_effect.Rds")
 
 
 names(fixed_intercept_glm) <- rep(2:8)
