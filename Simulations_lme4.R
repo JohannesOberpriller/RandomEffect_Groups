@@ -169,7 +169,7 @@ X <- matrix(c(rep(1, n), x), nrow = n) #
 sd_randslope = 0.8*beta[2]
 
 result_list_slope = list()
-for(number_groups in 2:5){
+for(number_groups in 2:8){
   n_groups <- number_groups
   
   number_experiments = 10000 # increase 10000

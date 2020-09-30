@@ -43,7 +43,7 @@ snorm <- lapply(rslope_norm, as.data.frame)
 snorm <- bind_rows(snorm, .id="N_levels")
 snorm <- filter(snorm, N_levels %in% c("2","3","4","5"))
 
-names(rslope_bin) <- rep(2:8)
+names(rslope_bin) <- rep(2:5) ## results only up to 5 groups?
 sbin <- lapply(rslope_bin, as.data.frame)
 sbin <- bind_rows(sbin, .id="N_levels")
 sbin <- filter(sbin, N_levels %in% c("2","3","4","5"))
@@ -128,7 +128,7 @@ for(i in c(0, 1)) {
 
 
 ## NORMAL ----
-p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
+  p1 <- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
     geom_density_ridges(alpha=0.5, scale=1.5, quantile_lines=TRUE, 
                         quantiles=2) +
     geom_vline(xintercept = 13.2, col="black", linetype="dotted") +
@@ -264,12 +264,12 @@ p1<- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=stddev_randeff, y
                      expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
     scale_fill_viridis_d() +
     scale_color_viridis_d() +
-    xlab("SE slope")  +xlim(0,0.6)
+    xlab("SE slope")#  +xlim(0,0.6)
   
   if(i==0){
     plots_binomial[[i+1]] = (g1+g2+g3+bint+plot_layout(ncol=4))/(g1s+g2s+g3s+bslop+ plot_layout(ncol=4))
   }else{
-    plots_binomial[[i+1]] = (p1+p2+p3)/(p1s+p2s+p3s)
+    plots_binomial[[i+1]] = (g1+g2+g3)/(g1s+g2s+g3s)
   }
 
 }
@@ -473,7 +473,7 @@ p1 <- ggplot(tmb.int, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_le
   theme(legend.position = "none",
         axis.line.y = element_blank()) +
   scale_fill_viridis_d() +
-  scale_color_viridis_d() +
+  scale_color_viridis_d() + xlim(0,1.05) +
   labs(tag="A)") 
 
 p2 <-  ggplot(tmb.int, aes(x=estimate_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
@@ -503,7 +503,7 @@ p1s <- ggplot(tmb.slope, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N
   xlab("SD random slope") +
   theme(legend.position = "none", axis.line.y = element_blank()) +
   scale_fill_viridis_d() +
-  scale_color_viridis_d() +
+  scale_color_viridis_d() + xlim(0,1.63) +
   labs(tag="B)")
 
 p2s <-  ggplot(tmb.slope, aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
