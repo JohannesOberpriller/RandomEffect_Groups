@@ -413,7 +413,122 @@ jpeg("Figures/RE_normal_glmmTMB.jpeg",width=860, height = 650)
 (p1+p2+p3+lint+plot_layout(ncol=4))/(p1s+p2s+p3s+lslo+ plot_layout(ncol=4))
 dev.off()
 
+### glmmTMB plots for binomial ------
 
+
+# because there are less than 1% of singularity in slope models in 2-3
+# levesl, I made the figures including all simulations
+
+tmb_intercept <- readRDS("./Results/results_intercept_glmmtmb_binomial.Rds")
+tmb_slope <- readRDS("./Results/results_slope_glmmtmb_binomial.Rds")
+
+names(tmb_intercept) <- rep(2:8)
+tmb_intercept <- lapply(tmb_intercept, as.data.frame)
+tmb.int <- bind_rows(tmb_intercept, .id="N_levels")
+tmb.int <- filter(tmb.int, N_levels %in% c("2","3","4","5"))
+
+names(tmb_slope) <- rep(2:8)
+tmb_slope <- lapply(tmb_slope, as.data.frame)
+tmb.slope <- bind_rows(tmb_slope, .id="N_levels")
+tmb.slope <- filter(tmb.slope, N_levels %in% c("2","3","4","5"))
+
+# singularity table
+tmb.si <- tmb.int %>% group_by(N_levels) %>% 
+  summarise(`Singularity (%)`= sum(Singularity)*100/n() )
+tmb.ss <- tmb.slope %>% group_by(N_levels) %>% 
+  summarise(`Singularity (%)`= sum(Singularity)*100/n() )
+
+tmb.sing <- bind_rows(list(intercept=tmb.si, slope=tmb.ss), .id="estimate") %>%
+  arrange(estimate, desc(N_levels))
+
+uni <- unit(c(17,17), "mm")
+lint <- ggtexttable(tmb.sing %>% filter(estimate=="intercept") %>%
+                      select(`Singularity (%)`), 
+                    rows = NULL,
+                    theme = ttheme(base_style = "blank",
+                                   base_size = 13,
+                                   padding = uni,
+                                   tbody.style = tbody_style(color=viridis_pal()(4)[4:1],
+                                                             fill = "white",
+                                                             size=13),
+                                   rownames.style = rownames_style(linewidth = 50)))
+lslo <- ggtexttable(tmb.sing %>% filter(estimate=="slope") %>%
+                      select(`Singularity (%)`), 
+                    rows = NULL,
+                    theme = ttheme(base_style = "blank",
+                                   base_size = 13,
+                                   padding = uni,
+                                   tbody.style = tbody_style(color=viridis_pal()(4)[4:1],
+                                                             fill = "white",
+                                                             size=13),
+                                   rownames.style = rownames_style(linewidth = 50)))
+
+p1 <- ggplot(tmb.int, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
+  geom_density_ridges(alpha=0.5, scale=1.5, quantile_lines=TRUE, 
+                      quantiles=2) +
+  geom_vline(xintercept = 0.4, col="black", linetype="dotted") +
+  # xlim(0,40) +
+  scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+  xlab("SD random intercept") +
+  theme(legend.position = "none",
+        axis.line.y = element_blank()) +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d() +
+  labs(tag="A)") 
+
+p2 <-  ggplot(tmb.int, aes(x=estimate_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
+  geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
+                       quantiles=2) +
+  scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+  geom_vline(xintercept = 2., col="black", linetype="dotted") +
+  com.theme +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d() +
+  xlab("Estimate intercept") 
+
+p3 <-  ggplot(tmb.int, aes(x=se_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
+  geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
+                       quantiles=2) + 
+  scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+  com.theme +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d() +
+  xlab("SE intercept") 
+
+p1s <- ggplot(tmb.slope, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
+  geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
+                       quantiles=2) +
+  scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+  geom_vline(xintercept = 0.24, col="black", linetype="dotted") +
+  xlab("SD random slope") +
+  theme(legend.position = "none", axis.line.y = element_blank()) +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d() +
+  labs(tag="B)")
+
+p2s <-  ggplot(tmb.slope, aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
+  geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
+                       quantiles=2) +
+  scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+  geom_vline(xintercept = 0.3, col="black", linetype="dotted") +
+  com.theme +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d() +
+  xlab("Estimate slope") 
+
+p3s <- ggplot(tmb.slope, aes(x=se_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
+  geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
+                       quantiles=2) +
+  scale_y_discrete(name="", 
+                   expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
+  com.theme +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d() +
+  xlab("SE slope") 
+
+jpeg("Figures/RE_binomial_glmmTMB.jpeg",width=860, height = 650)
+(p1+p2+p3+lint+plot_layout(ncol=4))/(p1s+p2s+p3s+lslo+ plot_layout(ncol=4))
+dev.off()
 
 ## FIXED EFFECTS -------------
 
