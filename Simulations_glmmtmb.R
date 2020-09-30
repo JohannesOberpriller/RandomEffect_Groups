@@ -195,12 +195,12 @@ for(number_groups in 2:5){
     
     fit_glmmtmb <- glmmTMB(y ~ x  + (0 + x | group), family = binomial)
     
-    results[experiment,1] = summary(fit_glmmtmb)$coefficients["(Intercept)","Estimate"]
-    results[experiment,2] = summary(fit_glmmtmb)$coefficients["x","Estimate"]
-    results[experiment,3] = summary(fit_glmmtmb)$coefficients["(Intercept)","Pr(>|z|)"]
-    results[experiment,4] = summary(fit_glmmtmb)$coefficients["x","Pr(>|z|)"]
-    results[experiment,5] = summary(fit_glmmtmb)$coefficients["(Intercept)","Std. Error"]
-    results[experiment,6] = summary(fit_glmmtmb)$coefficients["x","Std. Error"]
+    results[experiment,1] = summary(fit_glmmtmb)$coefficients$cond["(Intercept)","Estimate"]
+    results[experiment,2] = summary(fit_glmmtmb)$coefficients$cond["x","Estimate"]
+    results[experiment,3] = summary(fit_glmmtmb)$coefficients$cond["(Intercept)","Pr(>|z|)"]
+    results[experiment,4] = summary(fit_glmmtmb)$coefficients$cond["x","Pr(>|z|)"]
+    results[experiment,5] = summary(fit_glmmtmb)$coefficients$cond["(Intercept)","Std. Error"]
+    results[experiment,6] = summary(fit_glmmtmb)$coefficients$cond["x","Std. Error"]
     
     results[experiment,7] = attr(summary(fit_glmmtmb)$varcor$cond$group,"stddev")
     results[experiment,8] = as.integer(!fit_glmmtmb$sdr$pdHess)
