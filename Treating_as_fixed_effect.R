@@ -51,7 +51,7 @@ sd_randslope = 0.2*beta[2]
 result_list = list()
 for(number_groups in 2:10){
   n_groups <- number_groups
-  number_experiments = 1000
+  number_experiments = 10000
   results = matrix(nrow = number_experiments, ncol =4)
   colnames(results) = c("estimate_intercept","estimate_effect", 
                         "p_value_intercept", "p_value_effect")
