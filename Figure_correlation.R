@@ -5,7 +5,7 @@ number_of_levels = 4
 number_of_quantiles = 4
 plot(x = seq(1,4,1),y =seq(1,4,1),col = colors, pch = 19)
 
-svg("./Figures/correlations.jpeg", width = 18, height = 15)
+svg("./Figures/correlations.svg", width = 18, height = 15)
 layout(matrix(c(1,2,3,4),nrow =2, ncol =2, byrow = T))
 results_glmm <- readRDS("./Results/results_intercept_glmer.Rds")
 plot(NULL, NULL, xlim = c(0, 1.1*max(results_glmm[[4]][,7])), ylim = c(0., 1.1*max(results_glmm[[4]][,5])), 

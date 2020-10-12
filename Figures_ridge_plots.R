@@ -275,20 +275,20 @@ for(i in c(0, 1)) {
 }
 
 
-jpeg(paste0("Figures/RE_normal_WITHOUT_singularity.jpeg" ),width=860, height = 650)
+pdf(paste0("Figures/RE_normal_WITHOUT_singularity.pdf" ),width=18, height = 12)
 plots_normal[[1]] ## option 1
 dev.off()
 
-jpeg(paste0("Figures/RE_normal_WITH_singularity.jpeg"),width=860, height = 650)
+pdf(paste0("Figures/RE_normal_WITH_singularity.pdf"),width=18, height = 12)
 plots_normal[[2]] ## option 1
 dev.off()
 
 
-jpeg(paste0("Figures/RE_binomial_WITHOUT_singularity.jpeg"),width=860, height = 650)
+pdf(paste0("Figures/RE_binomial_WITHOUT_singularity.pdf"),width=18, height =12)
 plots_binomial[[1]]
 dev.off()
 
-jpeg(paste0("Figures/RE_binomial_WITH_singularity.jpeg"),width=860, height = 650)
+pdf(paste0("Figures/RE_binomial_WITH_singularity.pdf"),width=18, height = 12)
 plots_binomial[[2]]
 dev.off()
 
@@ -408,7 +408,7 @@ p3s <- ggplot(tmb.slope, aes(x=se_effect, y = N_levels, fill=N_levels,col=N_leve
   scale_color_viridis_d() +
   xlab("SE slope") + xlim(0, 1.05*max(tmb.slope$se_effect))
 
-jpeg("Figures/RE_normal_glmmTMB.jpeg",width=860, height = 650)
+pdf("Figures/RE_normal_glmmTMB.pdf",width=18, height = 12)
 (p1+p2+p3+plot_layout(ncol=3))/(p1s+p2s+p3s+ plot_layout(ncol=3))
 dev.off()
 
@@ -431,7 +431,7 @@ tmb_intercept <- lapply(tmb_intercept, as.data.frame)
 tmb.int <- bind_rows(tmb_intercept, .id="N_levels")
 tmb.int <- filter(tmb.int, N_levels %in% c("2","3","4","5"))
 
-names(tmb_slope) <- rep(2:8)
+names(tmb_slope) <- rep(2:5)
 tmb_slope <- lapply(tmb_slope, as.data.frame)
 tmb.slope <- bind_rows(tmb_slope, .id="N_levels")
 tmb.slope <- filter(tmb.slope, N_levels %in% c("2","3","4","5"))
@@ -508,7 +508,7 @@ p1s <- ggplot(tmb.slope, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N
   theme(legend.position = "none", axis.line.y = element_blank()) +
   scale_fill_viridis_d() +
   scale_color_viridis_d() + xlim(0,1.05*max(tmb.slope$stddev_randeff)) +
-  annotate("text", x = 0.1, y=4.3, label = "b)",size =10)
+  annotate("text", x = 0.1, y=5.3, label = "b)",size =10)
 
 p2s <-  ggplot(tmb.slope, aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
   geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
@@ -530,7 +530,7 @@ p3s <- ggplot(tmb.slope, aes(x=se_effect, y = N_levels, fill=N_levels,col=N_leve
   scale_color_viridis_d() + xlim(0,1.05*max(tmb.slope$se_effect)) +
   xlab("SE slope") 
 
-jpeg("Figures/RE_binomial_glmmTMB.jpeg",width=860, height = 650)
+pdf("Figures/RE_binomial_glmmTMB.pdf",width=18, height = 12)
 (p1+p2+p3+plot_layout(ncol=3))/(p1s+p2s+p3s+plot_layout(ncol=3))
 dev.off()
 
@@ -624,7 +624,7 @@ p4 <- ggplot(fixed.slope_glm, aes(x=estimate_effect, y = N_levels, fill=N_levels
 
 
 
-jpeg("Figures/Fixed_effects.jpeg",width=860, height = 650)
+pdf("Figures/Fixed_effects.pdf",width=18, height = 10)
 (p1+p2+plot_layout(ncol=2))/(p3+p4+plot_layout(ncol=2))
 dev.off()
 
@@ -646,7 +646,7 @@ tmb_intercept <- lapply(tmb_intercept, as.data.frame)
 tmb.int <- bind_rows(tmb_intercept, .id="N_levels")
 tmb.int <- filter(tmb.int, N_levels %in% c("2","3","4","5"))
 
-names(tmb_slope) <- rep(2:8)
+names(tmb_slope) <- rep(2:5)
 tmb_slope <- lapply(tmb_slope, as.data.frame)
 tmb.slope <- bind_rows(tmb_slope, .id="N_levels")
 tmb.slope <- filter(tmb.slope, N_levels %in% c("2","3","4","5"))
@@ -704,14 +704,14 @@ p2 <-  ggplot(tmb.int, aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_
   scale_color_viridis_d() +
   xlab("Estimate effect") + xlim(min(tmb.int$estimate_effect),max(tmb.int$estimate_effect))
 
-p3 <-  ggplot(tmb.int, aes(x=p_value_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
+p3 <-  ggplot(tmb.int, aes(x=se_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
   geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
                        quantiles=2) + 
   scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
   com.theme +
   scale_fill_viridis_d() +
   scale_color_viridis_d() +
-  xlab("P-value effect") + xlim(0, 0.06)
+  xlab("Standard error effect") + xlim(0.05, 1.05*max(tmb.int$se_effect))
 
 
 p1s <- ggplot(tmb.slope, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
@@ -735,7 +735,7 @@ p2s <-  ggplot(tmb.slope, aes(x=estimate_intercept, y = N_levels, fill=N_levels,
   scale_color_viridis_d() +
   xlab("Estimate Intercept")  + xlim(min(tmb.slope$estimate_intercept), max(tmb.slope$estimate_intercept))
 
-p3s <- ggplot(tmb.slope, aes(x=p_value_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
+p3s <- ggplot(tmb.slope, aes(x=se_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
   geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
                        quantiles=2) +
   scale_y_discrete(name="", 
@@ -743,9 +743,9 @@ p3s <- ggplot(tmb.slope, aes(x=p_value_intercept, y = N_levels, fill=N_levels,co
   com.theme +
   scale_fill_viridis_d() +
   scale_color_viridis_d() +
-  xlab("P-value intercept") + xlim(0, 1.05*max(tmb.slope$p_value_intercept))
+  xlab("Standard error intercept") + xlim(0.02, 1.05*max(tmb.slope$se_intercept))
 
-jpeg("Figures/RE_normal_glmmTMB_not_affected.jpeg",width=860, height = 650)
+pdf("Figures/RE_normal_glmmTMB_not_affected.pdf",width=18, height = 12)
 (p1+p2+p3+plot_layout(ncol=3))/(p1s+p2s+p3s+ plot_layout(ncol=3))
 dev.off()
 
@@ -758,7 +758,7 @@ tmb_intercept <- lapply(tmb_intercept, as.data.frame)
 tmb.int <- bind_rows(tmb_intercept, .id="N_levels")
 tmb.int <- filter(tmb.int, N_levels %in% c("2","3","4","5"))
 
-names(tmb_slope) <- rep(2:8)
+names(tmb_slope) <- rep(2:)5
 tmb_slope <- lapply(tmb_slope, as.data.frame)
 tmb.slope <- bind_rows(tmb_slope, .id="N_levels")
 tmb.slope <- filter(tmb.slope, N_levels %in% c("2","3","4","5"))
@@ -817,14 +817,14 @@ p2 <-  ggplot(tmb.int, aes(x=estimate_effect, y = N_levels, fill=N_levels,col=N_
   scale_color_viridis_d() + xlim(min(tmb.int$estimate_effect), max(tmb.int$estimate_effect)) +
   xlab("Estimate Effect") 
 
-p3 <-  ggplot(tmb.int, aes(x=p_value_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
+p3 <-  ggplot(tmb.int, aes(x=se_effect, y = N_levels, fill=N_levels,col=N_levels)) + 
   geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
                        quantiles=2) + 
   scale_y_discrete(name="", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
   com.theme +
   scale_fill_viridis_d() +
-  scale_color_viridis_d() + xlim(0,1.05*max(tmb.int$p_value_effect)) +
-  xlab("P-value Effect") 
+  scale_color_viridis_d() + xlim(0.1,1.05*max(tmb.int$se_effect)) +
+  xlab("Standard error effect") 
 
 p1s <- ggplot(tmb.slope, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_levels)) + 
   geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
@@ -847,17 +847,17 @@ p2s <-  ggplot(tmb.slope, aes(x=estimate_intercept, y = N_levels, fill=N_levels,
   scale_color_viridis_d()  + xlim(min(tmb.slope$estimate_intercept),max(tmb.slope$estimate_intercept)) +
   xlab("Estimate intercept") 
 
-p3s <- ggplot(tmb.slope, aes(x=p_value_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
+p3s <- ggplot(tmb.slope, aes(x=se_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
   geom_density_ridges( alpha=0.5, scale=1.5, quantile_lines=TRUE, 
                        quantiles=2) +
   scale_y_discrete(name="", 
                    expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
   com.theme +
   scale_fill_viridis_d() +
-  scale_color_viridis_d() + xlim(0,0.06) +
-  xlab("SE slope") 
+  scale_color_viridis_d() + xlim(0.05,1.05*max(tmb.slope$se_intercept)) +
+  xlab("Standard error intercept") 
 
-jpeg("Figures/RE_binomial_glmmTMB_non_affected.jpeg",width=860, height = 650)
+pdf("Figures/RE_binomial_glmmTMB_non_affected.pdf",width=18, height = 12)
 (p1+p2+p3+plot_layout(ncol=3))/(p1s+p2s+p3s+plot_layout(ncol=3))
 dev.off()
 
@@ -904,9 +904,9 @@ p2 <- ggplot(tmb.int, aes(x=p_value_intercept, y = N_levels, fill=N_levels,col=N
         axis.line.y = element_blank()) +
   scale_fill_viridis_d() +
   scale_color_viridis_d() + xlim(0, 1.05*max(tmb.int$p_value_intercept))+
-  annotate("text", x = 0.02, y=5.3, label = "glmmtmb",size =6)
+  annotate("text", x = 0.02, y=5.3, label = "glmmTMB",size =6)
 
-jpeg("Figures/RE_normal_pvalues.jpeg",width=860, height = 650)
+pdf("Figures/RE_normal_pvalues.pdf",width=18, height = 8)
 (p1+p2+plot_layout(ncol=2))
 dev.off()
 
