@@ -74,7 +74,7 @@ lint <- ggtexttable(sing %>% filter(model=="linear", estimate=="inter") %>%
                            padding = uni,
                            tbody.style = tbody_style(color="black",
                                                      fill = "white",
-                                                     size=13),
+                                                     size=base_size),
                            rownames.style = rownames_style(linewidth = 50)
                                       )) 
 lslop <- ggtexttable(sing %>% filter(model=="linear", estimate=="slope") %>%
@@ -85,7 +85,7 @@ lslop <- ggtexttable(sing %>% filter(model=="linear", estimate=="slope") %>%
                                     padding = uni,
                                     tbody.style = tbody_style(color="black",
                                                               fill = "white",
-                                                              size=13),
+                                                              size=base_size),
                                     rownames.style = rownames_style(linewidth = 50)
                      ))
 bint <- ggtexttable(sing %>% filter(model=="binomial", estimate=="inter") %>%
@@ -96,7 +96,7 @@ bint <- ggtexttable(sing %>% filter(model=="binomial", estimate=="inter") %>%
                                    padding = uni,
                                    tbody.style = tbody_style(color="black",
                                                              fill = "white",
-                                                             size=13),
+                                                             size=base_size),
                                    rownames.style = rownames_style(linewidth = 50)
                     )) 
 bslop <- ggtexttable(sing %>% filter(model=="binomial", estimate=="slope") %>%
@@ -107,7 +107,7 @@ bslop <- ggtexttable(sing %>% filter(model=="binomial", estimate=="slope") %>%
                                     padding = uni,
                                     tbody.style = tbody_style(color="black",
                                                               fill = "white",
-                                                              size=13),
+                                                              size=base_size),
                                     rownames.style = rownames_style(linewidth = 50)
                      ))
 
@@ -710,6 +710,7 @@ p1 <- ggplot(tmb.int, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_le
   scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
   xlab("SD random intercept") +
   theme(legend.position = "none",
+        text = element_text(size=25),axis.text = element_text(size=20),
         axis.line.y = element_blank()) +
   scale_fill_viridis_d() +
   scale_color_viridis_d() + xlim(0, 1.05*max(tmb.int$stddev_randeff))+
@@ -741,7 +742,9 @@ p1s <- ggplot(tmb.slope, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N
   scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
   geom_vline(xintercept = 0.4, col="black", linetype="dotted") +
   xlab("SD random slope") +
-  theme(legend.position = "none", axis.line.y = element_blank()) +
+  theme(legend.position = "none", 
+        text = element_text(size=25),axis.text = element_text(size=20),
+        axis.line.y = element_blank()) +
   scale_fill_viridis_d() +
   scale_color_viridis_d() +
   annotate("text", x = 0.1, y=5.3, label = "b)",size =10) + xlim(0, 1.05*max(tmb.slope$stddev_randeff))
@@ -823,6 +826,7 @@ p1 <- ggplot(tmb.int, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N_le
   scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
   xlab("SD random intercept") +
   theme(legend.position = "none",
+        text = element_text(size=25),axis.text = element_text(size=20),
         axis.line.y = element_blank()) +
   scale_fill_viridis_d() +
   scale_color_viridis_d() + xlim(0, 1.05*max(tmb.int$stddev_randeff)) +
@@ -853,7 +857,9 @@ p1s <- ggplot(tmb.slope, aes(x=stddev_randeff, y = N_levels, fill=N_levels,col=N
   scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
   geom_vline(xintercept = 0.24, col="black", linetype="dotted") +
   xlab("SD random slope") +
-  theme(legend.position = "none", axis.line.y = element_blank()) +
+  theme(legend.position = "none", 
+        text = element_text(size=25),axis.text = element_text(size=20),
+        axis.line.y = element_blank()) +
   scale_fill_viridis_d() +
   scale_color_viridis_d() + xlim(0,1.05*max(tmb.slope$stddev_randeff)) +
   annotate("text", x = 0.1, y=4.3, label = "b)",size =10)
@@ -909,11 +915,12 @@ p1 <- ggplot(res.int %>% filter(Singularity %in% c(0,i)), aes(x=p_value_intercep
   scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
   xlab("P-value intercept") +
   theme(legend.position = "none",
+        text = element_text(size=25),axis.text = element_text(size=20),
         axis.line.y = element_blank()) +
   scale_fill_viridis_d() +
   scale_color_viridis_d() +
   xlim(0, 1.05*max(res.int$p_value_intercept))+
-  annotate("text", x = 0.15, y=5.3, label = "lme4",size =6)
+  annotate("text", x = 0.15, y=5.3, label = "lme4",size =10)
 
 p2 <- ggplot(tmb.int, aes(x=p_value_intercept, y = N_levels, fill=N_levels,col=N_levels)) + 
   geom_density_ridges(alpha=0.5, scale=1.5, quantile_lines=TRUE, 
@@ -922,10 +929,11 @@ p2 <- ggplot(tmb.int, aes(x=p_value_intercept, y = N_levels, fill=N_levels,col=N
   scale_y_discrete(name="Number of Levels", expand = expansion(mult=c(0.01,0.01), c(0, 1.5))) +
   xlab("P-value intercept") +
   theme(legend.position = "none",
+        text = element_text(size=25),axis.text = element_text(size=20),
         axis.line.y = element_blank()) +
   scale_fill_viridis_d() +
   scale_color_viridis_d() + xlim(0, 1.05*max(tmb.int$p_value_intercept))+
-  annotate("text", x = 0.02, y=5.3, label = "glmmTMB",size =6)
+  annotate("text", x = 0.02, y=5.3, label = "glmmTMB",size =10)
 
 pdf("Figures/RE_normal_pvalues.pdf",width=18, height = 8)
 (p1+p2+plot_layout(ncol=2))
