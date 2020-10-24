@@ -54,7 +54,7 @@ for(number_groups in 2:8){
   result_list[[number_groups-1]] = results
 }
 
-saveRDS(result_list, file = "Results/results_intercept_glmmtmb.Rds")
+saveRDS(result_list, file = "Results/results_intercept_glmmtmb_normal.Rds")
 
 
 #### NORMAL Random slope -----------------------------------------------
@@ -102,7 +102,7 @@ for(number_groups in 2:8){
   result_list_slope[[number_groups-1]] = results
 }
 
-saveRDS(result_list_slope, file = "Results/results_slope_glmmtmb.Rds")
+saveRDS(result_list_slope, file = "Results/results_slope_glmmtmb_normal.Rds")
 
 
 
