@@ -24,12 +24,12 @@ results_intercept <- readRDS("./Results/results_intercept_lme4.Rds")
 results_glmm <- readRDS("./Results/results_intercept_glmer.Rds")
 
 names(results_intercept) <- rep(2:8)
-results_intercept <- lapply(results_intercept, as.data.frame)
+results_intercept <- lapply(results_intercept,function(l) as.data.frame(l$w))
 res.int <- bind_rows(results_intercept, .id="N_levels")
 res.int <- filter(res.int, N_levels %in% c("2","3","4","5"))
 
 names(results_glmm) <- rep(2:8)
-results_glmm<- lapply(results_glmm, as.data.frame)
+results_glmm<- lapply(results_glmm,function(l) as.data.frame(l$w))
 res.glmm <- bind_rows(results_glmm, .id="N_levels")
 res.glmm <- filter(res.glmm, N_levels %in% c("2","3","4","5"))
 
