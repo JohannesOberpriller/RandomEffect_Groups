@@ -44,7 +44,7 @@ system.time({
   result_list = 
     snow::parLapply(cl, 2:8, function(number_groups)  {
       
-      n_each <- 20
+      n_each <- 50
       n_groups <- number_groups
       
       results_w_lme4 = results_wo_lme4 = matrix(nrow = number_experiments, ncol = 11)
@@ -83,9 +83,10 @@ system.time({
         beta0 = 0.3
         g <- rep(1:n_groups, n_each)
         group <-  as.factor(g)
-        randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)
+        randintercep <- rnorm(n_groups, mean = beta, sd = sd_randeff)
+        randslope <- rnorm(n_groups, mean = beta0, sd = sd_randeff)
         
-        mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],beta)) 
+        mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],randslope[g[i]])) 
         sigma <- 0.5
         y <- rnorm(n, mu, sd = sigma) 
         
@@ -127,9 +128,11 @@ system.time({
         beta = 0.0
         g <- rep(1:n_groups, n_each)
         group <-  as.factor(g)
-        randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)
+        randintercep <- rnorm(n_groups, mean = beta, sd = sd_randeff)
+        randslope <- rnorm(n_groups, mean = beta0, sd = sd_randeff)
         
-        mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],beta)) 
+        mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],randslope[g[i]])) 
+        
         sigma <- 0.5
         y <- rnorm(n, mu, sd = sigma) 
         
