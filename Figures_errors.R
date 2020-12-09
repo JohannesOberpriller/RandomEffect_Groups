@@ -3,6 +3,7 @@ results_lmm = readRDS("Results/results_mountain_lmm.Rds")
 results_glmm = readRDS("Results/results_mountain_glmm.Rds")
 
 addA = function(col, alpha = 0.25) apply(sapply(col, col2rgb)/255, 2, function(x) rgb(x[1], x[2], x[3], alpha=alpha)) 
+cols = RColorBrewer::brewer.pal(3, "Set1")
 
 ## Type I error ##
 par(mfrow = c(2,3), mar = c(0.1, 4, 2, 1), oma = c(4, 1, 2, 1))
@@ -167,33 +168,36 @@ cols = viridis(5)
 ff = function(i) {
   if(i == 1) return(cols[1])
   if(i == 2) return(cols[2])
-  if(i == 4) return(cols[4])
-  if(i == 7) return(cols[7])
+  if(i == 4) return(cols[3])
+  if(i == 7) return(cols[4])
 }
 
 adj = 1.0
 par(mfrow = c(2,2), mar = c(2, 1, 4, 2))
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 26.0), axes= FALSE, ylab = "", main = "lme4 SD intercept", xlab = "")
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 24.0), axes= FALSE, ylab = "", main = "lme4 SD intercept", xlab = "")
 for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
 axis(1)
-legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols, bty = "n")
+legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols[1:4], bty = "n")
+abline(v=0.1, col="darkgrey", lty = 3)
 
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 26.0), axes= FALSE, ylab = "", main = "lme4 SD slope", xlab = "")
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 24.0), axes= FALSE, ylab = "", main = "lme4 SD slope", xlab = "")
 for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4$stddev_randeff_x, adjust = adj), col = ff(i), lwd = 1.4)
 axis(1)
 legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols, bty = "n")
+abline(v=0.1, col="darkgrey", lty = 3)
 
-
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 26.0), axes= FALSE, ylab = "", main = "glmmTMB SD intercept", xlab = "")
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 24.0), axes= FALSE, ylab = "", main = "glmmTMB SD intercept", xlab = "")
 for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
 axis(1)
 legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols, bty = "n")
+abline(v=0.1, col="darkgrey", lty = 3)
 
 
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 26.0), axes= FALSE, ylab = "", main = "glmmTMB SD slope", xlab = "")
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 24.0), axes= FALSE, ylab = "", main = "glmmTMB SD slope", xlab = "")
 for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
 axis(1)
 legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols, bty = "n")
+abline(v=0.1, col="darkgrey", lty = 3)
 
 
 
@@ -210,26 +214,29 @@ legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols, bty = "n")
 
 adj = 1.0
 par(mfrow = c(2,2), mar = c(2, 1, 4, 2))
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "lme4 SD intercept", xlab = "")
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 34.0), axes= FALSE, ylab = "", main = "lme4 SD intercept", xlab = "")
 for(i in c(1, 2, 4, 7)) lines(density(results_glmm[[i]]$results_w_lme4$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
 axis(1)
-legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols, bty = "n")
+legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols[1:4], bty = "n")
+abline(v=0.1, col="darkgrey", lty = 3)
 
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "lme4 SD slope", xlab = "")
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 34.0), axes= FALSE, ylab = "", main = "lme4 SD slope", xlab = "")
 for(i in c(1, 2, 4, 7)) lines(density(results_glmm[[i]]$results_w_lme4$stddev_randeff_x, adjust = adj), col = ff(i), lwd = 1.4)
 axis(1)
 legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols, bty = "n")
+abline(v=0.1, col="darkgrey", lty = 3)
 
-
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "glmmTMB SD intercept", xlab = "")
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 34.0), axes= FALSE, ylab = "", main = "glmmTMB SD intercept", xlab = "")
 for(i in c(1, 2, 4, 7)) lines(density(results_glmm[[i]]$results_w_glmmTMB$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
 axis(1)
 legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols, bty = "n")
+abline(v=0.1, col="darkgrey", lty = 3)
 
 
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "glmmTMB SD slope", xlab = "")
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 38.0), axes= FALSE, ylab = "", main = "glmmTMB SD slope", xlab = "")
 for(i in c(1, 2, 4, 7)) lines(density(results_glmm[[i]]$results_w_glmmTMB$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
 axis(1)
 legend("topright", legend = c(2, 3, 5, 8), pch = 15, col = cols, bty = "n")
+abline(v=0.1, col="darkgrey", lty = 3)
 
 
