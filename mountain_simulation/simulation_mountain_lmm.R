@@ -37,7 +37,7 @@ extract_results = function(fit_lmm, confs, beta, beta0) {
 
 
 cl = snow::makeCluster(7L)
-snow::clusterEvalQ(cl, {library(lme4); library(lmerTest);library(glmmTMB); number_experiments =10000})
+snow::clusterEvalQ(cl, {library(lme4); library(lmerTest);library(glmmTMB); number_experiments =5000})
 snow::clusterExport(cl, list("extract_results","extract_results_t"), envir = environment())
 
 system.time({
@@ -47,27 +47,31 @@ system.time({
       n_each <- 50
       n_groups <- number_groups
       
-      results_w_lme4 = results_wo_lme4 = matrix(nrow = number_experiments, ncol = 11)
-      colnames(results_w_lme4) = c("estimate_intercept","estimate_effect", 
+      results_w_lme4_ml = results_wo_lme4_ml = results_w_lme4_reml = results_wo_lme4_reml = matrix(nrow = number_experiments, ncol = 11)
+      colnames(results_w_lme4_ml) = c("estimate_intercept","estimate_effect", 
                               "p_value_intercept", "p_value_effect",
                               "se_intercept", "se_effect",
                               "stddev_randeff_inter","stddev_randeff_x", "Singularity",
                               "Int_in_conf",  "Slope_in_conf")
-      colnames(results_wo_lme4) = colnames(results_w_lme4)
+      colnames(results_wo_lme4_ml) = colnames(results_w_lme4_ml)
+      colnames(results_w_lme4_reml) = colnames(results_w_lme4_ml)
+      colnames(results_wo_lme4_reml) = colnames(results_w_lme4_ml)
       
       
-      results_w_glmmTMB = results_wo_glmmTMB = matrix(nrow = number_experiments, ncol = 11)
-      colnames(results_w_glmmTMB) = c("estimate_intercept","estimate_effect", 
+      results_w_glmmTMB_ml = results_wo_glmmTMB_ml = results_w_glmmTMB_reml = results_wo_glmmTMB_reml = matrix(nrow = number_experiments, ncol = 11)
+      colnames(results_w_glmmTMB_ml) = c("estimate_intercept","estimate_effect", 
                                    "p_value_intercept", "p_value_effect",
                                    "se_intercept", "se_effect",
                                    "stddev_randeff_inter","stddev_randeff_x", "Singularity",
                                    "Int_in_conf",  "Slope_in_conf")
-      colnames(results_wo_glmmTMB) = colnames(results_w_glmmTMB)
+      colnames(results_wo_glmmTMB_ml) = colnames(results_w_glmmTMB_ml)
+      colnames(results_w_glmmTMB_reml) = colnames(results_w_glmmTMB_ml)
+      colnames(results_wo_glmmTMB_reml) = colnames(results_w_glmmTMB_ml)
       
       
       results_w_lm = results_wo_lm = matrix(nrow = number_experiments, ncol = 4)
       colnames(results_w_lm) = c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf")
-      colnames(results_wo_lme4) = colnames(results_w_lme4)
+      colnames(results_wo_lm) = colnames(results_w_lm)
       
       ## The data generating process ### 
       n = (number_groups)*n_each
@@ -79,8 +83,8 @@ system.time({
       
       for(experiment in 1:number_experiments){
         # w effect
-        beta = 0.3
-        beta0 = 0.3
+        beta = 10.0
+        beta0 = 0.4
         g <- rep(1:n_groups, n_each)
         group <-  as.factor(g)
         randintercep <- rnorm(n_groups, mean = beta, sd = sd_randeff)
@@ -91,8 +95,8 @@ system.time({
         y <- rnorm(n, mu, sd = sigma) 
         
         
-        # lme4
-        fit_lmm <- lmer(y ~ x  + (x | group)) 
+        # lme4 - ML
+        fit_lmm <- lmer(y ~ x  + (x | group), REML = FALSE) 
         summ = summary(fit_lmm)
         
         confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
@@ -101,10 +105,23 @@ system.time({
                             summ$coefficients[2,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"])
                       )
         rownames(confs) = c("(Intercept)", "x")
-        results_w_lme4[experiment, ] = extract_results_t(fit_lmm, confs, beta, beta0)
+        results_w_lme4_ml[experiment, ] = extract_results_t(fit_lmm, confs, beta, beta0)
         
-        # glmmTMB
-        fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group)) 
+        
+        # lme4 - REML
+        fit_lmm <- lmer(y ~ x  + (x | group), REML = TRUE) 
+        summ = summary(fit_lmm)
+        
+        confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
+                            summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
+                      cbind(summ$coefficients[2,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"], 
+                            summ$coefficients[2,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"])
+        )
+        rownames(confs) = c("(Intercept)", "x")
+        results_w_lme4_reml[experiment, ] = extract_results_t(fit_lmm, confs, beta, beta0)
+        
+        # glmmTMB - ML
+        fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = FALSE) 
         summ = summary(fit_glmmTMB)
         confs = rbind(cbind(summ$coefficients$cond[1,"Estimate"] - 1.96*summ$coefficients$cond[1,"Std. Error"], 
                             summ$coefficients$cond[1,"Estimate"] + 1.96*summ$coefficients$cond[1,"Std. Error"]),
@@ -112,7 +129,20 @@ system.time({
                             summ$coefficients$cond[2,"Estimate"] + 1.96*summ$coefficients$cond[2,"Std. Error"])
         )
         rownames(confs) = c("(Intercept)", "x")
-        results_w_glmmTMB[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
+        results_w_glmmTMB_ml[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
+        
+        # glmmTMB - REML
+        fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = TRUE)
+        try({
+          summ = summary(fit_glmmTMB)
+          confs = rbind(cbind(summ$coefficients$cond[1,"Estimate"] - 1.96*summ$coefficients$cond[1,"Std. Error"], 
+                              summ$coefficients$cond[1,"Estimate"] + 1.96*summ$coefficients$cond[1,"Std. Error"]),
+                        cbind(summ$coefficients$cond[2,"Estimate"] - 1.96*summ$coefficients$cond[2,"Std. Error"], 
+                              summ$coefficients$cond[2,"Estimate"] + 1.96*summ$coefficients$cond[2,"Std. Error"])
+          )
+          rownames(confs) = c("(Intercept)", "x")
+          results_w_glmmTMB_reml[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
+        }, silent = TRUE)
         
         # lm 
         fit_lm = lm(y ~ x*group)
@@ -124,7 +154,7 @@ system.time({
         
         
         # w/o effect
-        beta0 = 0.0
+        beta0 = 10.0
         beta = 0.0
         g <- rep(1:n_groups, n_each)
         group <-  as.factor(g)
@@ -136,7 +166,9 @@ system.time({
         sigma <- 0.5
         y <- rnorm(n, mu, sd = sigma) 
         
-        fit_lmm <- lmer(y ~ x  + (x | group)) 
+        
+        # lme4 - ML
+        fit_lmm <- lmer(y ~ x  + (x | group), REML = FALSE) 
         summ = summary(fit_lmm)
         confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
                             summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
@@ -144,10 +176,21 @@ system.time({
                             summ$coefficients[2,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"])
         )
         rownames(confs) = c("(Intercept)", "x")
-        results_wo_lme4[experiment, ] = extract_results_t(fit_lmm, confs, beta, beta0)
+        results_wo_lme4_ml[experiment, ] = extract_results_t(fit_lmm, confs, beta, beta0)
         
-        # glmmTMB
-        fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group)) 
+        # lme4 - REML
+        fit_lmm <- lmer(y ~ x  + (x | group), REML = TRUE) 
+        summ = summary(fit_lmm)
+        confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
+                            summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
+                      cbind(summ$coefficients[2,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"], 
+                            summ$coefficients[2,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"])
+        )
+        rownames(confs) = c("(Intercept)", "x")
+        results_wo_lme4_reml[experiment, ] = extract_results_t(fit_lmm, confs, beta, beta0)
+        
+        # glmmTMB - ML
+        fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = FALSE) 
         summ = summary(fit_glmmTMB)
         confs = rbind(cbind(summ$coefficients$cond[1,"Estimate"] - 1.96*summ$coefficients$cond[1,"Std. Error"], 
                             summ$coefficients$cond[1,"Estimate"] + 1.96*summ$coefficients$cond[1,"Std. Error"]),
@@ -155,7 +198,20 @@ system.time({
                             summ$coefficients$cond[2,"Estimate"] + 1.96*summ$coefficients$cond[2,"Std. Error"])
         )
         rownames(confs) = c("(Intercept)", "x")
-        results_wo_glmmTMB[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
+        results_wo_glmmTMB_ml[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
+        
+        # glmmTMB - REML
+        fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = TRUE) 
+        try({
+          summ = summary(fit_glmmTMB)
+          confs = rbind(cbind(summ$coefficients$cond[1,"Estimate"] - 1.96*summ$coefficients$cond[1,"Std. Error"], 
+                              summ$coefficients$cond[1,"Estimate"] + 1.96*summ$coefficients$cond[1,"Std. Error"]),
+                        cbind(summ$coefficients$cond[2,"Estimate"] - 1.96*summ$coefficients$cond[2,"Std. Error"], 
+                              summ$coefficients$cond[2,"Estimate"] + 1.96*summ$coefficients$cond[2,"Std. Error"])
+          )
+          rownames(confs) = c("(Intercept)", "x")
+          results_wo_glmmTMB_reml[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
+        }, silent = TRUE)  
         
         # lm
         fit_lm = lm(y ~ x*group)
@@ -165,12 +221,17 @@ system.time({
         
       }
       
-      return(list(results_w_lme4 = data.frame(results_w_lme4), 
-                  results_wo_lme4 = data.frame(results_wo_lme4),
-                  results_w_glmmTMB = data.frame(results_w_glmmTMB), 
-                  results_wo_glmmTMB = data.frame(results_wo_glmmTMB),
+      return(list(results_w_lme4_ml = data.frame(results_w_lme4_ml), 
+                  results_wo_lme4_ml = data.frame(results_wo_lme4_ml),
+                  results_w_glmmTMB_ml = data.frame(results_w_glmmTMB_ml), 
+                  results_wo_glmmTMB_ml = data.frame(results_wo_glmmTMB_ml),
                   results_w_lm = data.frame(results_w_lm),
-                  results_wo_lm = data.frame(results_wo_lm)
+                  results_wo_lm = data.frame(results_wo_lm),
+                  
+                  results_w_lme4_reml = data.frame(results_w_lme4_reml), 
+                  results_wo_lme4_reml = data.frame(results_wo_lme4_reml),
+                  results_w_glmmTMB_reml = data.frame(results_w_glmmTMB_reml), 
+                  results_wo_glmmTMB_reml = data.frame(results_wo_glmmTMB_reml)
                   ))
     })
 })
