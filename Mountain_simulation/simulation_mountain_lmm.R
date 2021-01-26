@@ -4,6 +4,9 @@ library(snow)
 library(glmmTMB)
 set.seed(1)
 
+
+################ Helper functions  ################ 
+# helper functions to extracts model properties 
 extract_results_t = function(fit_lmm, confs, beta, beta0) {
   return(
     c(summary(fit_lmm)$coefficients["(Intercept)","Estimate"],
@@ -36,7 +39,7 @@ extract_results = function(fit_lmm, confs, beta, beta0) {
 
 
 
-cl = snow::makeCluster(7L)
+cl = snow::makeCluster(7L) # reduce the number of cores if you have not 7 physical CPU cores
 snow::clusterEvalQ(cl, {library(lme4); library(lmerTest);library(glmmTMB); number_experiments =5000})
 snow::clusterExport(cl, list("extract_results","extract_results_t"), envir = environment())
 
@@ -73,33 +76,47 @@ system.time({
       colnames(results_w_lm) = c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf")
       colnames(results_wo_lm) = colnames(results_w_lm)
       
-      ## The data generating process ### 
+      ################  The data generating process ################ 
+      # Number of observations, 50 observations for each mountain range 
       n = (number_groups)*n_each
       
-      x <- runif(n, -1, 1)
-      X <- matrix(c(rep(1, n), x), nrow = n) # 
-      sd_randeff = 0.1
+      ### Environmental predictors (Intercept and Temperature) ###
+      x <- runif(n, -1, 1) # Temperature
+      X <- matrix(c(rep(1, n), x), nrow = n) # Intercept, Temperature
+      
+      sd_randeff = 0.1 # sd for random effects
       
       
       for(experiment in 1:number_experiments){
-        # w effect
-        beta = 0.4
-        beta0 = 10.0
-        g <- rep(1:n_groups, n_each)
-        group <-  as.factor(g)
-        randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)
-        randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)
         
-        mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],randslope[g[i]])) 
+        ################ Simulation of LMM with Temperature effect  ################ 
+        # fixed effects
+        beta = 0.4    # Temperature effect
+        beta0 = 10.0  # Intercept
+        
+        # random effects are sampled around the fixed effects
+        g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
+        group <-  as.factor(g)
+        randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)  # random intercept
+        randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)      # random slope
+        
+        # calculate linear response, different intercept and slope for each mountain range
+        mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],randslope[g[i]]))
+        
+        # sample residuals from a Normal distribution
         sigma <- 0.5
         y <- rnorm(n, mu, sd = sigma) 
         
         
-        # lme4 - ML
+        ################ Fitting: lme4, glmmTMB, and LM ################ 
+        # we tested MLE (maximum likelihood estimation) and REML (restricted maximum likelihood estimation) for glmmTMB and lme4
+        
+        # lme4 - MLE
         try({
           fit_lmm <- lmer(y ~ x  + (x | group), REML = FALSE) 
           summ = summary(fit_lmm)
           
+          # calculate confidence intervals for the temperature effect
           confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
                               summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
                         cbind(summ$coefficients[2,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"], 
@@ -115,6 +132,7 @@ system.time({
           fit_lmm <- lmer(y ~ x  + (x | group), REML = TRUE) 
           summ = summary(fit_lmm)
           
+          # calculate confidence intervals for the temperature effect
           confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
                               summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
                         cbind(summ$coefficients[2,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"], 
@@ -124,10 +142,12 @@ system.time({
           results_w_lme4_reml[experiment, ] = extract_results_t(fit_lmm, confs, beta, beta0)
         }, silent = TRUE)
           
-        # glmmTMB - ML
+        # glmmTMB - MLE
         try({
           fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = FALSE) 
           summ = summary(fit_glmmTMB)
+          
+          # calculate confidence intervals for the temperature effect
           confs = rbind(cbind(summ$coefficients$cond[1,"Estimate"] - 1.96*summ$coefficients$cond[1,"Std. Error"], 
                               summ$coefficients$cond[1,"Estimate"] + 1.96*summ$coefficients$cond[1,"Std. Error"]),
                         cbind(summ$coefficients$cond[2,"Estimate"] - 1.96*summ$coefficients$cond[2,"Std. Error"], 
@@ -141,6 +161,8 @@ system.time({
         try({
           fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = TRUE)
           summ = summary(fit_glmmTMB)
+          
+          # calculate confidence intervals for the temperature effect
           confs = rbind(cbind(summ$coefficients$cond[1,"Estimate"] - 1.96*summ$coefficients$cond[1,"Std. Error"], 
                               summ$coefficients$cond[1,"Estimate"] + 1.96*summ$coefficients$cond[1,"Std. Error"]),
                         cbind(summ$coefficients$cond[2,"Estimate"] - 1.96*summ$coefficients$cond[2,"Std. Error"], 
@@ -160,24 +182,34 @@ system.time({
         
         
         
-        # w/o effect
-        beta0 = 10.0
-        beta = 0.0
-        g <- rep(1:n_groups, n_each)
-        group <-  as.factor(g)
-        randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)
-        randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)
+        ################ Simulation of LMM without Temperature effect  ################ 
+        # fixed effects
+        beta0 = 10.0  # Intercept
+        beta = 0.0    # Temperature, now set to zero
         
+        # random effects
+        g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
+        group <-  as.factor(g)
+        randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)  # random intercept
+        randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)      # random slope
+        
+        # calculate linear response, different intercept and slope for each mountain range
         mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],randslope[g[i]])) 
         
+        # sample residuals from a Normal distribution
         sigma <- 0.5
         y <- rnorm(n, mu, sd = sigma) 
         
         
-        # lme4 - ML
+        ################ Fitting: lme4, glmmTMB, and LM ################ 
+        # we tested MLE (maximum likelihood estimation) and REML (restricted maximum likelihood estimation) for glmmTMB and lme4
+        
+        # lme4 - MLE
         try({
           fit_lmm <- lmer(y ~ x  + (x | group), REML = FALSE) 
           summ = summary(fit_lmm)
+          
+          # calculate confidence intervals for the temperature effect
           confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
                               summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
                         cbind(summ$coefficients[2,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"], 
@@ -191,6 +223,8 @@ system.time({
         try({
           fit_lmm <- lmer(y ~ x  + (x | group), REML = TRUE) 
           summ = summary(fit_lmm)
+          
+          # calculate confidence intervals for the temperature effect
           confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
                               summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
                         cbind(summ$coefficients[2,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"], 
@@ -200,10 +234,12 @@ system.time({
           results_wo_lme4_reml[experiment, ] = extract_results_t(fit_lmm, confs, beta, beta0)
         }, silent = TRUE)
         
-        # glmmTMB - ML
+        # glmmTMB - MLE
         try({
           fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = FALSE) 
           summ = summary(fit_glmmTMB)
+          
+          # calculate confidence intervals for the temperature effect
           confs = rbind(cbind(summ$coefficients$cond[1,"Estimate"] - 1.96*summ$coefficients$cond[1,"Std. Error"], 
                               summ$coefficients$cond[1,"Estimate"] + 1.96*summ$coefficients$cond[1,"Std. Error"]),
                         cbind(summ$coefficients$cond[2,"Estimate"] - 1.96*summ$coefficients$cond[2,"Std. Error"], 
@@ -241,7 +277,6 @@ system.time({
                   results_wo_glmmTMB_ml = data.frame(results_wo_glmmTMB_ml),
                   results_w_lm = data.frame(results_w_lm),
                   results_wo_lm = data.frame(results_wo_lm),
-                  
                   results_w_lme4_reml = data.frame(results_w_lme4_reml), 
                   results_wo_lme4_reml = data.frame(results_wo_lme4_reml),
                   results_w_glmmTMB_reml = data.frame(results_w_glmmTMB_reml), 

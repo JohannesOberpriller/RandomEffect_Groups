@@ -1,18 +1,14 @@
-
-results_lmm = readRDS("Results/results_mountain_lmm.Rds")
-results_glmm = readRDS("Results/results_mountain_glmm_200_.Rds")
-
+########## Helper functions ########## 
 addA = function(col, alpha = 0.25) apply(sapply(col, col2rgb)/255, 2, function(x) rgb(x[1], x[2], x[3], alpha=alpha)) 
 
-
-
-########## Figure 1 Type I, Error, etc. for lmm ########## 
+# calculate p-values by z-statistic for LMMs
 get_p_from_z = function(obj) {
   z = obj$estimate_effect / obj$se_effect
   p = 2*stats::pnorm(abs(z),lower.tail = FALSE)
   return(p)
 }
 
+# calculate confidence intervals for temperature effect based on z-statistic
 get_confidence_interval = function(object) {
   conf = cbind(
     object$results_w_lme4_reml$estimate_effect - 1.96*object$results_w_lme4_reml$se_effect, 
@@ -20,6 +16,20 @@ get_confidence_interval = function(object) {
   return(as.integer(0.4 > conf[,1] & 0.4 < conf[,2]))
 }
 
+# assign color
+ff = function(i) {
+  if(i == 1) return(cols[1])
+  if(i == 2) return(cols[2])
+  if(i == 4) return(cols[3])
+  if(i == 7) return(cols[4])
+}
+
+########## Load Results ########## 
+results_lmm = readRDS("Results/results_mountain_lmm.Rds")
+results_glmm = readRDS("Results/results_mountain_glmm_200_.Rds")
+
+
+########## Figure 1 Type I, Error, etc. for lmm ########## 
 
 cols = RColorBrewer::brewer.pal(3, "Set1")
 cols = c(cols[1], cols)
@@ -201,126 +211,11 @@ dev.off()
 
 
 
-########## Figure S1 different number of observations for GLMM ########## 
-files = c("Results/results_mountain_glmm_50_.Rds", 
-          "Results/results_mountain_glmm_100_.Rds", 
-          "Results/results_mountain_glmm_200_.Rds", 
-          "Results/results_mountain_glmm_500_.Rds")
-
-pdf("Figures/Fig_S1.pdf", , width = 7, height = 8.5)
-par(mfrow = c(4,3), mar = c(0.1, 2, 1, 1), oma = c(5, 5, 3, 1)-1)
-labels = c("A", "B", "C", "D")
-for(i in 1:4) {
-  
-  results_glmm = readRDS(files[i])
-  
-  if(i == 4) xlab = "Number of mountain ranges"
-  else xlab = ""
-  
-  ## Type I error ##
-  cols = RColorBrewer::brewer.pal(3, "Set1")
-  type_one_int = 
-    cbind(
-      sapply(results_glmm, function(l) mean(l$results_wo_lme4_ml$p_value_effect < 0.05)), #lme4
-      sapply(results_glmm, function(l) mean(l$results_wo_glmmTMB_reml$p_value_effect < 0.05, na.rm=TRUE)), # glmmTMB
-      sapply(results_glmm, function(l) mean(l$results_wo_lm[[2]] < 0.05, na.rm=TRUE)) #lm
-    )
-  
-  matplot(type_one_int, type="o", ylim = c(0, 0.5), pch = 15:17, las = 1, lty = 1, col = cols, 
-          ylab = "Rate", xaxt="n", main = "", xlab = xlab, xpd = NA)
-  text(x=-0.2, pos = 2, y = 0.55, labels = labels[i], cex = 1.2, xpd = NA, font = 2)
-  
-  if(i == 4) axis(1, at = 1:7, labels = 2:8)
-  legend("topright", legend =c("lme4 z-statistics", "glmmTMB z-statistics", "lm"), col = cols, pch = 15:17, bty = "n")
-  abline(h = 0.05, lty = 3, col = "darkgrey")
-  sd = 
-    cbind(
-      sapply(results_glmm, function(l) sd(l$results_wo_lme4_ml$p_value_effect < 0.05)), #lme4
-      sapply(results_glmm, function(l) sd(l$results_wo_glmmTMB_reml$p_value_effect < 0.05, na.rm=TRUE)), # glmmTMB
-      sapply(results_glmm, function(l) sd(l$results_wo_lm[[2]] < 0.05, na.rm=TRUE)) #lm
-    )
-  mm =type_one_int
-  upper = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i])$y)
-  lower = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i])$y)
-  sapply(1:3, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.10)))
-  #text(-0.5, 0.55, labels = "B", cex = 1.3, font = 2, xpd =NA)
-  
-  
-  ## Power ##
-  cols = RColorBrewer::brewer.pal(3, "Set1")
-  type_two_int = 
-    cbind(
-      sapply(results_glmm, function(l) 1-mean(l$results_w_lme4_ml$p_value_effect < 0.05)), #lme4
-      sapply(results_glmm, function(l) 1-mean(l$results_w_glmmTMB_reml$p_value_effect < 0.05, na.rm=TRUE)), # glmmTMB
-      sapply(results_glmm, function(l) 1-mean(l$results_w_lm$p_value_effect < 0.05, na.rm=TRUE)) #lm
-    )
-  
-  matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = 15:17, las = 1, lty = 1, col = cols, 
-          ylab = "", xaxt="n", main = "", xlab = xlab, xpd = NA)
-  if(i == 4) axis(1, at = 1:7, labels = 2:8)
-  if(i > 2) position = "bottomright"
-  else position = "topleft"
-  legend(position, legend = c("lme4 z-statistics", "glmmTMB z-statistics", "lm"), col = cols, pch = 15:17, bty = "n")
-  sd = 
-    cbind(
-      sapply(results_glmm, function(l) sd(l$results_w_lme4_ml$p_value_effect < 0.05)), #lme4
-      sapply(results_glmm, function(l) sd(l$results_w_glmmTMB_reml$p_value_effect < 0.05, na.rm=TRUE)), # glmmTMB
-      sapply(results_glmm, function(l) sd(l$results_w_lm$p_value_effect < 0.05, na.rm=TRUE)) #lm
-    )
-  mm =1-type_two_int
-  upper = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i])$y)
-  lower = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i])$y)
-  sapply(1:3, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.10)))
-  
-  
-  ## Coverage ##
-  cols = RColorBrewer::brewer.pal(3, "Set1")
-  type_two_int = 
-    cbind(
-      sapply(results_glmm, function(l) mean(l$results_w_lme4_ml$Slope_in_conf )), #lme4
-      sapply(results_glmm, function(l) mean(l$results_w_glmmTMB_reml$Slope_in_conf, na.rm=TRUE)), # glmmTMB
-      sapply(results_glmm, function(l) mean(l$results_w_lm$Slope_in_conf , na.rm=TRUE)) #lm
-    )
-  
-  
-  matplot(type_two_int, type="o", ylim = c(0.5, 1.0), pch = 15:17, las = 1, lty = 1, col = cols, 
-          ylab = "", xaxt="n", main = "", xlab = xlab, xpd = NA)
-  abline(h = 0.95, lty = 3, col = "darkgrey")
-  
-  if(i == 4) axis(1, at = 1:7, labels = 2:8)
-  legend("bottomright", legend = c("lme4 z-statistics", "glmmTMB z-statistics", "lm"), col = cols, pch = 15:17, bty = "n")
-  
-  sd = 
-    cbind(
-      sapply(results_glmm, function(l) sd(l$results_w_lme4_ml$Slope_in_conf )), #lme4
-      sapply(results_glmm, function(l) sd(l$results_w_glmmTMB_reml$Slope_in_conf, na.rm=TRUE)), # glmmTMB
-      sapply(results_glmm, function(l) sd(l$results_w_lm$Slope_in_conf , na.rm=TRUE)) #lm
-    )
-  mm =type_two_int
-  upper = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i])$y)
-  lower = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i])$y)
-  sapply(1:3, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.10)))
-}  
-
-
-dev.off()
-
-
-results_glmm = readRDS("Results/results_mountain_glmm_200_.Rds")
-
-
 
 
 ########## Figure 2 Variance estimates lmm ########## 
 
 cols = viridis::viridis(5)
-
-ff = function(i) {
-  if(i == 1) return(cols[1])
-  if(i == 2) return(cols[2])
-  if(i == 4) return(cols[3])
-  if(i == 7) return(cols[4])
-}
 
 adj = 1.0
 pdf(file = "Figures/Fig_2.pdf", width = 7, height = 5)
@@ -357,7 +252,7 @@ dev.off()
 
 
 
-########## Figure 3 correlation plot ###########
+########## Figure 3 Correlation plot ###########
 
 pdf("./Figures/Fig_3.pdf", width = 9, height = 7.5)
 par(mfrow = c(2,2), mar=c(1, 2, 1, 1), oma = c(5, 5, 3, 1))
@@ -480,20 +375,116 @@ dev.off()
 
 
 
+########## Figure S1 different number of observations for GLMM ########## 
+files = c("Results/results_mountain_glmm_50_.Rds", 
+          "Results/results_mountain_glmm_100_.Rds", 
+          "Results/results_mountain_glmm_200_.Rds", 
+          "Results/results_mountain_glmm_500_.Rds")
+
+pdf("Figures/Fig_S1.pdf", , width = 7, height = 8.5)
+par(mfrow = c(4,3), mar = c(0.1, 2, 1, 1), oma = c(5, 5, 3, 1)-1)
+cols = RColorBrewer::brewer.pal(3, "Set1")
+labels = c("A", "B", "C", "D")
+for(i in 1:4) {
+  
+  results_glmm = readRDS(files[i])
+  
+  if(i == 4) xlab = "Number of mountain ranges"
+  else xlab = ""
+  
+  ## Type I error ##
+  type_one_int = 
+    cbind(
+      sapply(results_glmm, function(l) mean(l$results_wo_lme4_ml$p_value_effect < 0.05)), #lme4
+      sapply(results_glmm, function(l) mean(l$results_wo_glmmTMB_ml$p_value_effect < 0.05, na.rm=TRUE)), # glmmTMB
+      sapply(results_glmm, function(l) mean(l$results_wo_lm[[2]] < 0.05, na.rm=TRUE)) #lm
+    )
+  
+  matplot(type_one_int, type="o", ylim = c(0, 0.5), pch = 15:17, las = 1, lty = 1, col = cols, 
+          ylab = "Rate", xaxt="n", main = "", xlab = xlab, xpd = NA)
+  text(x=-0.2, pos = 2, y = 0.55, labels = labels[i], cex = 1.2, xpd = NA, font = 2)
+  
+  if(i == 4) axis(1, at = 1:7, labels = 2:8)
+  legend("topright", legend =c("lme4 z-statistics", "glmmTMB z-statistics", "lm"), col = cols, pch = 15:17, bty = "n")
+  abline(h = 0.05, lty = 3, col = "darkgrey")
+  sd = 
+    cbind(
+      sapply(results_glmm, function(l) sd(l$results_wo_lme4_ml$p_value_effect < 0.05)), #lme4
+      sapply(results_glmm, function(l) sd(l$results_wo_glmmTMB_ml$p_value_effect < 0.05, na.rm=TRUE)), # glmmTMB
+      sapply(results_glmm, function(l) sd(l$results_wo_lm[[2]] < 0.05, na.rm=TRUE)) #lm
+    )
+  mm =type_one_int
+  upper = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i])$y)
+  lower = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i])$y)
+  sapply(1:3, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.10)))
+  #text(-0.5, 0.55, labels = "B", cex = 1.3, font = 2, xpd =NA)
+  
+  
+  ## Power ##
+  cols = RColorBrewer::brewer.pal(3, "Set1")
+  type_two_int = 
+    cbind(
+      sapply(results_glmm, function(l) 1-mean(l$results_w_lme4_ml$p_value_effect < 0.05)), #lme4
+      sapply(results_glmm, function(l) 1-mean(l$results_w_glmmTMB_ml$p_value_effect < 0.05, na.rm=TRUE)), # glmmTMB
+      sapply(results_glmm, function(l) 1-mean(l$results_w_lm$p_value_effect < 0.05, na.rm=TRUE)) #lm
+    )
+  
+  matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = 15:17, las = 1, lty = 1, col = cols, 
+          ylab = "", xaxt="n", main = "", xlab = xlab, xpd = NA)
+  if(i == 4) axis(1, at = 1:7, labels = 2:8)
+  if(i > 2) position = "bottomright"
+  else position = "topleft"
+  legend(position, legend = c("lme4 z-statistics", "glmmTMB z-statistics", "lm"), col = cols, pch = 15:17, bty = "n")
+  sd = 
+    cbind(
+      sapply(results_glmm, function(l) sd(l$results_w_lme4_ml$p_value_effect < 0.05)), #lme4
+      sapply(results_glmm, function(l) sd(l$results_w_glmmTMB_ml$p_value_effect < 0.05, na.rm=TRUE)), # glmmTMB
+      sapply(results_glmm, function(l) sd(l$results_w_lm$p_value_effect < 0.05, na.rm=TRUE)) #lm
+    )
+  mm =1-type_two_int
+  upper = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i])$y)
+  lower = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i])$y)
+  sapply(1:3, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.10)))
+  
+  
+  ## Coverage ##
+  cols = RColorBrewer::brewer.pal(3, "Set1")
+  type_two_int = 
+    cbind(
+      sapply(results_glmm, function(l) mean(l$results_w_lme4_ml$Slope_in_conf )), #lme4
+      sapply(results_glmm, function(l) mean(l$results_w_glmmTMB_ml$Slope_in_conf, na.rm=TRUE)), # glmmTMB
+      sapply(results_glmm, function(l) mean(l$results_w_lm$Slope_in_conf , na.rm=TRUE)) #lm
+    )
+  
+  
+  matplot(type_two_int, type="o", ylim = c(0.5, 1.0), pch = 15:17, las = 1, lty = 1, col = cols, 
+          ylab = "", xaxt="n", main = "", xlab = xlab, xpd = NA)
+  abline(h = 0.95, lty = 3, col = "darkgrey")
+  
+  if(i == 4) axis(1, at = 1:7, labels = 2:8)
+  legend("bottomright", legend = c("lme4 z-statistics", "glmmTMB z-statistics", "lm"), col = cols, pch = 15:17, bty = "n")
+  
+  sd = 
+    cbind(
+      sapply(results_glmm, function(l) sd(l$results_w_lme4_ml$Slope_in_conf )), #lme4
+      sapply(results_glmm, function(l) sd(l$results_w_glmmTMB_ml$Slope_in_conf, na.rm=TRUE)), # glmmTMB
+      sapply(results_glmm, function(l) sd(l$results_w_lm$Slope_in_conf , na.rm=TRUE)) #lm
+    )
+  mm =type_two_int
+  upper = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i])$y)
+  lower = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i])$y)
+  sapply(1:3, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.10)))
+}  
+dev.off()
+
+results_glmm = readRDS("Results/results_mountain_glmm_200_.Rds")
+
 
 
 
 ########## Figure S2 variance estimate+std error########## 
-
-
 cols = viridis::viridis(5)
 
-ff = function(i) {
-  if(i == 1) return(cols[1])
-  if(i == 2) return(cols[2])
-  if(i == 4) return(cols[3])
-  if(i == 7) return(cols[4])
-}
 
 adj = 1.0
 pdf(file = "Figures/Fig_S2.pdf", width = 7, height = 5)
@@ -531,13 +522,6 @@ dev.off()
 
 ########## Figure S3 Variance estimates lmm ML/REML ########## 
 cols = viridis::viridis(5)
-
-ff = function(i) {
-  if(i == 1) return(cols[1])
-  if(i == 2) return(cols[2])
-  if(i == 4) return(cols[3])
-  if(i == 7) return(cols[4])
-}
 
 adj = 1.0
 pdf(file = "Figures/Fig_S3.pdf", width = 7, height = 5)
@@ -591,12 +575,6 @@ dev.off()
 ########## Figure S4 Variance estimates glmm ########## 
 cols = viridis::viridis(5)
 
-ff = function(i) {
-  if(i == 1) return(cols[1])
-  if(i == 2) return(cols[2])
-  if(i == 4) return(cols[3])
-  if(i == 7) return(cols[4])
-}
 
 # glmm4
 
