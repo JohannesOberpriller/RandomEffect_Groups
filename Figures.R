@@ -202,16 +202,19 @@ dev.off()
 
 
 ########## Figure S1 different number of observations for GLMM ########## 
-files = c("Results/results_mountain_glmm_50_.Rds", "Results/results_mountain_glmm_100_.Rds", "Results/results_mountain_glmm_200_.Rds")
+files = c("Results/results_mountain_glmm_50_.Rds", 
+          "Results/results_mountain_glmm_100_.Rds", 
+          "Results/results_mountain_glmm_200_.Rds", 
+          "Results/results_mountain_glmm_500_.Rds")
 
-pdf("Figures/Fig_S1.pdf", , width = 7, height = 6.5)
-par(mfrow = c(3,3), mar = c(0.1, 2, 1, 1), oma = c(5, 5, 3, 1)-1)
-labels = c("A", "B", "C")
-for(i in 1:3) {
+pdf("Figures/Fig_S1.pdf", , width = 7, height = 8.5)
+par(mfrow = c(4,3), mar = c(0.1, 2, 1, 1), oma = c(5, 5, 3, 1)-1)
+labels = c("A", "B", "C", "D")
+for(i in 1:4) {
   
   results_glmm = readRDS(files[i])
   
-  if(i == 3) xlab = "Number of mountain ranges"
+  if(i == 4) xlab = "Number of mountain ranges"
   else xlab = ""
   
   ## Type I error ##
@@ -227,7 +230,7 @@ for(i in 1:3) {
           ylab = "Rate", xaxt="n", main = "", xlab = xlab, xpd = NA)
   text(x=-0.2, pos = 2, y = 0.55, labels = labels[i], cex = 1.2, xpd = NA, font = 2)
   
-  if(i == 3) axis(1, at = 1:7, labels = 2:8)
+  if(i == 4) axis(1, at = 1:7, labels = 2:8)
   legend("topright", legend =c("lme4 z-statistics", "glmmTMB z-statistics", "lm"), col = cols, pch = 15:17, bty = "n")
   abline(h = 0.05, lty = 3, col = "darkgrey")
   sd = 
@@ -254,7 +257,7 @@ for(i in 1:3) {
   
   matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = 15:17, las = 1, lty = 1, col = cols, 
           ylab = "", xaxt="n", main = "", xlab = xlab, xpd = NA)
-  if(i == 3) axis(1, at = 1:7, labels = 2:8)
+  if(i == 4) axis(1, at = 1:7, labels = 2:8)
   if(i > 2) position = "bottomright"
   else position = "topleft"
   legend(position, legend = c("lme4 z-statistics", "glmmTMB z-statistics", "lm"), col = cols, pch = 15:17, bty = "n")
@@ -284,7 +287,7 @@ for(i in 1:3) {
           ylab = "", xaxt="n", main = "", xlab = xlab, xpd = NA)
   abline(h = 0.95, lty = 3, col = "darkgrey")
   
-  if(i == 3) axis(1, at = 1:7, labels = 2:8)
+  if(i == 4) axis(1, at = 1:7, labels = 2:8)
   legend("bottomright", legend = c("lme4 z-statistics", "glmmTMB z-statistics", "lm"), col = cols, pch = 15:17, bty = "n")
   
   sd = 
