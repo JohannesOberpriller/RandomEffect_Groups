@@ -16,7 +16,7 @@ extract_results_t = function(fit_lmm, confs, beta, beta0) {
       summary(fit_lmm)$coefficients["(Intercept)","Std. Error"],
       summary(fit_lmm)$coefficients["x","Std. Error"],
       attr(summary(fit_lmm)$varcor$group, "stddev")["(Intercept)"],
-      attr(summary(fit_lmm)$varcor$group, "stddev")["x"],
+      NA,
       !is.null(fit_lmm@optinfo$conv$lme4$messages),
       as.integer(beta0 > confs["(Intercept)",1] & beta0 < confs["(Intercept)",2]),
       as.integer(beta > confs["x",1] & beta < confs["x",2])))
@@ -31,7 +31,7 @@ extract_results = function(fit_lmm, confs, beta, beta0) {
       summary(fit_lmm)$coefficients$cond["(Intercept)","Std. Error"],
       summary(fit_lmm)$coefficients$cond["x","Std. Error"],
       attr(summary(fit_lmm)$varcor$cond$group,"stddev")["(Intercept)"],
-      attr(summary(fit_lmm)$varcor$cond$group,"stddev")["x"],
+      NA,
       as.integer(!fit_lmm$sdr$pdHess),
       as.integer(beta0 > confs["(Intercept)",1] & beta0 < confs["(Intercept)",2]),
       as.integer(beta > confs["x",1] & beta < confs["x",2])))
@@ -117,7 +117,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           
           # lme4 - MLE
           try({
-            fit_lmm <- lmer(y ~ x  + (x | group), REML = FALSE) 
+            fit_lmm <- lmer(y ~ x  + (1 | group), REML = FALSE) 
             summ = summary(fit_lmm)
             
             # calculate confidence intervals for the temperature effect
@@ -133,7 +133,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           
           # lme4 - REML
           try({
-            fit_lmm <- lmer(y ~ x  + (x | group), REML = TRUE) 
+            fit_lmm <- lmer(y ~ x  + (1 | group), REML = TRUE) 
             summ = summary(fit_lmm)
             
             # calculate confidence intervals for the temperature effect
@@ -148,7 +148,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
             
           # glmmTMB - MLE
           try({
-            fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = FALSE) 
+            fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (1 | group), REML = FALSE) 
             summ = summary(fit_glmmTMB)
             
             # calculate confidence intervals for the temperature effect
@@ -163,7 +163,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           
           # glmmTMB - REML
           try({
-            fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = TRUE)
+            fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (1 | group), REML = TRUE)
             summ = summary(fit_glmmTMB)
             
             # calculate confidence intervals for the temperature effect
@@ -175,25 +175,6 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
             rownames(confs) = c("(Intercept)", "x")
             results_w_glmmTMB_reml[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
           }, silent = TRUE)
-          
-          # lm 
-          try({
-            fit_lm = lm(y ~ x*group)
-            summ = summary(fit_lm)
-            confs = confint(fit_lm)
-            results_w_lm[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-          }, silent = TRUE)
-          
-          
-          
-          # lm w/o grouping
-          try({
-            fit_lm = lm(y ~ x)
-            summ = summary(fit_lm)
-            confs = confint(fit_lm)
-            results_w_lm_wo_grouping[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-          }, silent = TRUE)
-          
           
           
           
@@ -221,7 +202,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           
           # lme4 - MLE
           try({
-            fit_lmm <- lmer(y ~ x  + (x | group), REML = FALSE) 
+            fit_lmm <- lmer(y ~ x  + (1 | group), REML = FALSE) 
             summ = summary(fit_lmm)
             
             # calculate confidence intervals for the temperature effect
@@ -236,7 +217,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           
           # lme4 - REML
           try({
-            fit_lmm <- lmer(y ~ x  + (x | group), REML = TRUE) 
+            fit_lmm <- lmer(y ~ x  + (1 | group), REML = TRUE) 
             summ = summary(fit_lmm)
             
             # calculate confidence intervals for the temperature effect
@@ -251,7 +232,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           
           # glmmTMB - MLE
           try({
-            fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = FALSE) 
+            fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (1 | group), REML = FALSE) 
             summ = summary(fit_glmmTMB)
             
             # calculate confidence intervals for the temperature effect
@@ -266,7 +247,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           
           # glmmTMB - REML
           try({
-            fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (x | group), REML = TRUE) 
+            fit_glmmTMB <- glmmTMB::glmmTMB(y ~ x  + (1 | group), REML = TRUE) 
             summ = summary(fit_glmmTMB)
             confs = rbind(cbind(summ$coefficients$cond[1,"Estimate"] - 1.96*summ$coefficients$cond[1,"Std. Error"], 
                                 summ$coefficients$cond[1,"Estimate"] + 1.96*summ$coefficients$cond[1,"Std. Error"]),
@@ -277,21 +258,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
             results_wo_glmmTMB_reml[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
           }, silent = TRUE)  
           
-          # lm
-          try({
-            fit_lm = lm(y ~ x*group)
-            summ = summary(fit_lm)
-            confs = confint(fit_lm)
-            results_wo_lm[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-          }, silent = TRUE)  
-          
-          # lm w/o grouping
-          try({
-            fit_lm = lm(y ~ x)
-            summ = summary(fit_lm)
-            confs = confint(fit_lm)
-            results_wo_lm_wo_grouping[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-          }, silent = TRUE)  
+  
         }
         
         return(list(results_w_lme4_ml = data.frame(results_w_lme4_ml), 
@@ -309,8 +276,8 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
                     ))
       })
   })
-  saveRDS(result_list, file = paste0("Results/results_mountain_lmm_", sd_re, "_.Rds"))
+  saveRDS(result_list, file = paste0("Results/results_mountain_lmm_miss_specified_", sd_re, "_.Rds"))
 }
   
-
-
+  
+  

@@ -49,7 +49,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
     result_list = 
       snow::parLapply(cl, 2:8, function(number_groups)  {
         
-        n_each <- 50
+        n_each <- 50/2
         n_groups <- number_groups
         
         results_w_lme4_ml = results_wo_lme4_ml = results_w_lme4_reml = results_wo_lme4_reml = matrix(nrow = number_experiments, ncol = 11)
@@ -102,10 +102,9 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
           group <-  as.factor(g)
           randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)  # random intercept
-          randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)      # random slope
           
           # calculate linear response, different intercept and slope for each mountain range
-          mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],randslope[g[i]]))
+          mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],beta))
           
           # sample residuals from a Normal distribution
           sigma <- 0.5
@@ -176,24 +175,6 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
             results_w_glmmTMB_reml[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
           }, silent = TRUE)
           
-          # lm 
-          try({
-            fit_lm = lm(y ~ x*group)
-            summ = summary(fit_lm)
-            confs = confint(fit_lm)
-            results_w_lm[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-          }, silent = TRUE)
-          
-          
-          
-          # lm w/o grouping
-          try({
-            fit_lm = lm(y ~ x)
-            summ = summary(fit_lm)
-            confs = confint(fit_lm)
-            results_w_lm_wo_grouping[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-          }, silent = TRUE)
-          
           
           
           
@@ -206,10 +187,9 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
           group <-  as.factor(g)
           randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)  # random intercept
-          randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)      # random slope
           
           # calculate linear response, different intercept and slope for each mountain range
-          mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],randslope[g[i]])) 
+          mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],beta)) 
           
           # sample residuals from a Normal distribution
           sigma <- 0.5
@@ -277,23 +257,8 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
             results_wo_glmmTMB_reml[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
           }, silent = TRUE)  
           
-          # lm
-          try({
-            fit_lm = lm(y ~ x*group)
-            summ = summary(fit_lm)
-            confs = confint(fit_lm)
-            results_wo_lm[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-          }, silent = TRUE)  
-          
-          # lm w/o grouping
-          try({
-            fit_lm = lm(y ~ x)
-            summ = summary(fit_lm)
-            confs = confint(fit_lm)
-            results_wo_lm_wo_grouping[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-          }, silent = TRUE)  
+  
         }
-        
         return(list(results_w_lme4_ml = data.frame(results_w_lme4_ml), 
                     results_wo_lme4_ml = data.frame(results_wo_lme4_ml),
                     results_w_glmmTMB_ml = data.frame(results_w_glmmTMB_ml), 
@@ -309,8 +274,8 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
                     ))
       })
   })
-  saveRDS(result_list, file = paste0("Results/results_mountain_lmm_", sd_re, "_.Rds"))
+  saveRDS(result_list, file = paste0("Results/results_mountain_lmm_random_intercept_only_miss_specified_", sd_re, "_.Rds"))
 }
-  
+
 
 

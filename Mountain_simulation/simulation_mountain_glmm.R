@@ -44,7 +44,7 @@ snow::clusterEvalQ(cl, {library(lme4); library(lmerTest);library(glmmTMB); numbe
 snow::clusterExport(cl, list("extract_results","extract_results_t", "inv.logit"), envir = environment())
 
 
-for(n_each in c(50, 100, 200, 500)) {
+for(n_each in c(25, 50, 100, 200, 500)) {
   snow::clusterExport(cl, list("n_each"))
   system.time({
     result_list = 
@@ -72,9 +72,11 @@ for(n_each in c(50, 100, 200, 500)) {
         colnames(results_wo_glmmTMB_reml) = colnames(results_w_glmmTMB_ml)
         
         
-        results_w_lm = results_wo_lm = matrix(nrow = number_experiments, ncol = 4)
+        results_w_lm = results_wo_lm = results_wo_lm_wo_grouping  = results_w_lm_wo_grouping= matrix(nrow = number_experiments, ncol = 4)
         colnames(results_w_lm) = c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf")
         colnames(results_wo_lm) = colnames(results_w_lm)
+        colnames(results_wo_lm_wo_grouping) = colnames(results_w_lm)
+        colnames(results_w_lm_wo_grouping) = colnames(results_w_lm)
         
         ################  The data generating process ################ 
         # Number of observations, n_each observations for each mountain range 
@@ -157,12 +159,20 @@ for(n_each in c(50, 100, 200, 500)) {
           }, silent = TRUE)
           
           # lm 
-          fit_lm = glm(y ~ x*group, family = binomial)
-          summ = summary(fit_lm)
-          confs = confint(fit_lm)
-          results_w_lm[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+          try({
+            fit_lm = glm(y ~ x*group, family = binomial)
+            summ = summary(fit_lm)
+            confs = confint(fit_lm)
+            results_w_lm[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+          }, silent = TRUE)
           
-          
+          # lm w/o grouping variable
+          try({
+            fit_lm = glm(y ~ x, family = binomial)
+            summ = summary(fit_lm)
+            confs = confint(fit_lm)
+            results_w_lm_wo_grouping[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+          }, silent = TRUE)
           
           ################ Simulation of LMM without Temperature effect  ################ 
           # fixed effects
@@ -229,11 +239,20 @@ for(n_each in c(50, 100, 200, 500)) {
           }, silent = TRUE)
           
           # lm
-          fit_lm = glm(y ~ x*group, family = binomial)
-          summ = summary(fit_lm)
-          confs = confint(fit_lm)
-          results_wo_lm[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+          try({
+            fit_lm = glm(y ~ x*group, family = binomial)
+            summ = summary(fit_lm)
+            confs = confint(fit_lm)
+            results_wo_lm[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+          }, silent = TRUE)
           
+          # lm w/o grouping
+          try({
+            fit_lm = glm(y ~ x, family = binomial)
+            summ = summary(fit_lm)
+            confs = confint(fit_lm)
+            results_wo_lm_wo_grouping[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+          }, silent = TRUE)
         }
         
         return(list(results_w_lme4_ml = data.frame(results_w_lme4_ml), 
@@ -243,7 +262,9 @@ for(n_each in c(50, 100, 200, 500)) {
                     results_w_lm = data.frame(results_w_lm),
                     results_wo_lm = data.frame(results_wo_lm),
                     results_w_glmmTMB_reml = data.frame(results_w_glmmTMB_reml), 
-                    results_wo_glmmTMB_reml = data.frame(results_wo_glmmTMB_reml)
+                    results_wo_glmmTMB_reml = data.frame(results_wo_glmmTMB_reml),
+                    results_wo_lm_wo_grouping = data.frame(results_wo_lm_wo_grouping),
+                    results_w_lm_wo_grouping = data.frame(results_w_lm_wo_grouping)
         ))
       })
   })
