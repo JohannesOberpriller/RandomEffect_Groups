@@ -4,6 +4,9 @@ library(snow)
 library(glmmTMB)
 set.seed(1)
 
+## Note:
+#The first simulation (Simulation of LMM with Temperature effect) tests if the effect is significant when there is an effect 
+#The second simulation (Simulation of LMM without Temperature effect) tests if the effect is significant, when there is an effect
 
 ################ Helper functions  ################ 
 # helper functions to extracts model properties 
@@ -37,20 +40,30 @@ extract_results = function(fit_lmm, confs, beta, beta0) {
       as.integer(beta > confs["x",1] & beta < confs["x",2])))
 }
 
+# set up the cluster and export variables as well as functions to the cluster 
 
 
 cl = snow::makeCluster(7L) # reduce the number of cores if you have not 7 physical CPU cores
 snow::clusterEvalQ(cl, {library(lme4); library(lmerTest);library(glmmTMB); number_experiments =5000})
 snow::clusterExport(cl, list("extract_results","extract_results_t"), envir = environment())
 
-for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
+# first we vary the standard deviation of the random effect 
+
+for(sd_re in c(0.01, 0.1, 0.5, 2.0)){
+  # export the standard deviation of the random effect to the cluster  
+  # as a run parameter for the simulations 
   snow::clusterExport(cl, list("sd_re"))
   system.time({
     result_list = 
       snow::parLapply(cl, 2:8, function(number_groups)  {
         
-        n_each <- 50/2
+        # set the number of observations per group to 25 
+        
+        n_each <- 25
         n_groups <- number_groups
+        
+        
+        # set up matrices to store the results of the different runs 
         
         results_w_lme4_ml = results_wo_lme4_ml = results_w_lme4_reml = results_wo_lme4_reml = matrix(nrow = number_experiments, ncol = 10)
         colnames(results_w_lme4_ml) = c("estimate_intercept","estimate_effect", 
@@ -80,11 +93,13 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
         colnames(results_wo_lm_wo_grouping) = colnames(results_w_lm)
         colnames(results_w_lm_wo_grouping) = colnames(results_w_lm)
         
-        ################  The data generating process ################ 
-        # Number of observations, 50 observations for each mountain range 
+        ################  The data generating process ################  
+        # Number of overall observations is equal to 25 observations for each mountain range 
         n = (number_groups)*n_each
         
-        ### Environmental predictors (Intercept and Temperature) ###
+        ### Raw environmental predictors (Intercept and Temperature) ###
+        # the temperature is drawn from a uniform distribution as we want to simulate 
+        # an altidudinal gradient and the intercept is kept constant at 1 
         x <- runif(n, -1, 1) # Temperature
         X <- matrix(c(rep(1, n), x), nrow = n) # Intercept, Temperature
         
@@ -175,7 +190,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
             results_w_glmmTMB_reml[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
           }, silent = TRUE)
           
-          # lm 
+          # linear model w/ mountain range as grouping variable 
           try({
             fit_lm = lm(y ~ x + group)
             summ = summary(fit_lm)
@@ -185,7 +200,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           
           
           
-          # lm w/o grouping
+          # linear model w/o mountain range as grouping variable
           try({
             fit_lm = lm(y ~ x)
             summ = summary(fit_lm)
@@ -275,7 +290,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
             results_wo_glmmTMB_reml[experiment, ] = extract_results(fit_glmmTMB, confs, beta, beta0)
           }, silent = TRUE)  
           
-          # lm
+          # linear model w/ mountain range as grouping variable
           try({
             fit_lm = lm(y ~ x + group)
             summ = summary(fit_lm)
@@ -283,7 +298,7 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
             results_wo_lm[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
           }, silent = TRUE)  
           
-          # lm w/o grouping
+          # linear model w/o mountain range as grouping variable
           try({
             fit_lm = lm(y ~ x)
             summ = summary(fit_lm)
