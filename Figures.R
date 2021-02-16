@@ -329,10 +329,10 @@ dev.off()
 
 
 ########## __Figure S2 Random intercept different number of observations for GLMM ########## 
-files = c("Results/results_mountain_glmm_random_intercept_only_50_.Rds", 
+files = c("Results/results_mountain_glmm_random_intercept_only_25_.Rds", 
+          "Results/results_mountain_glmm_random_intercept_only_50_.Rds", 
           "Results/results_mountain_glmm_random_intercept_only_100_.Rds", 
-          "Results/results_mountain_glmm_random_intercept_only_200_.Rds", 
-          "Results/results_mountain_glmm_random_intercept_only_500_.Rds")
+          "Results/results_mountain_glmm_random_intercept_only_200_.Rds")
 
 pdf("Figures/Fig_S2.pdf", , width = 8.2, height = 8.8)
 par(mfrow = c(4,3), mar = c(0.1, 2.4, 1, 1), oma = c(5, 3, 3, 1)-1)
@@ -741,10 +741,10 @@ dev.off()
 
 
 ########## __Figure S4 Random intercept different number of observations for GLMM ########## 
-files = c("Results/results_mountain_glmm_50_.Rds", 
+files = c("Results/results_mountain_glmm_25_.Rds", 
+          "Results/results_mountain_glmm_50_.Rds", 
           "Results/results_mountain_glmm_100_.Rds", 
-          "Results/results_mountain_glmm_200_.Rds", 
-          "Results/results_mountain_glmm_500_.Rds")
+          "Results/results_mountain_glmm_200_.Rds")
 
 pdf("Figures/Fig_S4.pdf", width = 8.2, height = 8.8)
 par(mfrow = c(4,3), mar = c(0.1, 2.4, 1, 1), oma = c(5, 3, 3, 1)-1)
