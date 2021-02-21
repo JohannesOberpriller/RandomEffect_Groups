@@ -31,7 +31,7 @@ ff = function(i) {
 ########## _________________________________  ##########
 results_lmm = readRDS("Results/results_mountain_lmm_random_intercept_only_0.1_.Rds")
 results_glmm = readRDS("Results/results_mountain_glmm_random_intercept_only_100_.Rds")
-results_miss = readRDS("Results/results_mountain_lmm_random_intercept_only_miss_specified_0.1_.Rds")
+results_miss = readRDS("Results/results_mountain_lmm_random_intercept_only_miss_specified_no_cov0.1_.Rds")
 
 ########## __Figure 1 Random intercept only  Type I, Error, etc. for lmm ########## 
 
@@ -442,7 +442,7 @@ dev.off()
 ########## _________________________________  ##########
 ########## __Figure 2 Random intercept + slope Type I, Error, etc. for lmm ########## 
 
-results_lmm = readRDS("Results/results_mountain_lmm_0.1_.Rds")
+results_lmm = readRDS("Results/results_mountain_lmm_no_cov0.1_.Rds")
 results_glmm = readRDS("Results/results_mountain_glmm_200_.Rds")
 results_miss = readRDS("Results/results_mountain_lmm_miss_specified_0.1_.Rds")
 
