@@ -7,14 +7,14 @@ library(ggeffects)
 
 cores <- c("#6f279c", "#456fc1", "#70af50")
 
-set.seed(2)
+set.seed(3)
 n_each <- 50
 n_groups <- 3
 n = (n_groups)*n_each
 
 x <- runif(n, -1, 1)
 X <- matrix(c(rep(1, n), x), nrow = n) # 
-sd_randeff = 0.2 # original 0.1 
+sd_randeff = 0.25 # original 0.1 
 
 beta = 10.0
 beta0 = 0.4
@@ -50,6 +50,44 @@ plmm2f <- ggpredict(fit_lmm2)
 plmm2r <- ggpredict(fit_lmm2,terms=c("x", "group"), type="re")
 #plot(predLM)
 
+# VERSION 2 - March 2021
+
+scenA <- ggplot(data, aes(x=x,y=y, col=group)) + 
+  geom_point(alpha=0.3, size=3, show.legend = F) +
+  geom_line(data=as.data.frame(plm1), aes(x=x,y=predicted, col=group), size=1.5) +
+  scale_color_manual(name="Mountain \n range", values=cores) +
+  xlab("Temperature") +
+  ylab("Height (cm)") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  scale_x_continuous(breaks=c(-1,0,1)) +
+  scale_y_continuous(breaks=c(9,10,11)) +
+  labs(title = "Scenario A",
+       subtitle = "Random intercept")
+
+scenB <- ggplot(data, aes(x=x,y=y, col=group)) + 
+  geom_point(alpha=0.3, size=3, show.legend = F) +
+  geom_line(data=as.data.frame(plm2), aes(x=x,y=predicted, col=group), size=1.5) +
+  scale_color_manual(name="Mountain \n range", values=cores) +
+  xlab("Temperature") +
+  ylab("Height (cm)") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  scale_x_continuous(breaks=c(-1,0,1)) +
+  scale_y_continuous(breaks=c(9,10,11)) +
+  labs(title="Scenario B", 
+       subtitle = "Random intercept and slope") 
+
+
+jpeg("figures_googledocs/box2_figure.jpeg", height = 300, width = 600, quality=100)
+scenA + scenB +
+  plot_layout(guides = 'collect',byrow=FALSE) 
+  #plot_annotation(tag_levels = 'a')
+dev.off()
+
+
+
+### OLD VERSION PLOT
 
 box2<-ggplot(data, aes(x=x,y=y, col=group)) + 
   geom_point(alpha=0.3, size=3, show.legend = F) +
@@ -63,8 +101,8 @@ box2<-ggplot(data, aes(x=x,y=y, col=group)) +
   scale_x_continuous(breaks=c(-1,0,1)) +
   scale_y_continuous(breaks=c(9,10,11)) +
   ggtitle("Fixed effects models") +
-
-ggplot(data, aes(x=x,y=y, col=group)) + 
+  
+  ggplot(data, aes(x=x,y=y, col=group)) + 
   geom_point(alpha=0.3, size=3, show.legend = F) +
   geom_line(data=as.data.frame(plm2), aes(x=x,y=predicted, col=group), size=1.5) +
   scale_color_manual(name="Mountain", values=cores) +
@@ -89,7 +127,7 @@ ggplot(data, aes(x=x,y=y, col=group)) +
   scale_x_continuous(breaks=c(-1,0,1)) +
   ggtitle("Mixed effects models") +
   
-ggplot(data, aes(x=x,y=y, col=group)) + 
+  ggplot(data, aes(x=x,y=y, col=group)) + 
   geom_point(alpha=0.3, size=3, show.legend = F) +
   geom_line(data=as.data.frame(plmm2r), aes(x=x,y=predicted, col=group), size=1.5) +
   geom_line(data=as.data.frame(plmm2f$x), aes(x=x,y=predicted), col="red", size=3)+
@@ -99,8 +137,8 @@ ggplot(data, aes(x=x,y=y, col=group)) +
   theme(axis.text.y = element_blank(),
         axis.ticks.y = element_blank())+
   scale_x_continuous(breaks=c(-1,0,1)) +
-
-plot_layout(guides = 'collect',byrow=FALSE) + 
+  
+  plot_layout(guides = 'collect',byrow=FALSE) + 
   plot_annotation(tag_levels = 'a')
 
 
@@ -110,4 +148,3 @@ plot_layout(guides = 'collect',byrow=FALSE) +
 jpeg("figures_googledocs/box2_figure.jpeg", height = 400, width = 500, quality=100)
 box2
 dev.off()
- 
