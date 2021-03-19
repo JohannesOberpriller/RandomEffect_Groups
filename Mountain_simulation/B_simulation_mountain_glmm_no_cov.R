@@ -56,11 +56,11 @@ grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = TRUE) 
   var1 = 0
   for(i in 1:mountain){
     for(j in 1:mountain){
-      var1 = var1 + covariance[i,j]
+      var1 = var1 + covariance[i,j]*weights[i]*weights[j]  # new: weights[i]*weights[j]
     }
   }
-  var1 = var1/mountain^2
-  var2 = (1/(mountain*(mountain-1)))*sum((effect_sizes-eff)^2)
+  #var1 = var1/mountain^2   
+  var2 = (weight/(mountain-1))*sum((effect_sizes-eff)^2)  # weighted mean instead of normal mean
   se = sqrt(var1 + var2)
   
   if(z_statistic) {
