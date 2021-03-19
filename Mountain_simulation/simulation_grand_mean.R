@@ -11,7 +11,7 @@
 # }
 
 
-grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE, df) {
+grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE) {
   
   ind = (mountain+1):(2*mountain)
   covariance = vcov(fit)[ind,ind]
@@ -35,8 +35,8 @@ grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE,
     p_value = 2*pnorm(abs(eff/se), lower.tail = FALSE)
     confs = cbind( eff -1.96*se, eff + 1.96*se)
   } else {
-    p_value = 2*pt(abs(eff/se),df=df, lower.tail = FALSE)
-    bound = qt(0.975, df = df)
+    p_value = 2*pt(abs(eff/se),df=mountain-1, lower.tail = FALSE)
+    bound = qt(0.975, df = mountain-1)
     confs = cbind( eff - bound*se, eff + bound*se) 
   }
   return(c(eff, p_value, se, as.integer(beta > confs[1,1] & beta < confs[1,2])))

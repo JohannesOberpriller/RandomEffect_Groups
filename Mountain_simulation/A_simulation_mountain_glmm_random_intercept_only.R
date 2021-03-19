@@ -26,13 +26,27 @@ extract_results = function(fit_lmm, confs, beta, beta0) {
       as.integer(beta0 > confs["(Intercept)",1] & beta0 < confs["(Intercept)",2]),
       as.integer(beta > confs["x",1] & beta < confs["x",2])))
 }
+extract_results_lme4 = function(fit_lmm, confs, beta, beta0) {
+  return(
+    c(summary(fit_lmm)$coefficients["(Intercept)","Estimate"],
+      summary(fit_lmm)$coefficients["x","Estimate"],
+      summary(fit_lmm)$coefficients["(Intercept)","Pr(>|z|)"],
+      summary(fit_lmm)$coefficients["x","Pr(>|z|)"],
+      summary(fit_lmm)$coefficients["(Intercept)","Std. Error"],
+      summary(fit_lmm)$coefficients["x","Std. Error"],
+      attr(summary(fit_lmm)$varcor$group,"stddev")["(Intercept)"],
+      #attr(summary(fit_lmm)$varcor$group.1,"stddev")["x"],
+      !is.null(fit_lmm@optinfo$conv$lme4$messages),
+      as.integer(beta0 > confs["(Intercept)",1] & beta0 < confs["(Intercept)",2]),
+      as.integer(beta > confs["x",1] & beta < confs["x",2])))
+}
 inv.logit <- function(p){return(exp(p)/(1 + exp(p)))}
 
 # set up the cluster and export variables as well as functions to the cluster 
 
 cl = snow::makeCluster(7L) # reduce the number of cores if you have not 7 physical CPU cores
 snow::clusterEvalQ(cl, {library(lme4); library(lmerTest);library(glmmTMB); number_experiments =1000})
-snow::clusterExport(cl, list("extract_results", "inv.logit"), envir = environment())
+snow::clusterExport(cl, list("extract_results","extract_results_lme4", "inv.logit"), envir = environment())
 
 
 ## loop over different numbers of data points in each level
@@ -123,7 +137,7 @@ for(n_each in c(25, 50, 100, 200, 500)) {
                                 summ$coefficients[2,"Estimate"] + 1.96*summ$coefficients[2,"Std. Error"])
                           )
             rownames(confs) = c("(Intercept)", "x")
-            results_w_lme4_ml[experiment, ] = extract_results(fit_lmm, confs, beta, beta0)
+            results_w_lme4_ml[experiment, ] = extract_results_lme4(fit_lmm, confs, beta, beta0)
           }, silent=TRUE)
           
           # glmmTMB - MLE
@@ -202,7 +216,7 @@ for(n_each in c(25, 50, 100, 200, 500)) {
                                 summ$coefficients[2,"Estimate"] + 1.96*summ$coefficients[2,"Std. Error"])
             )
             rownames(confs) = c("(Intercept)", "x")
-            results_wo_lme4_ml[experiment, ] = extract_results(fit_lmm, confs, beta, beta0)
+            results_wo_lme4_ml[experiment, ] = extract_results_lme4(fit_lmm, confs, beta, beta0)
           }, silent = TRUE)
             
           # glmmTMB - MLE

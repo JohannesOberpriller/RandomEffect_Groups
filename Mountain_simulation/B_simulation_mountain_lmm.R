@@ -64,8 +64,8 @@ grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE)
       p_value = 2*pnorm(abs(eff/se), lower.tail = FALSE)
       confs = cbind( eff -1.96*se, eff + 1.96*se)
     } else {
-      p_value = 2*pt(abs(eff/se),df=mountain-1, lower.tail = FALSE)
-      bound = qt(0.975, df = mountain-1)
+      p_value = 2*pt(abs(eff/se),df=fit$df.residual-1, lower.tail = FALSE)
+      bound = qt(0.975, df = fit$df.residual-1)
       confs = cbind( eff - bound*se, eff + bound*se) 
     }
     return(c(eff, p_value, se, as.integer(beta > confs[1,1] & beta < confs[1,2])))
@@ -79,7 +79,7 @@ snow::clusterEvalQ(cl, {library(lme4); library(lmerTest);library(glmmTMB); numbe
 snow::clusterExport(cl, list("extract_results","extract_results_t", "grand_mean"), envir = environment())
 
 # first we vary the standard deviation of the random effect 
-for(n_each in c(25, 50, 100, 200)) {
+for(n_each in c( 50, 100, 200, 500)) {
   snow::clusterExport(cl, list("n_each"))
   for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
     # export the standard deviation of the random effect to the cluster  

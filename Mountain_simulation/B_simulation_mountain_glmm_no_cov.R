@@ -60,7 +60,7 @@ grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = TRUE) 
     }
   }
   var1 = var1/mountain^2
-  var2 = (1/(mountain*(mountain-1)))*sum((effect_sizes-mean(effect_sizes))^2)
+  var2 = (1/(mountain*(mountain-1)))*sum((effect_sizes-eff)^2)
   se = sqrt(var1 + var2)
   
   if(z_statistic) {
