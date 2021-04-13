@@ -42,35 +42,33 @@ extract_results = function(fit_lmm, confs, beta, beta0) {
 
 grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE) {
   
-    ind = (mountain+1):(2*mountain)
-    covariance = vcov(fit)[ind,ind]
-    effect = summary(fit)$coefficients[ind, 1]
-    
-    if(!weighted) weights = rep(1/mountain, mountain)
-    else weights = apply(covariance, 1,sum)/sum(apply(covariance, 1,sum))
-    effect_sizes = effect
-    eff = weighted.mean(effect_sizes, weights)
-    var1 = 0
-    for(i in 1:mountain){
-      for(j in 1:mountain){
-        var1 = var1 + covariance[i,j]
-      }
+  ind = (mountain+1):(2*mountain)
+  covariance = vcov(fit)[ind,ind]
+  effect = summary(fit)$coefficients[ind, 1]
+  
+  if(!weighted) weights = rep(1/mountain, mountain)
+  else weights = apply(covariance, 1,sum)/sum(apply(covariance, 1,sum))
+  effect_sizes = effect
+  eff = weighted.mean(effect_sizes, weights)
+  var1 = 0
+  for(i in 1:mountain){
+    for(j in 1:mountain){
+      var1 = var1 + covariance[i,j]*weights[i]*weights[j]  
     }
-    var1 = var1/mountain^2
-    var2 = (1/(mountain*(mountain-1)))*sum((effect_sizes-mean(effect_sizes))^2)
-    se = sqrt(var1 + var2)
-    
-    if(z_statistic) {
-      p_value = 2*pnorm(abs(eff/se), lower.tail = FALSE)
-      confs = cbind( eff -1.96*se, eff + 1.96*se)
-    } else {
-      p_value = 2*pt(abs(eff/se),df=fit$df.residual-1, lower.tail = FALSE)
-      bound = qt(0.975, df = fit$df.residual-1)
-      confs = cbind( eff - bound*se, eff + bound*se) 
-    }
-    return(c(eff, p_value, se, as.integer(beta > confs[1,1] & beta < confs[1,2])))
+  }
+  var2 = sum((weights/(mountain-1))*(effect_sizes-eff)^2)   
+  se = sqrt(var1 + var2)
+  
+  if(z_statistic) {
+    p_value = 2*pnorm(abs(eff/se), lower.tail = FALSE)
+    confs = cbind( eff -1.96*se, eff + 1.96*se)
+  } else {
+    p_value = 2*pt(abs(eff/se),df=mountain-1, lower.tail = FALSE)
+    bound = qt(0.975, df = mountain-1)
+    confs = cbind( eff - bound*se, eff + bound*se) 
+  }
+  return(c(eff, p_value, se, as.integer(beta > confs[1,1] & beta < confs[1,2])))
 }
-
 # set up the cluster and export variables as well as functions to the cluster 
 
 
@@ -80,11 +78,11 @@ snow::clusterExport(cl, list("extract_results","extract_results_t", "grand_mean"
 
 # first we vary the standard deviation of the random effect 
 for(n_each in c( 50, 100, 200, 500)) {
-  snow::clusterExport(cl, list("n_each"))
-  for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
+  snow::clusterExport(cl, list("n_each"), envir = environment())
+  for(sd_re in c(0.1, 0.01, 0.5, 2.0)) {
     # export the standard deviation of the random effect to the cluster  
     # as a run parameter for the simulations 
-    snow::clusterExport(cl, list("sd_re"))
+    snow::clusterExport(cl, list("sd_re"), envir = environment())
     system.time({
       result_list = 
         snow::parLapply(cl, 2:8, function(number_groups)  {
@@ -124,20 +122,20 @@ for(n_each in c( 50, 100, 200, 500)) {
           colnames(results_wo_lm_wo_grouping) = colnames(results_w_lm)
           colnames(results_w_lm_wo_grouping) = colnames(results_w_lm)
           
-          ################  The data generating process ################ 
-          # Number of overall observations is equal to 50 observations for each mountain range 
-          n = (number_groups)*n_each
-          
-          ### Raw environmental predictors (Intercept and Temperature) ###
-          # the temperature is drawn from a uniform distribution as we want to simulate 
-          # an altidudinal gradient and the intercept is kept constant at 1 
-          x <- runif(n, -1, 1) # Temperature
-          X <- matrix(c(rep(1, n), x), nrow = n) # Intercept, Temperature
-          
-          sd_randeff = sd_re # sd for random effects
-          
           
           for(experiment in 1:number_experiments){
+            
+            ################  The data generating process ################ 
+            # Number of overall observations is equal to 50 observations for each mountain range 
+            n = (number_groups)*n_each
+            
+            ### Raw environmental predictors (Intercept and Temperature) ###
+            # the temperature is drawn from a uniform distribution as we want to simulate 
+            # an altidudinal gradient and the intercept is kept constant at 1 
+            x <- runif(n, -1, 1) # Temperature
+            X <- matrix(c(rep(1, n), x), nrow = n) # Intercept, Temperature
+            
+            sd_randeff = sd_re # sd for random effects
             
             ################ Simulation of LMM with Temperature effect  ################ 
             # fixed effects

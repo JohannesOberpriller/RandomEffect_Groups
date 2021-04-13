@@ -49,10 +49,10 @@ snow::clusterExport(cl, list("extract_results","extract_results_t"), envir = env
 
 # first we vary the standard deviation of the random effect 
 
-for(sd_re in c(0.01, 0.1, 0.5, 2.0)){
+for(sd_re in c(0.1, 0.01, 0.5, 2.0)){
   # export the standard deviation of the random effect to the cluster  
   # as a run parameter for the simulations 
-  snow::clusterExport(cl, list("sd_re"))
+  snow::clusterExport(cl, list("sd_re"), envir = environment())
   system.time({
     result_list = 
       snow::parLapply(cl, 2:8, function(number_groups)  {
@@ -93,20 +93,20 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)){
         colnames(results_wo_lm_wo_grouping) = colnames(results_w_lm)
         colnames(results_w_lm_wo_grouping) = colnames(results_w_lm)
         
-        ################  The data generating process ################  
-        # Number of overall observations is equal to 25 observations for each mountain range 
-        n = (number_groups)*n_each
-        
-        ### Raw environmental predictors (Intercept and Temperature) ###
-        # the temperature is drawn from a uniform distribution as we want to simulate 
-        # an altidudinal gradient and the intercept is kept constant at 1 
-        x <- runif(n, -1, 1) # Temperature
-        X <- matrix(c(rep(1, n), x), nrow = n) # Intercept, Temperature
-        
-        sd_randeff = sd_re # sd for random effects
-        
         
         for(experiment in 1:number_experiments){
+          
+          ################  The data generating process ################  
+          # Number of overall observations is equal to 25 observations for each mountain range 
+          n = (number_groups)*n_each
+          
+          ### Raw environmental predictors (Intercept and Temperature) ###
+          # the temperature is drawn from a uniform distribution as we want to simulate 
+          # an altidudinal gradient and the intercept is kept constant at 1 
+          x <- runif(n, -1, 1) # Temperature
+          X <- matrix(c(rep(1, n), x), nrow = n) # Intercept, Temperature
+          
+          sd_randeff = sd_re # sd for random effects
           
           ################ Simulation of LMM with Temperature effect  ################ 
           # fixed effects

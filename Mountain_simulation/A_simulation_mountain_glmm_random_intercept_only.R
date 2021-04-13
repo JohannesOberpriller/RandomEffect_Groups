@@ -45,16 +45,17 @@ inv.logit <- function(p){return(exp(p)/(1 + exp(p)))}
 # set up the cluster and export variables as well as functions to the cluster 
 
 cl = snow::makeCluster(7L) # reduce the number of cores if you have not 7 physical CPU cores
-snow::clusterEvalQ(cl, {library(lme4); library(lmerTest);library(glmmTMB); number_experiments =1000})
+snow::clusterEvalQ(cl, {library(lme4); library(lmerTest);library(glmmTMB); number_experiments =5000})
 snow::clusterExport(cl, list("extract_results","extract_results_lme4", "inv.logit"), envir = environment())
 
 
 ## loop over different numbers of data points in each level
 
-for(n_each in c(25, 50, 100, 200, 500)) {
+for(n_each in c(100, 25, 50, 200, 500)) {
   # export the number of data points in each level to the cluster as required 
   # run parameters for the simulations 
-  snow::clusterExport(cl, list("n_each"))
+  snow::clusterExport(cl, list("n_each"), envir = environment())
+  
   system.time({
     result_list = 
       snow::parLapply(cl, 2:8, function(number_groups)  {
@@ -89,18 +90,17 @@ for(n_each in c(25, 50, 100, 200, 500)) {
         colnames(results_wo_lm_wo_grouping) = colnames(results_w_lm)
         colnames(results_w_lm_wo_grouping) = colnames(results_w_lm)
         
-        ### Raw environmental predictors (Intercept and Temperature) ###
-        # the temperature is drawn from a uniform distribution as we want to simulate 
-        # an altidudinal gradient and the intercept is kept constant at 1 
-        n = (number_groups)*n_each
-        
-        ### Environmental predictors (Intercept and Temperature) ###
-        x <- runif(n, -1, 1) # Temperature
-        X <- matrix(c(rep(1, n), x), nrow = n) # Intercept, Temperature
-        sd_randeff = 0.1 # sd for random effects
-        
-        
         for(experiment in 1:number_experiments){
+          
+          ### Raw environmental predictors (Intercept and Temperature) ###
+          # the temperature is drawn from a uniform distribution as we want to simulate 
+          # an altidudinal gradient and the intercept is kept constant at 1 
+          n = (number_groups)*n_each
+          
+          ### Environmental predictors (Intercept and Temperature) ###
+          x <- runif(n, -1, 1) # Temperature
+          X <- matrix(c(rep(1, n), x), nrow = n) # Intercept, Temperature
+          sd_randeff = 0.1 # sd for random effects
           
           
           ################ Simulation of GLMM with Temperature effect  ################ 
