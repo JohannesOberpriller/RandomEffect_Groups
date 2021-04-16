@@ -81,7 +81,7 @@ nobs = sample.int(491, 300, replace = TRUE)+9
 parameter = data.frame(sd = sds, moutain = mountains, nobs = nobs)
 
 
-cl = snow::makeCluster(20L)
+cl = snow::makeCluster(50L)
 snow::clusterEvalQ(cl, {library(lme4); library(lmerTest)})
 snow::clusterExport(cl, list("extract_results","extract_results_t", "grand_mean", "parameter"), envir = environment())
 
@@ -110,11 +110,14 @@ result_list =
     colnames(results_wo_lm) = colnames(results_w_lm)
     
     
-    nonSing = 1
-    abort = 1
-    while(nonSing < 1001){
-      abort = abort + 1
-      if(abort == 20000) break
+    nonSing1 = 1
+    nonSing2 = 1
+    abort1 = 1
+    abort2 = 1
+    while((nonSing1 < 1001 ) & nonSing2 < 1001){
+      abort1 = abort1 + 1
+      abort2 = abort2 + 1
+      if((abort1 == 20000) & (abort2 == 20000)) break
       
       ################  The data generating process ################ 
       # Number of overall observations is equal to 50 observations for each mountain range 
@@ -152,29 +155,34 @@ result_list =
       # we tested MLE (maximum likelihood estimation) and REML (restricted maximum likelihood estimation) for glmmTMB and lme4
       
       # lme4 - REML
-      try({
-        fit_lmm <- lmer(y ~ x  + (1|group) + (0+x | group), REML = TRUE) 
-        summ = summary(fit_lmm)
-        
-        # calculate confidence intervals for the temperature effect
-        confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
-                            summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
-                      cbind(summ$coefficients[2,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"], 
-                            summ$coefficients[2,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"])
-        )
-        rownames(confs) = c("(Intercept)", "x")
-        results_w_lme4_reml[nonSing, ] = extract_results_t(fit_lmm, confs, beta, beta0)
-      }, silent = TRUE)
-      
-      if(results_w_lme4_reml[nonSing, ][9] < 1.0) {
-      
-        
-        # linear model w/ mountain range as grouping variable
+      if(nonSing1 < 1001) {
         try({
-          fit_lm = lm(y ~ 0+x*group-x)
-          results_w_lm[nonSing, ] = grand_mean(fit_lm, n_groups, beta = beta)
+          fit_lmm <- lmer(y ~ x  + (1|group) + (0+x | group), REML = TRUE) 
+          summ = summary(fit_lmm)
+          
+          # calculate confidence intervals for the temperature effect
+          confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
+                              summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
+                        cbind(summ$coefficients[2,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"], 
+                              summ$coefficients[2,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"])
+          )
+          rownames(confs) = c("(Intercept)", "x")
+          results_w_lme4_reml[nonSing1, ] = extract_results_t(fit_lmm, confs, beta, beta0)
         }, silent = TRUE)
         
+        if(results_w_lme4_reml[nonSing1, ][9] < 1.0) {
+        
+          
+          # linear model w/ mountain range as grouping variable
+          try({
+            fit_lm = lm(y ~ 0+x*group-x)
+            results_w_lm[nonSing1, ] = grand_mean(fit_lm, n_groups, beta = beta)
+          }, silent = TRUE)
+          
+          nonSing1 = nonSing1+1
+          
+        }
+      }
         
         
         ################ Simulation of LMM without Temperature effect  ################ 
@@ -199,29 +207,33 @@ result_list =
         ################ Fitting: lme4, glmmTMB, and LM ################ 
         
         # lme4 - REML
-        try({
-          fit_lmm <- lmer(y ~ x  + (1|group) + (0+x | group), REML = TRUE) 
-          summ = summary(fit_lmm)
+        if(nonSing2 < 1001) {
+          try({
+            fit_lmm <- lmer(y ~ x  + (1|group) + (0+x | group), REML = TRUE) 
+            summ = summary(fit_lmm)
+            
+            # calculate confidence intervals for the temperature effect
+            confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
+                                summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
+                          cbind(summ$coefficients[2,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"], 
+                                summ$coefficients[2,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"])
+            )
+            rownames(confs) = c("(Intercept)", "x")
+            results_wo_lme4_reml[nonSing2, ] = extract_results_t(fit_lmm, confs, beta, beta0)
+          }, silent = TRUE)
           
-          # calculate confidence intervals for the temperature effect
-          confs = rbind(cbind(summ$coefficients[1,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"], 
-                              summ$coefficients[1,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][1])*summ$coefficients[1,"Std. Error"]),
-                        cbind(summ$coefficients[2,"Estimate"] - qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"], 
-                              summ$coefficients[2,"Estimate"] + qt(0.975, df = summ$coefficients[,"df"][2])*summ$coefficients[2,"Std. Error"])
-          )
-          rownames(confs) = c("(Intercept)", "x")
-          results_wo_lme4_reml[nonSing, ] = extract_results_t(fit_lmm, confs, beta, beta0)
-        }, silent = TRUE)
-        
-        
-        # linear model w mountain range as grouping variable
-        try({
-          fit_lm = lm(y ~ 0+x*group-x)
-          results_wo_lm[nonSing, ] = grand_mean(fit_lm, n_groups, beta)
-        }, silent = TRUE)
-        
-        nonSing = nonSing + 1
-      }
+          
+          # linear model w mountain range as grouping variable
+          if(results_wo_lme4_reml[nonSing2, ][9] < 1.0) {
+            try({
+              fit_lm = lm(y ~ 0+x*group-x)
+              results_wo_lm[nonSing2, ] = grand_mean(fit_lm, n_groups, beta)
+            }, silent = TRUE)
+            
+            nonSing2 = nonSing2 + 1
+          }
+        }
+  
     }
     results_wo_lme4_reml = data.frame(results_wo_lme4_reml)
     results_w_lme4_reml = data.frame(results_w_lme4_reml)
