@@ -29,9 +29,9 @@ ff = function(i) {
 ########## _________________________________  ##########
 ##########  Random intercept only ########## 
 ########## _________________________________  ##########
-results_lmm = readRDS("Results/results_mountain_lmm_random_intercept_only_0.1_.Rds")
-results_glmm = readRDS("Results/results_mountain_glmm_random_intercept_only_100_.Rds")
-results_miss = readRDS("Results/results_mountain_lmm_random_intercept_only_miss_specified_no_cov_0.1_.Rds")
+results_lmm = readRDS("Results/results_mountain_lmm_random_intercept_only_0.1_unbalanced.Rds")
+results_glmm = readRDS("Results/results_mountain_glmm_random_intercept_only_100_unbalanced.Rds")
+results_miss = readRDS("Results/results_mountain_lmm_random_intercept_only_miss_specified_no_cov_0.1_unbalanced.Rds")
 ########## __Figure  1 Random intercept only  Type I, Error, etc. for lmm ########## 
 
 
@@ -43,7 +43,7 @@ pch = c(15, 16:18)
 
 cex_legend = 0.9
 labels = c("Height ~ T + (1|mountain)", 
-           "Height ~ T + (1|mountain) + (0+T|mountain)", 
+           "Height ~ T + (1|mountain) + (0 + T|mountain)", 
            "Height ~ T + mountain", 
            "Height ~ T ")
 ## Type I error ##
@@ -225,14 +225,14 @@ dev.off()
 
 
 
-########## __Figure S6 Random intercept different SD for random effect ########## 
+########## __Figure S8 Random intercept different SD for random effect ########## 
 
 cols = RColorBrewer::brewer.pal(4, "Set1")
 #cols = c(cols[1], cols, cols[3])
 lty = c(1, 1, 2, 2)
 cex_legend = 0.9
 ## Type I error ##
-pdf(file = "Figures/Fig_S6.pdf", width = 9.2, height = 8.8)
+pdf(file = "Figures/Fig_S8.pdf", width = 9.2, height = 8.8)
 
 sd_results = c("0.01", "0.1", "0.5", "2")
 par(mfrow = c(4,3), mar = c(0.1, 2.4, 1, 1), oma = c(5, 3, 3, 1)-1)
@@ -244,8 +244,8 @@ si = c(0)
 get_sd = function(v) sd(v < 0.05, na.rm=TRUE) / sum(!is.na(v))
 for(i in 1:4){
   
-  results_lmm = readRDS(paste0("Results/results_mountain_lmm_random_intercept_only_", sd_results[i],"_.Rds"))
-  results_miss = readRDS(paste0("Results/results_mountain_lmm_random_intercept_only_miss_specified_no_cov_", sd_results[i],"_.Rds"))
+  results_lmm = readRDS(paste0("Results/results_mountain_lmm_random_intercept_only_", sd_results[i],"_unbalanced.Rds"))
+  results_miss = readRDS(paste0("Results/results_mountain_lmm_random_intercept_only_miss_specified_no_cov_", sd_results[i],"_unbalanced.Rds"))
   
   if(i == 4) xlab = "Number of mountains"
   
@@ -346,13 +346,13 @@ dev.off()
 
 
 
-########## __Figure S8 Random intercept different number of observations for GLMM ########## 
-files = c("Results/results_mountain_glmm_random_intercept_only_25_.Rds", 
-          "Results/results_mountain_glmm_random_intercept_only_50_.Rds", 
-          "Results/results_mountain_glmm_random_intercept_only_100_.Rds", 
-          "Results/results_mountain_glmm_random_intercept_only_200_.Rds")
+########## __Figure S10 Random intercept different number of observations for GLMM ########## 
+files = c("Results/results_mountain_glmm_random_intercept_only_25_unbalanced.Rds", 
+          "Results/results_mountain_glmm_random_intercept_only_50_unbalanced.Rds", 
+          "Results/results_mountain_glmm_random_intercept_only_100_unbalanced.Rds", 
+          "Results/results_mountain_glmm_random_intercept_only_200_unbalanced.Rds")
 
-pdf("Figures/Fig_S8.pdf",  width = 9.2, height = 8.8)
+pdf("Figures/Fig_S10.pdf",  width = 9.2, height = 8.8)
 par(mfrow = c(4,3), mar = c(0.1, 2.4, 1, 1), oma = c(5, 3, 3, 1)-1)
 cols = RColorBrewer::brewer.pal(3, "Set1")
 labels = c("A", "B", "C", "D")
@@ -463,24 +463,16 @@ dev.off()
 
 
 
-
-
-
-
-
-
-
-
 ########## _________________________________  ##########
 ########## Random intercept and Random slope ########## 
 ########## _________________________________  ##########
 ########## __Figure 2 Random intercept + slope Type I, Error, etc. for lmm ########## 
 
-results_lmm_no_cov = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_.Rds")
-results_lmm = readRDS("Results/results_mountain_lmm_0.1_50_.Rds")
-results_glmm = readRDS("Results/results_mountain_glmm_0.1_200_.Rds")
-results_glmm_no_cov = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_.Rds")
-results_miss = readRDS("Results/results_mountain_lmm_miss_specified_0.1_50_.Rds")
+results_lmm_no_cov = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_unbalanced.Rds")
+results_lmm = readRDS("Results/results_mountain_lmm_0.1_50_unbalanced.Rds")
+results_glmm = readRDS("Results/results_mountain_glmm_0.1_200_unbalanced.Rds")
+results_glmm_no_cov = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_unbalanced.Rds")
+results_miss = readRDS("Results/results_mountain_lmm_miss_specified_0.1_50_unbalanced.Rds")
 
 get_sd = function(v) sd(v < 0.05, na.rm=TRUE) / sum(!is.na(v))
 
@@ -699,306 +691,7 @@ dev.off()
 
 
 
-
-
-
-
-
-# type_one_int = NULL
-# 
-# si = 0
-# 
-# df = c(50, 100, 200, 500)
-# for(j in 1:4) {
-#   for(i in 1:4){
-#     
-#     results_lmm = readRDS(paste0("Results/results_mountain_lmm_", sd_results[i],"_", df[j],"_.Rds"))
-#     results_lmm_no_cov = readRDS(paste0("Results/results_mountain_lmm_no_cov_", sd_results[i],"_", df[j],"_.Rds"))
-#     results_miss = readRDS(paste0("Results/results_mountain_lmm_miss_specified_", sd_results[i],"_", df[j],"_.Rds"))
-#     
-#     if(i == 4) xlab = "Number of mountain ranges"
-#     
-#     type_one_int = rbind(type_one_int, 
-#       cbind(
-#         sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si]< 0.05)), #lme4
-#         sapply(results_lmm, function(l) mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si]< 0.05)), #lme4
-#         sapply(results_miss, function(l) mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si]< 0.05)),
-#         sapply(results_lmm, function(l) mean(l$results_wo_lm$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si] < 0.05, na.rm=TRUE)), #lm
-#         sapply(results_lmm, function(l) mean(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si] < 0.05, na.rm=TRUE)), #lm w/go goruping
-#         0.4/as.numeric(sd_results[i]) * (2:8) ,
-#         0.4/as.numeric(sd_results[i])* df[j]
-#       ))
-#   }
-# }
-# 
-# 
-# matplot(type_one_int[order(type_one_int[,7]),-c(6, 7)], type="o", ylim = c(0, 1.0), pch = pch, las = 1, lty = lty, col = cols, 
-#         ylab = "Rate", xaxt="n", main = "", xlab = xlab, xpd = NA)
-# text(x=-0.2, pos = 2, y = 2*0.55, labels = labels[i], cex = 1.2, xpd = NA, font = 2)
-# if(i == 1) text(x= 4, pos = 3, y = 1.04, xpd = NA, labels = "Type I error", xpd = NA)
-# if(i == 4) axis(1, at = 1:7, labels = 2:8)
-# legend("topright", legend = legend_label,
-#        col = cols, pch = pch, bty = "n", lty = lty, cex = cex_legend)
-
-
-
-
-
-
-
-
-
-
-########## __Figure 5 Random intercept+slope different SD for random effect ########## 
-
-cols2 = RColorBrewer::brewer.pal(5, "Set1")
-cols = c(cols2[1], cols2[5], cols2[2:4])
-#cols = c(cols[1], cols, cols[3])
-lty = c(1, 1,1, 2, 2)
-pch = c(15, 20, 16:18)
-## Type I error ##
-pdf(file = "Figures/Fig_5.pdf", width = 9.2, height = 8.8)
-
-sd_results = c("0.01", "0.1", "0.5", "2")
-par(mfrow = c(4,3), mar = c(0.1, 2.4, 1, 1), oma = c(5, 3, 3, 1)-1)
-labels = c("A", "B", "C", "D")
-xlab = ""
-legend_label = c("Height ~ T + (1|mountain) + (0 + T|mountain)",
-                 "Height ~ T + (T|mountain)", 
-                 "Height ~ T + (1|mountain)", 
-                 "Height ~ 0 + T * mountain - T", 
-                 "Height ~ T ")
-for(i in 1:4){
-  
-  results_lmm = readRDS(paste0("Results/results_mountain_lmm_", sd_results[i],"_50_.Rds"))
-  results_lmm_no_cov = readRDS(paste0("Results/results_mountain_lmm_no_cov_", sd_results[i],"_50_.Rds"))
-  results_miss = readRDS(paste0("Results/results_mountain_lmm_miss_specified_", sd_results[i],"_50_.Rds"))
-  
-  if(i == 4) xlab = "Number of mountain ranges"
-  
-  type_one_int = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si]< 0.05)), #lme4
-      sapply(results_lmm, function(l)        mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si]< 0.05)), #lme4
-      sapply(results_miss, function(l)       mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si]< 0.05)),
-      sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lm$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si] < 0.05, na.rm=TRUE)), #lm
-      sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si] < 0.05, na.rm=TRUE)) #lm w/go goruping
-    )
-  
-  
-  matplot(type_one_int, type="o", ylim = c(0, 1.0), pch = pch, las = 1, lty = lty, col = cols, 
-          ylab = "Rate", xaxt="n", main = "", xlab = xlab, xpd = NA)
-  text(x=-0.2, pos = 2, y = 2*0.55, labels = labels[i], cex = 1.2, xpd = NA, font = 2)
-  if(i == 1) text(x= 4, pos = 3, y = 1.04, xpd = NA, labels = "Type I error", xpd = NA)
-  if(i == 4) axis(1, at = 1:7, labels = 2:8)
-  legend("topright", legend = legend_label,
-         col = cols, pch = pch, bty = "n", lty = lty, cex = cex_legend)
-  abline(h = 0.05, lty = 3, col = "darkgrey")
-  sd = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm, function(l)        get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-      sapply(results_miss, function(l)       get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lm$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si]))
-    )
-  mm = type_one_int
-  upper = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
-  lower = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i], spar = 0.1)$y)
-  sapply(1:5, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.3)))
-  
-  ## Power ##
-  type_two_int = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), #lme4
-      sapply(results_lmm, function(l)        1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), #lme4
-      sapply(results_miss, function(l) 1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), 
-      sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lm$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05, na.rm=TRUE)), #lm
-      sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05, na.rm=TRUE)) #lm
-    )
-  matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = pch, las = 1, lty = lty, col = cols, 
-          ylab = "", xaxt="n", main = "", xlab = xlab, xpd = NA)
-  if(i == 1) text(x= 4, pos = 3, y = 1.04, xpd = NA, labels = "Power")
-  if(i == 4) axis(1, at = 1:7, labels = 2:8)
-  legend("bottomright", legend = legend_label,
-         col = cols, pch = pch, bty = "n", lty = lty, cex = cex_legend)
-  sd = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm,        function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-      sapply(results_miss,       function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm, function(l) get_sd(l$results_w_lm$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm, function(l) get_sd(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_reml$Singularity %in% si]))
-    )
-  mm =1-type_two_int
-  upper = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
-  lower = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i], spar = 0.1)$y)
-  sapply(1:5, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.3)))
-  #axis(1, at = 1:7, labels = 2:8)
-  
-  # coverage
-  type_two_int = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) mean(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )), #lme4
-      sapply(results_lmm,        function(l) mean(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )), #lme4
-      sapply(results_miss,       function(l) mean(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )), #lme4
-      sapply(results_lmm_no_cov, function(l) mean(l$results_w_lm$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] , na.rm=TRUE)), #lm
-      sapply(results_lmm_no_cov, function(l) mean(l$results_w_lm_wo_grouping$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] , na.rm=TRUE)) #lm
-    )
-  
-  matplot(type_two_int, type="o", ylim = c(0.5, 1.0), pch = pch, las = 1, lty = lty, col = cols, 
-          ylab = "", xaxt="n", main = "", xlab = xlab, xpd = NA)
-  if(i == 1) text(x= 4, pos = 3, y = 1.02, xpd = NA, labels = "Coverage")
-  if(i == 4) axis(1, at = 1:7, labels = 2:8)
-  legend("bottomright", legend  = legend_label,
-         col = cols, pch = pch, bty = "n", lty = lty, cex = cex_legend)
-  abline(h = 0.95, lty = 3, col = "darkgrey")
-  
-  sd = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )),
-      sapply(results_lmm,        function(l) get_sd(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )),
-      sapply(results_miss,       function(l) get_sd(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )),
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_w_lm$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si])),
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_w_lm_wo_grouping$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] ))
-    )
-  
-  mm =type_two_int
-  upper = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
-  lower = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i], spar = 0.1)$y)
-  sapply(1:5, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.10)))
-  
-
-}
-
-dev.off()
-
-
-########## __Figure S7 Random intercept+slope different SD for random effect ########## 
-
-cols2 = RColorBrewer::brewer.pal(5, "Set1")
-cols = c(cols2[1], cols2[5], cols2[2:4])
-#cols = c(cols[1], cols, cols[3])
-lty = c(1, 1,1, 2, 2)
-pch = c(15, 20, 16:18)
-## Type I error ##
-pdf(file = "Figures/Fig_S7.pdf", width = 9.2, height = 8.8)
-
-sds = c(0.01, 0.1, 0.5, 2)
-par(mfrow = c(4,3), mar = c(0.1, 2.4, 1, 1), oma = c(5, 3, 3, 1)-1)
-labels = c("A", "B", "C", "D")
-xlab = ""
-legend_label = c("Height ~ T + (1|mountain) + (0 + T|mountain)",
-                 "Height ~ T + (T|mountain)", 
-                 "Height ~ T + (1|mountain)", 
-                 "Height ~ 0 + T * mountain - T", 
-                 "Height ~ T ")
-for(i in 1:4){
-  
-  results_lmm = readRDS(paste0("Results/results_mountain_lmm_",sds[i],"_", 50,"_.Rds"))
-  results_lmm_no_cov = readRDS(paste0("Results/results_mountain_lmm_no_cov_",sds[i],"_", 50,"_.Rds"))
-  results_miss = readRDS(paste0("Results/results_mountain_lmm_miss_specified_",sds[i],"_", 50,"_.Rds"))
-  
-  if(i == 4) xlab = "Number of mountains"
-  
-  type_one_int = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si]< 0.05)), #lme4
-      sapply(results_lmm, function(l)        mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si]< 0.05)), #lme4
-      sapply(results_miss, function(l)       mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si]< 0.05)),
-      sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lm$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si] < 0.05, na.rm=TRUE)), #lm
-      sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si] < 0.05, na.rm=TRUE)) #lm w/go goruping
-    )
-  
-  
-  matplot(type_one_int, type="o", ylim = c(0, 1.0), pch = pch, las = 1, lty = lty, col = cols, 
-          ylab = "Rate", xaxt="n", main = "", xlab = xlab, xpd = NA)
-  text(x=-0.2, pos = 2, y = 2*0.55, labels = labels[i], cex = 1.2, xpd = NA, font = 2)
-  if(i == 1) text(x= 4, pos = 3, y = 1.04, xpd = NA, labels = "Type I error", xpd = NA)
-  if(i == 4) axis(1, at = 1:7, labels = 2:8)
-  legend("topright", legend = legend_label,
-         col = cols, pch = pch, bty = "n", lty = lty, cex = cex_legend)
-  abline(h = 0.05, lty = 3, col = "darkgrey")
-  sd = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm, function(l)        get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-      sapply(results_miss, function(l)       get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lm$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si]))
-    )
-  mm = type_one_int
-  upper = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
-  lower = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i], spar = 0.1)$y)
-  sapply(1:5, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.3)))
-  
-  ## Power ##
-  type_two_int = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), #lme4
-      sapply(results_lmm, function(l)        1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), #lme4
-      sapply(results_miss, function(l) 1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), 
-      sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lm$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05, na.rm=TRUE)), #lm
-      sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05, na.rm=TRUE)) #lm
-    )
-  matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = pch, las = 1, lty = lty, col = cols, 
-          ylab = "", xaxt="n", main = "", xlab = xlab, xpd = NA)
-  if(i == 1) text(x= 4, pos = 3, y = 1.04, xpd = NA, labels = "Power")
-  if(i == 4) axis(1, at = 1:7, labels = 2:8)
-  legend("bottomright", legend = legend_label,
-         col = cols, pch = pch, bty = "n", lty = lty, cex = cex_legend)
-  sd = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm,        function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-      sapply(results_miss,       function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm, function(l) get_sd(l$results_w_lm$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-      sapply(results_lmm, function(l) get_sd(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_reml$Singularity %in% si]))
-    )
-  mm =1-type_two_int
-  upper = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
-  lower = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i], spar = 0.1)$y)
-  sapply(1:5, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.3)))
-  #axis(1, at = 1:7, labels = 2:8)
-  
-  # coverage
-  type_two_int = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) mean(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )), #lme4
-      sapply(results_lmm,        function(l) mean(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )), #lme4
-      sapply(results_miss,       function(l) mean(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )), #lme4
-      sapply(results_lmm_no_cov, function(l) mean(l$results_w_lm$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] , na.rm=TRUE)), #lm
-      sapply(results_lmm_no_cov, function(l) mean(l$results_w_lm_wo_grouping$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] , na.rm=TRUE)) #lm
-    )
-  
-  matplot(type_two_int, type="o", ylim = c(0.5, 1.0), pch = pch, las = 1, lty = lty, col = cols, 
-          ylab = "", xaxt="n", main = "", xlab = xlab, xpd = NA)
-  if(i == 1) text(x= 4, pos = 3, y = 1.02, xpd = NA, labels = "Coverage")
-  if(i == 4) axis(1, at = 1:7, labels = 2:8)
-  legend("bottomright", legend  = legend_label,
-         col = cols, pch = pch, bty = "n", lty = lty, cex = cex_legend)
-  abline(h = 0.95, lty = 3, col = "darkgrey")
-  
-  sd = 
-    cbind(
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )),
-      sapply(results_lmm,        function(l) get_sd(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )),
-      sapply(results_miss,       function(l) get_sd(l$results_w_lme4_reml$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] )),
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_w_lm$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si])),
-      sapply(results_lmm_no_cov, function(l) get_sd(l$results_w_lm_wo_grouping$Slope_in_conf[l$results_w_lme4_reml$Singularity%in% si] ))
-    )
-  
-  mm =type_two_int
-  upper = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
-  lower = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i], spar = 0.1)$y)
-  sapply(1:5, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border = NA, col =addA(cols[i], 0.10)))
-  
-  
-}
-dev.off()
-
-
-########## __Figure S9 Random intercept+slope different observations for random effect ########## 
+########## __Figure S9 Random intercept+slope different SD for random effect ########## 
 
 cols2 = RColorBrewer::brewer.pal(5, "Set1")
 cols = c(cols2[1], cols2[5], cols2[2:4])
@@ -1017,13 +710,11 @@ legend_label = c("Height ~ T + (1|mountain) + (0 + T|mountain)",
                  "Height ~ T + (1|mountain)", 
                  "Height ~ 0 + T * mountain - T", 
                  "Height ~ T ")
-obs = c( 50, 100, 200, 500)
-sds = 0.1
 for(i in 1:4){
   
-  results_lmm = readRDS(paste0("Results/results_mountain_lmm_",sds,"_", obs[i],"_.Rds"))
-  results_lmm_no_cov = readRDS(paste0("Results/results_mountain_lmm_no_cov_",sds,"_", obs[i],"_.Rds"))
-  results_miss = readRDS(paste0("Results/results_mountain_lmm_miss_specified_",sds,"_", obs[i],"_.Rds"))
+  results_lmm = readRDS(paste0("Results/results_mountain_lmm_",sds[i],"_", 50,"_unbalanced.Rds"))
+  results_lmm_no_cov = readRDS(paste0("Results/results_mountain_lmm_no_cov_",sds[i],"_", 50,"_unbalanced.Rds"))
+  results_miss = readRDS(paste0("Results/results_mountain_lmm_miss_specified_",sds[i],"_", 50,"_unbalanced.Rds"))
   
   if(i == 4) xlab = "Number of mountains"
   
@@ -1124,7 +815,7 @@ for(i in 1:4){
 dev.off()
 
 
-########## __Figure S8 Random intercept+slope different SD for random effect ########## 
+########## __Figure S11 Random intercept+slope different observations for random effect ########## 
 
 cols2 = RColorBrewer::brewer.pal(5, "Set1")
 cols = c(cols2[1], cols2[5], cols2[2:4])
@@ -1132,9 +823,9 @@ cols = c(cols2[1], cols2[5], cols2[2:4])
 lty = c(1, 1,1, 2, 2)
 pch = c(15, 20, 16:18)
 ## Type I error ##
-pdf(file = "Figures/Fig_S8.pdf", width = 9.2, height = 8.8)
+pdf(file = "Figures/Fig_S11.pdf", width = 9.2, height = 8.8)
 
-nobs = c("50", "100", "200", "500")
+sds = c(0.01, 0.1, 0.5, 2)
 par(mfrow = c(4,3), mar = c(0.1, 2.4, 1, 1), oma = c(5, 3, 3, 1)-1)
 labels = c("A", "B", "C", "D")
 xlab = ""
@@ -1143,13 +834,15 @@ legend_label = c("Height ~ T + (1|mountain) + (0 + T|mountain)",
                  "Height ~ T + (1|mountain)", 
                  "Height ~ 0 + T * mountain - T", 
                  "Height ~ T ")
+obs = c( 50, 100, 200, 500)
+sds = 0.1
 for(i in 1:4){
   
-  results_lmm = readRDS(paste0("Results/results_mountain_lmm_0.1_", nobs[i],"_.Rds"))
-  results_lmm_no_cov = readRDS(paste0("Results/results_mountain_lmm_no_cov_0.1_", nobs[i],"_.Rds"))
-  results_miss = readRDS(paste0("Results/results_mountain_lmm_miss_specified_0.1_", nobs[i],"_.Rds"))
+  results_lmm = readRDS(paste0("Results/results_mountain_lmm_",sds,"_", obs[i],"_unbalanced.Rds"))
+  results_lmm_no_cov = readRDS(paste0("Results/results_mountain_lmm_no_cov_",sds,"_", obs[i],"_unbalanced.Rds"))
+  results_miss = readRDS(paste0("Results/results_mountain_lmm_miss_specified_",sds,"_", obs[i],"_unbalanced.Rds"))
   
-  if(i == 4) xlab = "Number of mountain ranges"
+  if(i == 4) xlab = "Number of mountains"
   
   type_one_int = 
     cbind(
@@ -1245,31 +938,29 @@ for(i in 1:4){
   
   
 }
-
 dev.off()
 
 
 
 
 
-########## __Figure S9 Random intercept different number of observations for GLMM ########## 
-files = c( "Results/results_mountain_glmm_no_cov_0.1_25_.Rds", 
-           "Results/results_mountain_glmm_no_cov_0.1_50_.Rds", 
-          "Results/results_mountain_glmm_no_cov_0.1_100_.Rds", 
-          "Results/results_mountain_glmm_no_cov_0.1_200_.Rds",
-          "Results/results_mountain_glmm_no_cov_0.1_500_.Rds")
+
+########## __Figure S12 Random intercept different number of observations for GLMM ########## 
+files = c( "Results/results_mountain_glmm_no_cov_0.1_25_unbalanced.Rds", 
+           "Results/results_mountain_glmm_no_cov_0.1_50_unbalanced.Rds", 
+          "Results/results_mountain_glmm_no_cov_0.1_100_unbalanced.Rds", 
+          "Results/results_mountain_glmm_no_cov_0.1_200_unbalanced.Rds",
+          "Results/results_mountain_glmm_no_cov_0.1_500_unbalanced.Rds")
 
 
-files_with_cov = c("Results/results_mountain_glmm_0.1_25_.Rds",
-                   "Results/results_mountain_glmm_0.1_50_.Rds",
-                   "Results/results_mountain_glmm_0.1_100_.Rds",
-                   "Results/results_mountain_glmm_0.1_200_.Rds",
+files_with_cov = c("Results/results_mountain_glmm_0.1_25_unbalanced.Rds",
+                   "Results/results_mountain_glmm_0.1_50_unbalanced.Rds",
+                   "Results/results_mountain_glmm_0.1_100_unbalanced.Rds",
+                   "Results/results_mountain_glmm_0.1_200_unbalanced.Rds",
                    "Results/results_mountain_glmm_0.1_500_.Rds")
 
-#results_glmm = readRDS("Results/results_mountain_glmm_200_.Rds")
-#results_glmm_no_cov = readRDS("Results/results_mountain_glmm_no_cov_200_.Rds")
 
-pdf("Figures/Fig_S10.pdf", width = 8.2, height = 8.8)
+pdf("Figures/Fig_S12.pdf", width = 8.2, height = 8.8)
 par(mfrow = c(5,3), mar = c(0.1, 2.4, 1, 1), oma = c(5, 3, 3, 1)-1)
 cols2 = RColorBrewer::brewer.pal(5, "Set1")
 cols = c(cols2[1], cols2[5], cols2[2:4])
@@ -1390,17 +1081,16 @@ dev.off()
 ########## _________________________________  ##########
 ########## lme4 vs glmmTMB ########## 
 ########## _________________________________  ##########
-########## __Figure S5  Random intercept+slope Type I, Power, Cover########## 
+########## __Figure S7  Random intercept+slope Type I, Power, Cover########## 
 
-results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_.Rds")
-results_glmm = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_.Rds")
+results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_unbalanced.Rds")
+results_glmm = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_unbalanced.Rds")
 
 
 cols = RColorBrewer::brewer.pal(4, "Set1")
-#cols = c(cols[1], cols, cols[3])
 lty = c(1, 1, 2, 2)
 ## Type I error ##
-pdf(file = "Figures/Fig_S5.pdf", width = 8.2, height = 5.8)
+pdf(file = "Figures/Fig_S7.pdf", width = 8.2, height = 5.8)
 par(mfrow = c(2,3), mar = c(0.1, 2.4, 1, 1), oma = c(5, 3, 3, 1)-1)
 type_one_int = 
   cbind(
@@ -1569,8 +1259,8 @@ dev.off()
 
 cols = viridis::viridis(5)
 
-results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_.Rds")
-results_glmm = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_.Rds")
+results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_unbalanced.Rds")
+results_glmm = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_unbalanced.Rds")
 
 adj = 1.0
 pdf(file = "Figures/Fig_3.pdf", width = 7, height = 5)
@@ -1610,8 +1300,6 @@ axis(1)
 abline(v=0.1, col="darkgrey", lty = 3)
 text(-0.03, 15, labels = "D", cex = 1.3, font = 2, xpd =NA)
 
-
-
 dev.off()
 
 
@@ -1621,8 +1309,8 @@ cols = viridis::viridis(5)
 adj = 1.0
 pdf(file = "Figures/Fig_S1.pdf", width = 7, height = 5)
 
-results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_.Rds")
-results_glmm = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_.Rds")
+results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_unbalanced.Rds")
+results_glmm = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_unbalanced.Rds")
 par(mfrow = c(2,2), mar = c(2, 1, 4, 2))
 plot(NULL, NULL, xlim = c(0.0, 0.5), ylim = c(0., 15.0), axes= FALSE, ylab = "", main = "", xlab = "")
 for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_reml$stddev_randeff_inter, adjust = adj, na.rm=TRUE), col = ff(i), lwd = 1.4)
@@ -1697,44 +1385,6 @@ dev.off()
 
 
 
-
-
-########## __Figure S7 variance estimate+std error########## 
-cols = viridis::viridis(5)
-
-
-adj = 1.0
-pdf(file = "Figures/Fig_S7.pdf", width = 7, height = 5)
-
-par(mfrow = c(2,2), mar = c(2, 1, 4, 2))
-plot(NULL, NULL, xlim = c(0.0, 0.5), ylim = c(0., 15.0), axes= FALSE, ylab = "", main = "SD of random intercept", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
-axis(1)
-legend("topright", legend = paste0(c(2, 3, 5, 8), " mountain ranges"), pch = 15, col = cols, bty = "n")
-abline(v=0.1, col="darkgrey", lty = 3)
-text(-0.03, 12, labels = "A", cex = 1.3, font = 2, xpd =NA)
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 37.0), axes= FALSE, ylab = "", main = "SE of Intercept", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$se_intercept, adjust = adj), col = ff(i), lwd = 1.4)
-axis(1)
-legend("topright", legend = paste0(c(2, 3, 5, 8), " mountain ranges"), pch = 15, col = cols, bty = "n")
-
-
-
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 15.0), axes= FALSE, ylab = "", main = "SD of random slope", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_reml$stddev_randeff_x, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4)
-axis(1)
-legend("topright", legend = paste0(c(2, 3, 5, 8), " mountain ranges"), pch = 15, col = cols, bty = "n")
-abline(v=0.1, col="darkgrey", lty = 3)
-text(-0.04, 10, labels = "B", cex = 1.3, font = 2, xpd =NA)
-
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 50.0), axes= FALSE, ylab = "", main = "SE of Temperature effect", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_reml$se_effect, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4)
-axis(1)
-legend("topright", legend = paste0(c(2, 3, 5, 8), " mountain ranges"), pch = 15, col = cols, bty = "n")
-
-dev.off()
-
-
 ########## __Figure S3 Variance estimates lmm MLE/REML ########## 
 cols = viridis::viridis(5)
 
@@ -1789,13 +1439,21 @@ dev.off()
 
 
 
+
+
+
+
+
+
 ########## __Figure S4 Variance estimates glmm MLE/REML ########## 
 cols = viridis::viridis(5)
+
+results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_unbalanced.Rds")
 
 
 # glmm4
 
-adj = c(1000, 1.0, 1.0, 1.0)
+adj = c(1e6, 1.0, 1.0, 1.0)*1
 pdf(file = "Figures/Fig_S4.pdf", width = 7, height = 5)
 
 par(mfrow = c(2,2), mar = c(2, 1+0.3, 4, 2))
@@ -1855,8 +1513,114 @@ dev.off()
 
 
 
-########## __Figure 4 Singularities:Type I ########## 
+
+########## __Figure S5 Variance estimates lmm REML imbalanced vs REML balanced ########## 
+cols = viridis::viridis(5)
+
+results_lmm_im = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_unbalanced.Rds")
 results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_.Rds")
+
+
+adj = 1.0
+pdf(file = "Figures/Fig_S5.pdf", width = 7, height = 5)
+
+par(mfrow = c(2,2), mar = c(2, 1+0.3, 4, 2))
+
+# lme4
+plot(NULL, NULL, xlim = c(0.0, 0.5), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm_im[[i]]$results_w_lme4_reml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4, lty = 2)
+axis(1)
+abline(v=0.1, col="darkgrey", lty = 3)
+text(-0.04, 32, labels = "A", cex = 1.3, font = 2, xpd =NA)
+
+
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm_im[[i]]$results_w_lme4_reml$stddev_randeff_x, adjust = adj), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_x, adjust = adj), col = ff(i), lwd = 1.4, lty = 2)
+text(-0.04, 32, labels = "B", cex = 1.3, font = 2, xpd =NA)
+axis(1)
+legend("topright", legend = paste0(c(2, 3, 5, 8), " mountains"), pch = 15, col = cols, bty = "n")
+legend("bottomright", legend = c("imbalanced", "balanced"), lty = c(1, 2), bty = "n", lwd = 1.0)
+abline(v=0.1, col="darkgrey", lty = 3)
+
+
+# glmmTMB
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm_im[[i]]$results_w_glmmTMB_reml$stddev_randeff_inter, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_reml$stddev_randeff_inter, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4, lty = 2)
+axis(1)
+abline(v=0.1, col="darkgrey", lty = 3)
+text(-0.05, 32, labels = "C", cex = 1.3, font = 2, xpd =NA)
+
+
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm_im[[i]]$results_w_glmmTMB_reml$stddev_randeff_inter, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_reml$stddev_randeff_inter, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4, lty = 2)
+text(-0.05, 32, labels = "D", cex = 1.3, font = 2, xpd =NA)
+axis(1)
+abline(v=0.1, col="darkgrey", lty = 3)
+
+dev.off()
+
+
+
+
+########## __Figure S6 Variance estimates lmm MLE imbalanced vs MLE balanced ########## 
+cols = viridis::viridis(5)
+
+adj = 1.0
+pdf(file = "Figures/Fig_S6.pdf", width = 7, height = 5)
+
+par(mfrow = c(2,2), mar = c(2, 1+0.3, 4, 2))
+
+# lme4
+plot(NULL, NULL, xlim = c(0.0, 0.5), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_ml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4, lty = 2)
+axis(1)
+abline(v=0.1, col="darkgrey", lty = 3)
+text(-0.04, 32, labels = "A", cex = 1.3, font = 2, xpd =NA)
+
+
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_x, adjust = adj), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_ml$stddev_randeff_x, adjust = adj), col = ff(i), lwd = 1.4, lty = 2)
+text(-0.04, 32, labels = "B", cex = 1.3, font = 2, xpd =NA)
+axis(1)
+legend("topright", legend = paste0(c(2, 3, 5, 8), " mountains"), pch = 15, col = cols, bty = "n")
+legend("bottomright", legend = c("REML", "MLE"), lty = c(1, 2), bty = "n", lwd = 1.0)
+abline(v=0.1, col="darkgrey", lty = 3)
+
+
+# glmmTMB
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_reml$stddev_randeff_inter, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_ml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4, lty = 2)
+axis(1)
+abline(v=0.1, col="darkgrey", lty = 3)
+text(-0.05, 32, labels = "C", cex = 1.3, font = 2, xpd =NA)
+
+
+plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_reml$stddev_randeff_inter, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_ml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4, lty = 2)
+text(-0.05, 32, labels = "D", cex = 1.3, font = 2, xpd =NA)
+axis(1)
+abline(v=0.1, col="darkgrey", lty = 3)
+
+dev.off()
+
+
+
+
+
+
+
+
+
+########## __Figure 4 Singularities:Type I ########## 
+results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_unbalanced.Rds")
 pdf(file = "Figures/Fig_4.pdf", width = 8, height = 6.4)
 
 
@@ -1865,14 +1629,13 @@ labels = c("Singular fit: Height ~ T + (1|mountain) + (0 + T|mountain)",
            "Height ~ T")
 
 labels2 = c("Singular fit: Height ~ 0 + mountain + T * mountain",
-           "Non-singular fit: Height ~ 0 + mountain + T * mountain")
+            "Non-singular fit: Height ~ 0 + mountain + T * mountain")
 par(mfrow = c(2,2), mar = c(0.1, 2.4, 2.2, 1), oma = c(5, 3, 3, 1)-1)
 cols = RColorBrewer::brewer.pal(3, "Set1")[1:2]
 get_sd = function(v) sd(v < 0.05, na.rm=TRUE) / sum(!is.na(v))
 
 
 cols2 = RColorBrewer::brewer.pal(5, "Set1")[4]
-#cols = c(cols[1], cols, cols[3])
 lty = c(1, 1, 2)
 pch = c(15, 15, 18)
 cex_legend = 0.7
@@ -1887,7 +1650,7 @@ sing =
     sapply(results_lmm, function(l) mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity == 1] < 0.05, na.rm = TRUE)),
     sapply(results_lmm, function(l) mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity == 0] < 0.05, na.rm = TRUE)),
     sapply(results_lmm, function(l) mean(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity == 1] < 0.05, na.rm = TRUE))
-    )
+  )
 
 matplot(sing, type="o", ylim = c(0, 0.3), pch = pch, las = 1, col = cols, 
         ylab = "Rate", xaxt="n", main = "", xlab = "", lty = lty, cex.main = 0.7, xpd = NA)
@@ -1902,7 +1665,7 @@ sd =
     sapply(results_lmm, function(l) get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity == 1])),
     sapply(results_lmm, function(l) get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity == 0])),
     sapply(results_lmm, function(l) get_sd(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity == 1]))
-    )
+  )
 mm =sing
 upper = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
 lower = sapply(1:3, function(i) smooth.spline(x=1:7, y = (mm-sd)[,i], spar = 0.1)$y)
@@ -1995,309 +1758,8 @@ dev.off()
 
 
 
-
-
-
-
-# Figure S7 Correlation plot for glmmTMB 
-# 
-# pdf("./Figures/Fig_S7.pdf", width = 9, height = 7.5)
-# par(mfrow = c(2,2), mar=c(1, 2, 1, 1), oma = c(5, 5, 3, 1))
-# plot(NULL, NULL, xlim = c(0, 0.5), ylim = c(0, 0.4), 
-#      main = "",  cex.axis = 1.0, xaxt="n",
-#      cex.main = 1.0, xlab = "", ylab = "",  las =1, xpd = NA)
-# text(x = 0.25, y = 0.42, pos = 3, labels = "Intercept", xpd = NA)
-# text(x = -0.15, y = 0.43, labels = "A", font = 2, cex = 1.2, xpd = NA)
-# title(ylab = "Standard error of fixed effect", line = 4.2, cex.lab = 1, xpd = NA)
-# #title(xlab = "Standard deviation of random effect", line = 3.2, cex.lab = 1)
-# levels = c(2, 3, 5, 8)-1
-# for(i in 1:number_of_levels) {
-#   points(x = results_lmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_inter, 
-#          y = results_lmm[[levels[i]]]$results_w_glmmTMB_reml$se_intercept , col = colors[i], cex=0.2, pch = 19)
-# }
-# quants = sapply(1:number_of_levels, function(i) quantile(results_lmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_inter, probs = c(0.7, 0.8,0.9,0.95), na.rm = TRUE))
-# where = matrix(NA, number_of_quantiles, number_of_levels)
-# for(i in 1:number_of_levels){
-#   for(j in 1:number_of_quantiles){
-#     p = quants[j,i]
-#     ordered_results = results_lmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_inter[order(results_lmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_inter)]
-#     where[j,i] = which(ordered_results >= p)[1] 
-#   }
-# }
-# coords = sapply(1:number_of_levels, function(i) results_lmm[[levels[i]]]$results_w_glmmTMB_reml$se_intercept[order(results_lmm[[levels[i]]]$results_w_glmmTMB_reml$se_intercept)][where[,i]])
-# for(i in 1:number_of_quantiles){
-#   lines(y = coords[i,], x = quants[i,], lwd = 1, col = "black")
-# }
-# text(y = coords[,1], x = quants[,1], c("70%","80%","90%","95%"), offset = 0.5, pos =3, cex = 1)
-# legend("bottomright", legend = paste0(levels+1, " mountain ranges"), pch = 19, col = colors, bty = "n")
-# 
-# 
-# 
-# plot(NULL, NULL, xlim = c(0, 0.5), ylim = c(0, 0.4), 
-#      main = "",  cex.axis = 1.0,xaxt="n",
-#      cex.main = 1.0, xlab = "", ylab = "",  las =1, xpd=NA)
-# text(x = 0.25, y = 0.42, pos = 3, labels = "Temperature", xpd = NA)
-# 
-# title(ylab = "Standard error of fixed effect", line = 4.2, cex.lab = 1)
-# title(xlab = "Standard deviation of random effect", line = 3.2, cex.lab = 1)
-# for(i in 1:number_of_levels) {
-#   points(x = results_lmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_x,
-#          y = results_lmm[[levels[i]]]$results_w_glmmTMB_reml$se_effect , col = colors[i], cex=0.2, pch = 19)
-# }
-# quants = sapply(1:number_of_levels, function(i) quantile(results_lmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_x, probs = c(0.7, 0.8,0.9,0.95), na.rm = TRUE))
-# where = matrix(NA, number_of_quantiles, number_of_levels)
-# for(i in 1:number_of_levels){
-#   for(j in 1:number_of_quantiles){
-#     p = quants[j,i]
-#     ordered_results = results_lmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_x[order(results_lmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_x)]
-#     where[j,i] = which(ordered_results >= p)[1] 
-#   }
-# }
-# coords = sapply(1:number_of_levels, function(i) results_lmm[[levels[i]]]$results_w_glmmTMB_reml$se_effect[order(results_lmm[[levels[i]]]$results_w_glmmTMB_reml$se_effect)][where[,i]])
-# for(i in 1:number_of_quantiles){
-#   lines(y = coords[i,], x = quants[i,], lwd = 1, col = "black")
-# }
-# text(y = coords[,1], x = quants[,1], c("70%","80%","90%","95%"), offset = 0.5, pos =3, cex = 1)
-# legend("bottomright", legend = paste0(levels+1, " mountain ranges"), pch = 19, col = colors, bty = "n")
-# 
-# 
-# 
-# 
-# ## GLMM
-# plot(NULL, NULL, xlim = c(0, 0.6), ylim = c(0, 0.5), 
-#      main = "",  cex.axis = 1.0,
-#      cex.main = 1.0, xlab = "", ylab = "",  las =1)
-# title(ylab = "Standard error of fixed effect", line = 4.2, cex.lab = 1, xpd = NA)
-# title(xlab = "Standard deviation of random effect", line = 3.2, cex.lab = 1, xpd = NA)
-# text(x = -0.18, y = 0.5375, labels = "B", font = 2, cex = 1.2, xpd = NA)
-# for(i in 1:number_of_levels) {
-#   points(x = results_glmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_inter, 
-#          y = results_glmm[[levels[i]]]$results_w_glmmTMB_reml$se_intercept , col = colors[i], cex=0.2, pch = 19)
-# }
-# quants = sapply(1:number_of_levels, function(i) quantile(results_glmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_inter, probs = c(0.7, 0.8,0.9,0.95), na.rm = TRUE))
-# where = matrix(NA, number_of_quantiles, number_of_levels)
-# for(i in 1:number_of_levels){
-#   for(j in 1:number_of_quantiles){
-#     p = quants[j,i]
-#     ordered_results = results_glmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_inter[order(results_glmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_inter)]
-#     where[j,i] = which(ordered_results >= p)[1] 
-#   }
-# }
-# coords = sapply(1:number_of_levels, function(i) results_glmm[[levels[i]]]$results_w_glmmTMB_reml$se_intercept[order(results_glmm[[levels[i]]]$results_w_glmmTMB_reml$se_intercept)][where[,i]])
-# for(i in 1:number_of_quantiles){
-#   lines(y = coords[i,], x = quants[i,], lwd = 1, col = "black")
-# }
-# text(y = coords[,1], x = quants[,1], c("70%","80%","90%","95%"), offset = 0.5, pos =3, cex = 1)
-# 
-# legend("bottomright", legend = paste0(levels+1, " mountain ranges"), pch = 19, col = colors, bty = "n")
-# 
-# 
-# plot(NULL, NULL, xlim = c(0, 0.9), ylim = c(0, 0.6), 
-#      main = "",  cex.axis = 1.0,
-#      cex.main = 1.0, xlab = "", ylab = "",  las =1)
-# title(xlab = "Standard deviation of random effect", line = 3.2, cex.lab = 1, xpd=NA)
-# for(i in 1:number_of_levels) {
-#   points(x = results_glmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_x,
-#          y = results_glmm[[levels[i]]]$results_w_glmmTMB_reml$se_effect , col = colors[i], cex=0.1, pch = 19)
-# }
-# quants = sapply(1:number_of_levels, function(i) quantile(results_glmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_x, probs = c(0.7, 0.8,0.9,0.95), na.rm = TRUE))
-# where = matrix(NA, number_of_quantiles, number_of_levels)
-# for(i in 1:number_of_levels){
-#   for(j in 1:number_of_quantiles){
-#     p = quants[j,i]
-#     ordered_results = results_glmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_x[order(results_glmm[[levels[i]]]$results_w_glmmTMB_reml$stddev_randeff_x)]
-#     where[j,i] = which(ordered_results >= p)[1] 
-#   }
-# }
-# coords = sapply(1:number_of_levels, function(i) results_glmm[[levels[i]]]$results_w_glmmTMB_reml$se_effect[order(results_glmm[[levels[i]]]$results_w_glmmTMB_reml$se_effect)][where[,i]])
-# for(i in 1:number_of_quantiles){
-#   lines(y = coords[i,], x = quants[i,], lwd = 1, col = "black")
-# }
-# text(y = coords[,1], x = quants[,1], c("70%","80%","90%","95%"), offset = 0.5, pos =3, cex = 1)
-# 
-# legend("bottomright", legend = paste0(levels+1, " mountain ranges"), pch = 19, col = colors, bty = "n")
-# 
-# dev.off()
-
-
-
-# 
-# # Figure 4 Correlation plot 
-# 
-# pdf("./Figures/Fig_4.pdf", width = 9, height = 7.5)
-# par(mfrow = c(2,2), mar=c(1, 2, 1, 1), oma = c(5, 5, 3, 1))
-# plot(NULL, NULL, xlim = c(0, 0.5), ylim = c(0, 0.4), 
-#      main = "",  cex.axis = 1.0, xaxt="n",
-#      cex.main = 1.0, xlab = "", ylab = "",  las =1, xpd = NA)
-# text(x = 0.25, y = 0.42, pos = 3, labels = "Intercept", xpd = NA)
-# text(x = -0.15, y = 0.43, labels = "A", font = 2, cex = 1.2, xpd = NA)
-# title(ylab = "Standard error of fixed effect", line = 4.2, cex.lab = 1, xpd = NA)
-# #title(xlab = "Standard deviation of random effect", line = 3.2, cex.lab = 1)
-# levels = c(2, 3, 5, 8)-1
-# number_of_levels = 4
-# for(i in 1:number_of_levels) {
-#   points(x = results_lmm[[levels[i]]]$results_w_lme4_reml$stddev_randeff_inter, 
-#          y = results_lmm[[levels[i]]]$results_w_lme4_reml$se_intercept, col = colors[i], cex=0.2, pch = 19)
-# }
-# quants = sapply(1:number_of_levels, function(i) quantile(results_lmm[[levels[i]]]$results_w_lme4_reml$stddev_randeff_inter, probs = c(0.7, 0.8,0.9,0.95)))
-# where = matrix(NA, number_of_quantiles, number_of_levels)
-# for(i in 1:number_of_levels){
-#   for(j in 1:number_of_quantiles){
-#     p = quants[j,i]
-#     ordered_results = results_lmm[[levels[i]]]$results_w_lme4_reml$stddev_randeff_inter[order(results_lmm[[levels[i]]]$results_w_lme4_reml$stddev_randeff_inter)]
-#     where[j,i] = which(ordered_results >= p)[1] 
-#   }
-# }
-# coords = sapply(1:number_of_levels, function(i) results_lmm[[levels[i]]]$results_w_lme4_reml$se_intercept[order(results_lmm[[levels[i]]]$results_w_lme4_reml$se_intercept)][where[,i]])
-# for(i in 1:number_of_quantiles){
-#   lines(y = coords[i,], x = quants[i,], lwd = 1, col = "black")
-# }
-# text(y = coords[,1], x = quants[,1], c("70%","80%","90%","95%"), offset = 0.5, pos =3, cex = 1)
-# legend("bottomright", legend = paste0(levels+1, " mountain ranges"), pch = 19, col = colors, bty = "n")
-# 
-# 
-# 
-# plot(NULL, NULL, xlim = c(0, 0.5), ylim = c(0, 0.4), 
-#      main = "",  cex.axis = 1.0,xaxt="n",
-#      cex.main = 1.0, xlab = "", ylab = "",  las =1, xpd=NA)
-# text(x = 0.25, y = 0.42, pos = 3, labels = "Temperature", xpd = NA)
-# 
-# title(ylab = "Standard error of fixed effect", line = 4.2, cex.lab = 1)
-# title(xlab = "Standard deviation of random effect", line = 3.2, cex.lab = 1)
-# for(i in 1:number_of_levels) {
-#   points(x = results_lmm[[levels[i]]]$results_w_lme4_reml$stddev_randeff_x,
-#          y = results_lmm[[levels[i]]]$results_w_lme4_reml$se_effect , col = colors[i], cex=0.2, pch = 19)
-# }
-# quants = sapply(1:number_of_levels, function(i) quantile(results_lmm[[levels[i]]]$results_w_lme4_reml$stddev_randeff_x, probs = c(0.7, 0.8,0.9,0.95)))
-# where = matrix(NA, number_of_quantiles, number_of_levels)
-# for(i in 1:number_of_levels){
-#   for(j in 1:number_of_quantiles){
-#     p = quants[j,i]
-#     ordered_results = results_lmm[[levels[i]]]$results_w_lme4_reml$stddev_randeff_x[order(results_lmm[[levels[i]]]$results_w_lme4_reml$stddev_randeff_x)]
-#     where[j,i] = which(ordered_results >= p)[1] 
-#   }
-# }
-# coords = sapply(1:number_of_levels, function(i) results_lmm[[levels[i]]]$results_w_lme4_reml$se_effect[order(results_lmm[[levels[i]]]$results_w_lme4_reml$se_effect)][where[,i]])
-# for(i in 1:number_of_quantiles){
-#   lines(y = coords[i,], x = quants[i,], lwd = 1, col = "black")
-# }
-# text(y = coords[,1], x = quants[,1], c("70%","80%","90%","95%"), offset = 0.5, pos =3, cex = 1)
-# legend("bottomright", legend = paste0(levels+1, " mountain ranges"), pch = 19, col = colors, bty = "n")
-# 
-# 
-# 
-# 
-# ## GLMM
-# plot(NULL, NULL, xlim = c(0, 0.6), ylim = c(0, 0.5), 
-#      main = "",  cex.axis = 1.0,
-#      cex.main = 1.0, xlab = "", ylab = "",  las =1)
-# title(ylab = "Standard error of fixed effect", line = 4.2, cex.lab = 1, xpd = NA)
-# title(xlab = "Standard deviation of random effect", line = 3.2, cex.lab = 1, xpd = NA)
-# text(x = -0.18, y = 0.5375, labels = "B", font = 2, cex = 1.2, xpd = NA)
-# for(i in 1:number_of_levels) {
-#   points(x = results_glmm[[levels[i]]]$results_w_lme4_ml$stddev_randeff_inter, 
-#          y = results_glmm[[levels[i]]]$results_w_lme4_ml$se_intercept , col = colors[i], cex=0.2, pch = 19)
-# }
-# quants = sapply(1:number_of_levels, function(i) quantile(results_glmm[[levels[i]]]$results_w_lme4_ml$stddev_randeff_inter, probs = c(0.7, 0.8,0.9,0.95)))
-# where = matrix(NA, number_of_quantiles, number_of_levels)
-# for(i in 1:number_of_levels){
-#   for(j in 1:number_of_quantiles){
-#     p = quants[j,i]
-#     ordered_results = results_glmm[[levels[i]]]$results_w_lme4_ml$stddev_randeff_inter[order(results_glmm[[levels[i]]]$results_w_lme4_ml$stddev_randeff_inter)]
-#     where[j,i] = which(ordered_results >= p)[1] 
-#   }
-# }
-# coords = sapply(1:number_of_levels, function(i) results_glmm[[levels[i]]]$results_w_lme4_ml$se_intercept[order(results_glmm[[levels[i]]]$results_w_lme4_ml$se_intercept)][where[,i]])
-# for(i in 1:number_of_quantiles){
-#   lines(y = coords[i,], x = quants[i,], lwd = 1, col = "black")
-# }
-# text(y = coords[,1], x = quants[,1], c("70%","80%","90%","95%"), offset = 0.5, pos =3, cex = 1)
-# 
-# legend("bottomright", legend = paste0(levels+1, " mountain ranges"), pch = 19, col = colors, bty = "n")
-# 
-# 
-# plot(NULL, NULL, xlim = c(0, 0.9), ylim = c(0, 0.6), 
-#      main = "",  cex.axis = 1.0,
-#      cex.main = 1.0, xlab = "", ylab = "",  las =1)
-# title(xlab = "Standard deviation of random effect", line = 3.2, cex.lab = 1, xpd=NA)
-# for(i in 1:number_of_levels) {
-#   points(x = results_glmm[[levels[i]]]$results_w_lme4_ml$stddev_randeff_x,
-#          y = results_glmm[[levels[i]]]$results_w_lme4_ml$se_effect , col = colors[i], cex=0.1, pch = 19)
-# }
-# quants = sapply(1:number_of_levels, function(i) quantile(results_glmm[[levels[i]]]$results_w_lme4_ml$stddev_randeff_x, probs = c(0.7, 0.8,0.9,0.95)))
-# where = matrix(NA, number_of_quantiles, number_of_levels)
-# for(i in 1:number_of_levels){
-#   for(j in 1:number_of_quantiles){
-#     p = quants[j,i]
-#     ordered_results = results_glmm[[levels[i]]]$results_w_lme4_ml$stddev_randeff_x[order(results_glmm[[levels[i]]]$results_w_lme4_ml$stddev_randeff_x)]
-#     where[j,i] = which(ordered_results >= p)[1] 
-#   }
-# }
-# coords = sapply(1:number_of_levels, function(i) results_glmm[[levels[i]]]$results_w_lme4_ml$se_effect[order(results_glmm[[levels[i]]]$results_w_lme4_ml$se_effect)][where[,i]])
-# for(i in 1:number_of_quantiles){
-#   lines(y = coords[i,], x = quants[i,], lwd = 1, col = "black")
-# }
-# text(y = coords[,1], x = quants[,1], c("70%","80%","90%","95%"), offset = 0.5, pos =3, cex = 1)
-# 
-# legend("bottomright", legend = paste0(levels+1, " mountain ranges"), pch = 19, col = colors, bty = "n")
-# 
-# dev.off()
-# 
-# 
-
-
-
-par(mfrow = c(2,2), mar = c(2, 1, 4, 2))
-plot(NULL, NULL, xlim = c(0.0, 0.5), ylim = c(0., 15.0), axes= FALSE, ylab = "", main = "SD of random intercept", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_inter[results_lmm[[i]]$results_w_lme4_reml$Singularity == 1], adjust = adj), col = ff(i), lwd = 1.4)
-axis(1)
-legend("topright", legend = paste0(c(2, 3, 5, 8), " mountain ranges"), pch = 15, col = cols, bty = "n")
-abline(v=0.1, col="darkgrey", lty = 3)
-text(-0.03, 15, labels = "A", cex = 1.3, font = 2, xpd =NA)
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 15.0), axes= FALSE, ylab = "", main = "SD of random slope", xlab = "")
-
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_x[results_lmm[[i]]$results_w_lme4_reml$Singularity == 1], adjust = 1), col = ff(i), lwd = 1.4)
-axis(1)
-legend("topright", legend = paste0(c(2, 3, 5, 8), " mountain ranges"), pch = 15, col = cols, bty = "n")
-abline(v=0.1, col="darkgrey", lty = 3)
-
-
-
-plot(NULL, NULL, xlim = c(0.0, 0.5), ylim = c(0., 15.0), axes= FALSE, ylab = "", main = "SD of random intercept", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_inter[results_lmm[[i]]$results_w_lme4_reml$Singularity == 0], adjust = adj), col = ff(i), lwd = 1.4)
-axis(1)
-legend("topright", legend = paste0(c(2, 3, 5, 8), " mountain ranges"), pch = 15, col = cols, bty = "n")
-abline(v=0.1, col="darkgrey", lty = 3)
-text(-0.03, 15, labels = "A", cex = 1.3, font = 2, xpd =NA)
-plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 15.0), axes= FALSE, ylab = "", main = "SD of random slope", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_x[results_lmm[[i]]$results_w_lme4_reml$Singularity == 0], adjust = adj), col = ff(i), lwd = 1.4)
-axis(1)
-legend("topright", legend = paste0(c(2, 3, 5, 8), " mountain ranges"), pch = 15, col = cols, bty = "n")
-abline(v=0.1, col="darkgrey", lty = 3)
-
-
-
-
-
-
-
-
-
-
-
-
-
 ########## __Figure 5 LM ########## 
-
-
-
-test = readRDS("Results/C_results_mountain.RDS")
-test
-sub = test#[test$moutain < 10, ]
-sub$sd = scale(sub$sd)
-sub$nobs = scale(sub$nobs)
-sub$moutain = scale((sub$moutain))
-
+test = readRDS("Results/C_results_mountain_unbalanced.RDS")
 
 addCI = function(x, se, m) {
   bb = 0.005
@@ -2332,7 +1794,8 @@ plotEffects = function(eff, se, cols = c("grey", "red"), labels = rep("",20), XX
 labels = c("Height ~ T + (1|mountain) + (0 + T|mountain)",
            "Height ~ 0 + mountain + T * mountain")
 
-labels_y = (c( "mountain:nobs", "sd:nobs",      "sd:mountain" ,  "nobs"   ,      "mountain" ,     "sd" , "Average value"   ))
+labels_y = (c( "mountain:nobs", "sd:nobs",      "sd:mountain" , "imbalanced", "nobs"   ,      "mountain" ,     "sd" , "Average value"   ))
+labels_y = c("nobs:imbalanced","mountain:imbalanced","mountain:nobs","sd:imbalanced","sd:nobs","sd:mountain","imbalanced","nobs" ,"mountain" ,"sd","Average value"  )
 
 pdf(file="Figures//Figure_6.pdf", width = 9.4,  height = 8)
 cols2 = RColorBrewer::brewer.pal(5, "Set1")
@@ -2343,14 +1806,14 @@ sub = test[test$moutain <= 10 & test$moutain > 1 , ]
 sub$sd = scale(sub$sd)
 sub$nobs = scale(sub$nobs)
 sub$moutain = scale((sub$moutain)) 
-powerLM = (lm(PowerLM ~ .^2 , data = sub[,c(1:3, 7)]))
-powerLMM = (lm(PowerLMM ~ .^2 , data = sub[,c(1:3, 6)] ))
-TypeLM = (lm(((TypeOneLM -0.05)) ~ .^2 , data = sub[,c(1:3, 5)] ))
-TypeLMM = (lm(((TypeOneLMM -0.05)) ~ .^2, data = sub[,c(1:3, 4)] ))
+sub$balanced = scale((sub$balanced)) 
+form = function(resp) paste0(resp, "~ sd + moutain + nobs + balanced + sd:moutain + sd:nobs + moutain:nobs")
+form = function(resp) paste0(resp, "~ .^2")
+powerLM = (lm( form("PowerLM") , data = sub[,c(1:4, 8)]))
+powerLMM = (lm(form("PowerLMM") , data = sub[,c(1:4, 7)] ))
+TypeLM = (lm(form("TypeOneLM - 0.05"), data = sub[,c(1:4, 6)] ))
+TypeLMM = (lm(form("TypeOneLMM - 0.05"), data = sub[,c(1:4, 5)] ))
 
-
-
-#plot(simulateResiduals(powerLMM))
 
 cex_legend = 0.7
 
@@ -2358,7 +1821,6 @@ plot(NULL, NULL, ylim = c(0, 1), xlim = c(-0.015, 0.015), yaxt="n",xaxt="n", las
 coefsType = cbind(coef(TypeLMM), coef(TypeLM))
 seType = cbind(coef(summary(TypeLMM))[,2], coef(summary(TypeLM))[,2] )
 plotEffects(coefsType, seType, cols = cols, XX = -0.016, labels =labels_y)
-#legend("bottomleft", col = cols, pch = 16,legend = labels, bty = "n", cex = cex_legend)
 axis(3)
 text(-0.015*0.95, y = 1.0, pos = 2, xpd = NA, cex = 1.1, labels = "A", font = 2 )
 text(0.0, y = 1.2, pos = 3, labels = "Effect on type I error rate - 5%", xpd = NA)
@@ -2367,7 +1829,6 @@ plot(NULL, NULL, ylim = c(0, 1), xlim = c(-0.5, 0.5), yaxt="n",xaxt="n", las = 1
 coefsType = cbind(coef(powerLMM), coef(powerLM))
 seType = cbind(coef(summary(powerLMM))[,2], coef(summary(powerLM))[,2] )
 plotEffects(coefsType, seType, cols = cols)
-#legend(x=0.0, y = 1.2, xpd= NA, col = cols, pch = 16,legend = labels, bty = "n", cex = cex_legend)
 axis(3)
 text(-0.5*0.95, y = 1.0, pos = 2, xpd = NA, cex = 1.1, labels = "B", font = 2 )
 text(0.0, y = 1.2, pos = 3, labels = "Effect on power", xpd = NA)
@@ -2376,27 +1837,21 @@ text(0.0, y = 1.2, pos = 3, labels = "Effect on power", xpd = NA)
 sub = test[test$moutain > 10, ]
 sub$sd = scale(sub$sd)
 sub$nobs = scale(sub$nobs)
-sub$moutain = scale((sub$moutain))
-powerLM = (lm(PowerLM ~ .^2 , data = sub[,c(1:3, 7)] ))
-powerLMM = (lm((PowerLMM) ~ .^2 , data = sub[,c(1:3, 6)] ))
-
-#logit= function(x) log(x/(1.000001-x) + 0.001)
-TypeLM = (lm(((TypeOneLM -0.05)) ~ .^2, data = sub[,c(1:3, 5)] ))
-TypeLMM = (lm(((TypeOneLMM -0.05)) ~ .^2, data = sub[,c(1:3, 4)] ))
-#plot(simulateResiduals(TypeLM))
-#plot(simulateResiduals(TypeLMM))
-# summary(TypeLMM)
-# summary(TypeLM)
-# library(effects)
-# plot(allEffects(TypeLMM))
+sub$moutain = scale((sub$moutain)) 
+sub$balanced = scale((sub$balanced)) 
+form = function(resp) paste0(resp, "~ sd + moutain + nobs + balanced + sd:moutain + sd:nobs + moutain:nobs")
+form = function(resp) paste0(resp, "~ .^2")
+powerLM = (lm( form("PowerLM") , data = sub[,c(1:4, 8)]))
+powerLMM = (lm(form("PowerLMM") , data = sub[,c(1:4, 7)] ))
+TypeLM = (lm(form("TypeOneLM - 0.05"), data = sub[,c(1:4, 6)] ))
+TypeLMM = (lm(form("TypeOneLMM - 0.05"), data = sub[,c(1:4, 5)] ))
 
 plot(NULL, NULL, ylim = c(0, 1), xlim = c(-0.015, 0.015), yaxt="n", las = 1)
 coefsType = cbind(coef(TypeLMM), coef(TypeLM))
 seType = cbind(coef(summary(TypeLMM))[,2], coef(summary(TypeLM))[,2] )
 plotEffects(coefsType, seType, cols = cols,XX = -0.016, labels =labels_y)
-#legend("topright", col = cols, pch = 16,legend = labels, bty = "n")
 text(-0.015*0.95, y = 1.0, pos = 2, xpd = NA, cex = 1.1, labels = "C", font = 2 )
-text(0.0, y = -0.2, pos = 1, labels = "Effect on type I error rate - 5%", xpd = NA)
+text(0.0, y = -0.2, pos = 1, labels = "Effect on type I error rate - 5 %", xpd = NA)
 
 plot(NULL, NULL, ylim = c(0, 1), xlim = c(-0.5, 0.5), yaxt="n", las = 1)
 coefsType = cbind(coef(powerLMM), coef(powerLM))
@@ -2415,9 +1870,8 @@ dev.off()
 ########## Singular fit proportions  ##########
 ########## _________________________________  ##########
 
-results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_.Rds")
-results_glmm = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_.Rds")
-save
+results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_unbalanced.Rds")
+results_glmm = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_unbalanced.Rds")
 cbind(
 sapply(results_lmm, function(l )mean(l$results_w_lme4_reml$Singularity, na.rm=TRUE)),
 sapply(results_lmm, function(l )mean(l$results_w_lme4_ml$Singularity, na.rm=TRUE)),

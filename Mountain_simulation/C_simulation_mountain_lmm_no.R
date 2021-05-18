@@ -76,12 +76,13 @@ grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE)
 sds = runif(300, 0.01, 2.0)
 mountains = sample.int(19, 300, replace = TRUE)+1
 nobs = sample.int(491, 300, replace = TRUE)+9
+balanced = runif(300, 0, 0.9)
 
 
-parameter = data.frame(sd = sds, moutain = mountains, nobs = nobs)
+parameter = data.frame(sd = sds, moutain = mountains, nobs = nobs, balanced = balanced)
 
 
-cl = snow::makeCluster(50L)
+cl = snow::makeCluster(10L)
 snow::clusterEvalQ(cl, {library(lme4); library(lmerTest)})
 snow::clusterExport(cl, list("extract_results","extract_results_t", "grand_mean", "parameter"), envir = environment())
 
@@ -93,6 +94,7 @@ result_list =
     sd_re = parameter[p,]$sd
     n_each <- parameter[p,]$nobs
     n_groups = number_groups = parameter[p,]$moutain
+    balanced = parameter[p,]$balanced
     
     # set up matrices to store the results of the different runs 
     
@@ -138,7 +140,12 @@ result_list =
       
       # random effect sizes are sampled around the fixed effects with no correlation between the 
       # random intercept and random slope
-      g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
+      range = (1 - balanced)/2
+      continue = TRUE
+      while(continue) {
+        g <- sample.int(n_groups, n_each*n_groups, replace = TRUE, prob = runif(n_groups, range, 1-range))
+        if(min(table(g)) > 2) continue = FALSE
+      } # Grouping variable (mountain range)
       group <-  as.factor(g)
       randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)  # random intercept
       randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)      # random slope
@@ -259,5 +266,4 @@ result_list =
 })
 
 results = do.call(rbind, result_list)
-saveRDS(results, "C_results_mountain.RDS")
-saveRDS(results, "Results/C_results_mountain.RDS")
+saveRDS(results, "Results/C_results_mountain_unbalanced.RDS")

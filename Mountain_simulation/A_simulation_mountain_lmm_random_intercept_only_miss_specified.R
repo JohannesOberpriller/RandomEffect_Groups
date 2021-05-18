@@ -49,7 +49,7 @@ snow::clusterExport(cl, list("extract_results","extract_results_t"), envir = env
 # first we vary the standard deviation of the random effect 
 
 for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
-  snow::clusterExport(cl, list("sd_re"))
+  snow::clusterExport(cl, list("sd_re"), envir = environment())
   # export the standard deviation of the random effect to the cluster  
   # as a run parameter for the simulations 
   system.time({
@@ -91,20 +91,20 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
         colnames(results_wo_lm_wo_grouping) = colnames(results_w_lm)
         colnames(results_w_lm_wo_grouping) = colnames(results_w_lm)
         
-        ################  The data generating process ################  
-        # Number of overall observations is equal to 25 observations for each mountain range  
-        n = (number_groups)*n_each
-        
-        ### Raw environmental predictors (Intercept and Temperature) ###
-        # the temperature is drawn from a uniform distribution as we want to simulate 
-        # an altidudinal gradient and the intercept is kept constant at 1 
-        x <- runif(n, -1, 1) # Temperature
-        X <- matrix(c(rep(1, n), x), nrow = n) # Intercept, Temperature
-        
-        sd_randeff = sd_re # sd for random effects
-        
         
         for(experiment in 1:number_experiments){
+          
+          ################  The data generating process ################  
+          # Number of overall observations is equal to 25 observations for each mountain range  
+          n = (number_groups)*n_each
+          
+          ### Raw environmental predictors (Intercept and Temperature) ###
+          # the temperature is drawn from a uniform distribution as we want to simulate 
+          # an altidudinal gradient and the intercept is kept constant at 1 
+          x <- runif(n, -1, 1) # Temperature
+          X <- matrix(c(rep(1, n), x), nrow = n) # Intercept, Temperature
+          
+          sd_randeff = sd_re # sd for random effects
           
           ################ Simulation of LMM with Temperature effect  ################ 
           # fixed effects
@@ -112,7 +112,11 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           beta0 = 10.0  # Intercept
           
           # random effects are sampled around the fixed effects
-          g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
+          continue = TRUE
+          while(continue) {
+            g <- sample.int(n_groups, n_each*n_groups, replace = TRUE, prob = runif(n_groups, 0.1, 0.9))
+            if(min(table(g)) > 2) continue = FALSE
+          }
           group <-  as.factor(g)
           randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)  # random intercept
           
