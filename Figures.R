@@ -957,7 +957,7 @@ files_with_cov = c("Results/results_mountain_glmm_0.1_25_unbalanced.Rds",
                    "Results/results_mountain_glmm_0.1_50_unbalanced.Rds",
                    "Results/results_mountain_glmm_0.1_100_unbalanced.Rds",
                    "Results/results_mountain_glmm_0.1_200_unbalanced.Rds",
-                   "Results/results_mountain_glmm_0.1_500_.Rds")
+                   "Results/results_mountain_glmm_0.1_500_unbalanced.Rds")
 
 
 pdf("Figures/Fig_S12.pdf", width = 8.2, height = 8.8)
@@ -1569,6 +1569,9 @@ dev.off()
 ########## __Figure S6 Variance estimates lmm MLE imbalanced vs MLE balanced ########## 
 cols = viridis::viridis(5)
 
+results_lmm_im = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_unbalanced.Rds")
+results_lmm = readRDS("Results/results_mountain_lmm_no_cov_0.1_50_.Rds")
+
 adj = 1.0
 pdf(file = "Figures/Fig_S6.pdf", width = 7, height = 5)
 
@@ -1576,7 +1579,7 @@ par(mfrow = c(2,2), mar = c(2, 1+0.3, 4, 2))
 
 # lme4
 plot(NULL, NULL, xlim = c(0.0, 0.5), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm_im[[i]]$results_w_lme4_ml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4)
 for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_ml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4, lty = 2)
 axis(1)
 abline(v=0.1, col="darkgrey", lty = 3)
@@ -1584,18 +1587,18 @@ text(-0.04, 32, labels = "A", cex = 1.3, font = 2, xpd =NA)
 
 
 plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stddev_randeff_x, adjust = adj), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm_im[[i]]$results_w_lme4_ml$stddev_randeff_x, adjust = adj), col = ff(i), lwd = 1.4)
 for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_ml$stddev_randeff_x, adjust = adj), col = ff(i), lwd = 1.4, lty = 2)
 text(-0.04, 32, labels = "B", cex = 1.3, font = 2, xpd =NA)
 axis(1)
 legend("topright", legend = paste0(c(2, 3, 5, 8), " mountains"), pch = 15, col = cols, bty = "n")
-legend("bottomright", legend = c("REML", "MLE"), lty = c(1, 2), bty = "n", lwd = 1.0)
+legend("bottomright", legend = c("imbalanced", "balanced"), lty = c(1, 2), bty = "n", lwd = 1.0)
 abline(v=0.1, col="darkgrey", lty = 3)
 
 
 # glmmTMB
 plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_reml$stddev_randeff_inter, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm_im[[i]]$results_w_glmmTMB_ml$stddev_randeff_inter, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4)
 for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_ml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4, lty = 2)
 axis(1)
 abline(v=0.1, col="darkgrey", lty = 3)
@@ -1603,7 +1606,7 @@ text(-0.05, 32, labels = "C", cex = 1.3, font = 2, xpd =NA)
 
 
 plot(NULL, NULL, xlim = c(0.0, 0.6), ylim = c(0., 32.0), axes= FALSE, ylab = "", main = "", xlab = "")
-for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_reml$stddev_randeff_inter, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4)
+for(i in c(1, 2, 4, 7)) lines(density(results_lmm_im[[i]]$results_w_glmmTMB_ml$stddev_randeff_inter, adjust = adj, na.rm = TRUE), col = ff(i), lwd = 1.4)
 for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_glmmTMB_ml$stddev_randeff_inter, adjust = adj), col = ff(i), lwd = 1.4, lty = 2)
 text(-0.05, 32, labels = "D", cex = 1.3, font = 2, xpd =NA)
 axis(1)
@@ -1797,7 +1800,7 @@ labels = c("Height ~ T + (1|mountain) + (0 + T|mountain)",
 labels_y = (c( "mountain:nobs", "sd:nobs",      "sd:mountain" , "imbalanced", "nobs"   ,      "mountain" ,     "sd" , "Average value"   ))
 labels_y = c("nobs:imbalanced","mountain:imbalanced","mountain:nobs","sd:imbalanced","sd:nobs","sd:mountain","imbalanced","nobs" ,"mountain" ,"sd","Average value"  )
 
-pdf(file="Figures//Figure_6.pdf", width = 9.4,  height = 8)
+pdf(file="Figures/Fig_5.pdf", width = 9.4,  height = 8)
 cols2 = RColorBrewer::brewer.pal(5, "Set1")
 cols = addA(cols2[1:2], 0.5)
 par(mfrow = c(2,2), mar = c(1,1,0.3,1), oma = c(8, 8, 4, 1))
