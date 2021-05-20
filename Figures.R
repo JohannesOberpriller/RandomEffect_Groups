@@ -1797,8 +1797,8 @@ plotEffects = function(eff, se, cols = c("grey", "red"), labels = rep("",20), XX
 labels = c("Height ~ T + (1|mountain) + (0 + T|mountain)",
            "Height ~ 0 + mountain + T * mountain")
 
-labels_y = (c( "mountain:nobs", "sd:nobs",      "sd:mountain" , "imbalanced", "nobs"   ,      "mountain" ,     "sd" , "Average value"   ))
-labels_y = c("nobs:imbalanced","mountain:imbalanced","mountain:nobs","sd:imbalanced","sd:nobs","sd:mountain","imbalanced","nobs" ,"mountain" ,"sd","Average value"  )
+labels_y = (c( "mountain:nobs", "sd:nobs",      "sd:mountain" , "unbalanced", "nobs"   ,      "mountain" ,     "sd" , "Average value"   ))
+labels_y = c("nobs:unbalanced","mountain:unbalanced","mountain:nobs","sd:unbalanced","sd:nobs","sd:mountain","unbalanced","nobs" ,"mountain" ,"sd","Average value"  )
 
 pdf(file="Figures/Fig_5.pdf", width = 9.4,  height = 8)
 cols2 = RColorBrewer::brewer.pal(5, "Set1")
