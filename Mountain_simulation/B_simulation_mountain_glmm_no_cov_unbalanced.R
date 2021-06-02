@@ -149,12 +149,12 @@ for(n_each in c( 200, 100, 500, 25, 50)) {
               
               continue = TRUE
               while(continue) {
-                g <- sample.int(n_groups, n_each*n_groups, replace = TRUE, prob = runif(n_groups, 0.1, 0.9))
+                g <- sample.int(n_groups, n_each*n_groups, replace = TRUE, prob = runif(n_groups, 0.1/(n_groups/2), 0.9/(n_groups/2)))
                 if(min(table(g)) > 2) continue = FALSE
               }
               group <-  as.factor(g)
               randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff) # random intercept
-              randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)     # random slope
+              randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)  
               
               # calculate linear response, different intercept and slope for each mountain range
               mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],randslope[g[i]])) 
@@ -233,10 +233,14 @@ for(n_each in c( 200, 100, 500, 25, 50)) {
               beta = 0.0   # possible deviations from meean temperature now set to zero
               
               # random effects
-              g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
+              continue = TRUE
+              while(continue) {
+                g <- sample.int(n_groups, n_each*n_groups, replace = TRUE, prob = runif(n_groups, 0.1/(n_groups/2), 0.9/(n_groups/2)))
+                if(min(table(g)) > 2) continue = FALSE
+              }
               group <-  as.factor(g)
-              randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)
-              randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)
+              randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff) # random intercept
+              randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)  
               
               # calculate linear response, different intercept and slope for each mountain range
               mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],randslope[g[i]])) 

@@ -47,7 +47,7 @@ grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE)
   effect = summary(fit)$coefficients[ind, 1]
   
   if(!weighted) weights = rep(1/mountain, mountain)
-  else weights = apply(covariance, 1,sum)/sum(apply(covariance, 1,sum))
+  else weights = (1/apply(covariance, 1,sum))/ (sum(1/apply(covariance,1,sum)))
   effect_sizes = effect
   eff = weighted.mean(effect_sizes, weights)
   var1 = 0
@@ -67,6 +67,7 @@ grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE)
     bound = qt(0.975, df = mountain-1)
     confs = cbind( eff - bound*se, eff + bound*se) 
   }
+  # c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf")
   return(c(eff, p_value, se, as.integer(beta > confs[1,1] & beta < confs[1,2])))
 }
 
@@ -79,10 +80,10 @@ nobs = sample.int(491, 300, replace = TRUE)+9
 balanced = runif(300, 0, 0.9)
 
 
-parameter = data.frame(sd = sds, moutain = mountains, nobs = nobs, balanced = balanced)
+parameter = data.frame(sd = sds, moutain = mountains, nobs = nobs, balanced = balanced, min = NA, max = NA)
 
 
-cl = snow::makeCluster(10L)
+cl = snow::makeCluster(30L)
 snow::clusterEvalQ(cl, {library(lme4); library(lmerTest)})
 snow::clusterExport(cl, list("extract_results","extract_results_t", "grand_mean", "parameter"), envir = environment())
 
@@ -95,6 +96,19 @@ result_list =
     n_each <- parameter[p,]$nobs
     n_groups = number_groups = parameter[p,]$moutain
     balanced = parameter[p,]$balanced
+    
+    
+    range = (1 - balanced)/2
+    continue = TRUE
+    while(continue) {
+      prob = runif(n_groups, range, 1-range)
+      g <- sample.int(n_groups, n_each*n_groups, replace = TRUE, prob = prob)
+      if(min(table(g)) > 2) continue = FALSE
+    } # Grouping variable (mountain range)
+    group = as.factor(g)
+    min_max = c(min(table(g)), max(table(g)))
+    parameter[p,]$min = min_max[1]
+    parameter[p,]$max = min_max[2]
     
     # set up matrices to store the results of the different runs 
     
@@ -140,13 +154,6 @@ result_list =
       
       # random effect sizes are sampled around the fixed effects with no correlation between the 
       # random intercept and random slope
-      range = (1 - balanced)/2
-      continue = TRUE
-      while(continue) {
-        g <- sample.int(n_groups, n_each*n_groups, replace = TRUE, prob = runif(n_groups, range, 1-range))
-        if(min(table(g)) > 2) continue = FALSE
-      } # Grouping variable (mountain range)
-      group <-  as.factor(g)
       randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)  # random intercept
       randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)      # random slope
       
@@ -198,8 +205,6 @@ result_list =
         beta = 0.0    # Temperature, now set to zero
         
         # random intercept
-        g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
-        group <-  as.factor(g)
         randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)  # random intercept
         randslope <- rnorm(n_groups, mean = beta, sd = sd_randeff)      # random slope
         
@@ -240,7 +245,6 @@ result_list =
             nonSing2 = nonSing2 + 1
           }
         }
-  
     }
     results_wo_lme4_reml = data.frame(results_wo_lme4_reml)
     results_w_lme4_reml = data.frame(results_w_lme4_reml)

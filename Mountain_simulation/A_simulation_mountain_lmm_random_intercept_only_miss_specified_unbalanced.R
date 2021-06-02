@@ -111,9 +111,10 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           beta0 = 10.0  # Intercept
           
           # random effects are sampled around the fixed effects
+          g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
           continue = TRUE
           while(continue) {
-            g <- sample.int(n_groups, n_each*n_groups, replace = TRUE, prob = runif(n_groups, 0.1, 0.9))
+            g <- sample.int(n_groups, n_each*n_groups, replace = TRUE, prob = runif(n_groups, 0.1/(n_groups/2), 0.9/(n_groups/2)))
             if(min(table(g)) > 2) continue = FALSE
           }
           group <-  as.factor(g)
@@ -201,8 +202,13 @@ for(sd_re in c(0.01, 0.1, 0.5, 2.0)) {
           
           # random effects
           g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
+          continue = TRUE
+          while(continue) {
+            g <- sample.int(n_groups, n_each*n_groups, replace = TRUE, prob = runif(n_groups, 0.1/(n_groups/2), 0.9/(n_groups/2)))
+            if(min(table(g)) > 2) continue = FALSE
+          }
           group <-  as.factor(g)
-          randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff)  # random intercept
+          randintercep <- rnorm(n_groups, mean = beta0, sd = sd_randeff) # random intercept
           
           # calculate linear response, different intercept and slope for each mountain range
           mu <- sapply(1:n, FUN = function(i) X[i,] %*% c(randintercep[g[i]],beta)) 

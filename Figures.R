@@ -261,7 +261,7 @@ for(i in 1:4){
           ylab = "Rate", xaxt="n", main = "", xlab = xlab, xpd = NA)
   text(x=-0.2, pos = 2, y = 0.55, labels = labels[i], cex = 1.2, xpd = NA, font = 2)
   if(i == 1) text(x= 4, pos = 3, y = 0.52, xpd = NA, labels = "Type I error")
-  legend("topright", legend = c("Growth ~ T + (1|mountain)", "Growth ~ T + (1|mountain) + (0 + T|mountain)", "Growth ~ T + mountain", "Growth ~ T "), 
+  legend("topright", legend = c("Height ~ T + (1|mountain)", "Height ~ T + (1|mountain) + (0 + T|mountain)", "Height ~ T + mountain", "Height ~ T "), 
          col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
   abline(h = 0.05, lty = 3, col = "darkgrey")
   sd = 
@@ -290,7 +290,7 @@ for(i in 1:4){
           ylab = "", xaxt="n", main = "", xlab = xlab, xpd=NA)
   if(i == 1) text(x= 4, pos = 3, y = 1.04, xpd = NA, labels = "Power")
   
-  legend("bottomright", legend = c("Growth ~ T + (1|mountain)", "Growth ~ T + (1|mountain) + (0 + T|mountain)", "Growth ~ T + mountain", "Growth ~ T "), 
+  legend("bottomright", legend = c("Height ~ T + (1|mountain)", "Height ~ T + (1|mountain) + (0 + T|mountain)", "Height ~ T + mountain", "Height ~ T "), 
          col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
   sd = 
     cbind(
@@ -318,7 +318,7 @@ for(i in 1:4){
           ylab = "", xaxt="n", main = "", xlab = xlab, xpd=NA)
   if(i == 1) text(x= 4, pos = 3, y = 1.02, xpd = NA, labels = "Coverage")
   
-  legend("bottomright", legend = c("Growth ~ T + (1|mountain)", "Growth ~ T + (1|mountain) + (0 + T|mountain)", "Growth ~ T + mountain", "Growth ~ T "), 
+  legend("bottomright", legend = c("Height ~ T + (1|mountain)", "Height ~ T + (1|mountain) + (0 + T|mountain)", "Height ~ T + mountain", "Height ~ T "), 
          col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
   abline(h = 0.95, lty = 3, col = "darkgrey")
   
@@ -700,7 +700,7 @@ lty = c(1, 1,1, 2, 2)
 pch = c(15, 20, 16:18)
 ## Type I error ##
 pdf(file = "Figures/Fig_S9.pdf", width = 9.2, height = 8.8)
-
+si = c(0)
 sds = c(0.01, 0.1, 0.5, 2)
 par(mfrow = c(4,3), mar = c(0.1, 2.4, 1, 1), oma = c(5, 3, 3, 1)-1)
 labels = c("A", "B", "C", "D")
@@ -1541,7 +1541,7 @@ for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_reml$stdde
 text(-0.04, 32, labels = "B", cex = 1.3, font = 2, xpd =NA)
 axis(1)
 legend("topright", legend = paste0(c(2, 3, 5, 8), " mountains"), pch = 15, col = cols, bty = "n")
-legend("bottomright", legend = c("imbalanced", "balanced"), lty = c(1, 2), bty = "n", lwd = 1.0)
+legend("bottomright", legend = c("unbalanced", "balanced"), lty = c(1, 2), bty = "n", lwd = 1.0)
 abline(v=0.1, col="darkgrey", lty = 3)
 
 
@@ -1592,7 +1592,7 @@ for(i in c(1, 2, 4, 7)) lines(density(results_lmm[[i]]$results_w_lme4_ml$stddev_
 text(-0.04, 32, labels = "B", cex = 1.3, font = 2, xpd =NA)
 axis(1)
 legend("topright", legend = paste0(c(2, 3, 5, 8), " mountains"), pch = 15, col = cols, bty = "n")
-legend("bottomright", legend = c("imbalanced", "balanced"), lty = c(1, 2), bty = "n", lwd = 1.0)
+legend("bottomright", legend = c("unbalanced", "balanced"), lty = c(1, 2), bty = "n", lwd = 1.0)
 abline(v=0.1, col="darkgrey", lty = 3)
 
 
