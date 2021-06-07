@@ -81,16 +81,16 @@ grand_mean_metafor = function(fit, mountain, beta) {
 # set up the cluster and export variables as well as functions to the cluster 
 
 
-sds = runif(120, 0.01, 2.0)
-mountains = sample.int(19, 120, replace = TRUE)+1
-nobs = sample.int(491, 120, replace = TRUE)+9
-balanced = runif(120, 0, 0.9)
+sds = runif(300, 0.01, 2.0)
+mountains = sample.int(19, 300, replace = TRUE)+1
+nobs = sample.int(491, 300, replace = TRUE)+9
+balanced = runif(300, 0, 0.9)
 
 
 parameter = data.frame(sd = sds, moutain = mountains, nobs = nobs, balanced = balanced, min = NA, max = NA)
 
 
-cl = snow::makeCluster(40L)
+cl = snow::makeCluster(30L)
 snow::clusterEvalQ(cl, {library(lme4); library(lmerTest)})
 snow::clusterExport(cl, list("extract_results","extract_results_t", "grand_mean", "parameter", "grand_mean_metafor"), envir = environment())
 
@@ -118,7 +118,7 @@ result_list =
     parameter[p,]$max = min_max[2]
     
     # set up matrices to store the results of the different runs 
-    n_tries = 20
+    n_tries = 1000
     results_w_lme4_reml = results_wo_lme4_reml = matrix(nrow = n_tries, ncol = 11)
     colnames(results_w_lme4_reml) = c("estimate_intercept","estimate_effect", 
                                     "p_value_intercept", "p_value_effect",
@@ -228,7 +228,7 @@ result_list =
         ################ Fitting: lme4, glmmTMB, and LM ################ 
         
         # lme4 - REML
-        if(nonSing2 < 1001) {
+        if(nonSing2 < (n_tries+1)) {
           try({
             fit_lmm <- lmer(y ~ x  + (1|group) + (0+x | group), REML = TRUE) 
             summ = summary(fit_lmm)
