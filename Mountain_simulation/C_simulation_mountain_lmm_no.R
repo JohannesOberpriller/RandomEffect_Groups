@@ -73,7 +73,7 @@ grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE)
 
 
 grand_mean_metafor = function(fit, mountain, beta) {
-  ind = (n_groups+1):(2*n_groups)
+  ind = (mountain+1):(2*mountain)
   meta = metafor::rma.mv(coef(fit)[ind], V = vcov(fit)[ind, ind], test = "t")
   return(c(meta$beta, meta$pval, meta$se, as.integer(beta > meta$ci.lb & beta < meta$ci.ub)))
 }
@@ -81,16 +81,16 @@ grand_mean_metafor = function(fit, mountain, beta) {
 # set up the cluster and export variables as well as functions to the cluster 
 
 
-sds = runif(100, 0.01, 2.0)
-mountains = sample.int(19, 100, replace = TRUE)+1
-nobs = sample.int(491, 100, replace = TRUE)+9
-balanced = runif(100, 0, 0.9)
+sds = runif(120, 0.01, 2.0)
+mountains = sample.int(19, 120, replace = TRUE)+1
+nobs = sample.int(491, 120, replace = TRUE)+9
+balanced = runif(120, 0, 0.9)
 
 
 parameter = data.frame(sd = sds, moutain = mountains, nobs = nobs, balanced = balanced, min = NA, max = NA)
 
 
-cl = snow::makeCluster(50L)
+cl = snow::makeCluster(40L)
 snow::clusterEvalQ(cl, {library(lme4); library(lmerTest)})
 snow::clusterExport(cl, list("extract_results","extract_results_t", "grand_mean", "parameter", "grand_mean_metafor"), envir = environment())
 
@@ -118,7 +118,7 @@ result_list =
     parameter[p,]$max = min_max[2]
     
     # set up matrices to store the results of the different runs 
-    n_tries = 500
+    n_tries = 20
     results_w_lme4_reml = results_wo_lme4_reml = matrix(nrow = n_tries, ncol = 11)
     colnames(results_w_lme4_reml) = c("estimate_intercept","estimate_effect", 
                                     "p_value_intercept", "p_value_effect",
@@ -128,10 +128,11 @@ result_list =
     colnames(results_wo_lme4_reml) = colnames(results_w_lme4_reml)
     
     
-    results_w_lm = results_wo_lm = matrix(nrow = n_tries, ncol = 4)
+    results_w_lm = results_wo_lm = results_w_lm_GM = results_wo_lm_GM = matrix(nrow = n_tries, ncol = 4)
     colnames(results_w_lm) = c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf")
     colnames(results_wo_lm) = colnames(results_w_lm)
-    
+    colnames(results_wo_lm_GM) = colnames(results_w_lm)
+    colnames(results_w_lm_GM) = colnames(results_w_lm)
     
     nonSing1 = 1
     nonSing2 = 1
@@ -198,6 +199,7 @@ result_list =
           try({
             fit_lm = lm(y ~ 0+x*group-x)
             results_w_lm[nonSing1, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta)
+            results_w_lm_GM[nonSing1, ] = grand_mean(fit_lm, n_groups, beta = beta)
           }, silent = TRUE)
           
           nonSing1 = nonSing1+1
@@ -247,7 +249,8 @@ result_list =
             try({
               fit_lm = lm(y ~ 0+x*group-x)
               results_wo_lm[nonSing2, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta)
-            }, silent = TRUE)
+              results_wo_lm_GM[nonSing2, ] = grand_mean(fit_lm, n_groups, beta = beta)
+            }, silent = FALSE)
             
             nonSing2 = nonSing2 + 1
           }
@@ -257,23 +260,31 @@ result_list =
     results_w_lme4_reml = data.frame(results_w_lme4_reml)
     results_wo_lm = data.frame(results_wo_lm)
     results_w_lm = data.frame(results_w_lm)
+    results_wo_lm_GM = data.frame(results_wo_lm_GM)
+    results_w_lm_GM = data.frame(results_w_lm_GM)
     
     TypeOneLMM = mean(results_wo_lme4_reml$p_value_effect < 0.05, na.rm=TRUE)
     TypeOneLM = mean(results_wo_lm$p_value_effect < 0.05, na.rm=TRUE)
+    TypeOneLM_GM = mean(results_wo_lm_GM$p_value_effect < 0.05, na.rm=TRUE)
     
     PowerLMM = 1-mean(results_w_lme4_reml$p_value_effect > 0.05, na.rm=TRUE)
     PowerLM = 1-mean(results_w_lm$p_value_effect > 0.05, na.rm=TRUE)
+    PowerLM_GM = 1-mean(results_w_lm_GM$p_value_effect > 0.05, na.rm=TRUE)
     
     CoverLMM = mean(results_w_lme4_reml$Slope_in_conf , na.rm=TRUE)
     CoverLM = mean(results_w_lm$Slope_in_conf, na.rm=TRUE)
+    CoverLM_GM = mean(results_w_lm_GM$Slope_in_conf, na.rm=TRUE)
     
     return(cbind(parameter[p,], data.frame(TypeOneLMM = TypeOneLMM, 
                                            TypeOneLM = TypeOneLM, 
+                                           TypeOneLM_GM = TypeOneLM_GM,
                                            PowerLMM = PowerLMM, 
                                            PowerLM = PowerLM, 
-                                           CoverLMM = CoverLMM, CoverLM = CoverLM)))
-    
-    
+                                           PowerLM_GM = PowerLM_GM,
+                                           CoverLMM = CoverLMM, 
+                                           CoverLM = CoverLM,
+                                           CoverLM_GM = CoverLM_GM
+                                           )))
 })
 
 results = do.call(rbind, result_list)
