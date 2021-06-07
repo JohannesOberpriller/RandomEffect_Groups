@@ -1763,6 +1763,7 @@ dev.off()
 
 ########## __Figure 5 LM ########## 
 test = readRDS("Results/C_results_mountain_unbalanced.RDS")
+test$balanced2 = (test$max - test$min)/test$max
 
 addCI = function(x, se, m) {
   bb = 0.005
@@ -1797,30 +1798,34 @@ plotEffects = function(eff, se, cols = c("grey", "red"), labels = rep("",20), XX
 labels = c("Height ~ T + (1|mountain) + (0 + T|mountain)",
            "Height ~ 0 + mountain + T * mountain")
 
-labels_y = (c( "mountain:nobs", "sd:nobs",      "sd:mountain" , "unbalanced", "nobs"   ,      "mountain" ,     "sd" , "Average value"   ))
-labels_y = c("nobs:unbalanced","mountain:unbalanced","mountain:nobs","sd:unbalanced","sd:nobs","sd:mountain","unbalanced","nobs" ,"mountain" ,"sd","Average value"  )
+labels_y = (c("balanced2:nobs","balanced2:mountain", "balanced:sd","mountain:nobs", "sd:nobs",      "sd:mountain" , "unbalanced", "nobs"   ,      "mountain" ,     "sd" , "Average value"   ))
+#labels_y = c("nobs:unbalanced","mountain:unbalanced","mountain:nobs","sd:unbalanced","sd:nobs","sd:mountain","unbalanced","nobs" ,"mountain" ,"sd","Average value"  )
 
 pdf(file="Figures/Fig_5.pdf", width = 9.4,  height = 8)
+
+
+pp = 3
 cols2 = RColorBrewer::brewer.pal(5, "Set1")
 cols = addA(cols2[1:2], 0.5)
 par(mfrow = c(2,2), mar = c(1,1,0.3,1), oma = c(8, 8, 4, 1))
 ## All mountain < 10 
-sub = test[test$moutain <= 10 & test$moutain > 1 , ]
+sub = test[test$moutain <= 10 & test$moutain > 1 & test$min > pp , ]
 sub$sd = scale(sub$sd)
 sub$nobs = scale(sub$nobs)
 sub$moutain = scale((sub$moutain)) 
-sub$balanced = scale((sub$balanced)) 
-form = function(resp) paste0(resp, "~ sd + moutain + nobs + balanced + sd:moutain + sd:nobs + moutain:nobs")
-form = function(resp) paste0(resp, "~ .^2")
-powerLM = (lm( form("PowerLM") , data = sub[,c(1:4, 8)]))
-powerLMM = (lm(form("PowerLMM") , data = sub[,c(1:4, 7)] ))
-TypeLM = (lm(form("TypeOneLM - 0.05"), data = sub[,c(1:4, 6)] ))
-TypeLMM = (lm(form("TypeOneLMM - 0.05"), data = sub[,c(1:4, 5)] ))
+sub$balanced = ((sub$balanced)) 
+sub$balanced2 = scales::rescale(sub$balanced2)
+form = function(resp) paste0(resp, "~ sd + moutain + nobs + balanced2 + sd:moutain + sd:nobs + moutain:nobs")
+form = function(resp) paste0(resp, "~ sd + moutain + nobs + balanced2 + sd:moutain + sd:nobs + moutain:nobs + balanced2:sd + balanced2:moutain + balanced2:nobs")
+powerLM = (lm( form("PowerLM") , data = sub))
+powerLMM = (lm(form("PowerLMM") , data = sub))
+TypeLM = (lm(form("TypeOneLM - 0.05"), data = sub))
+TypeLMM = (lm(form("TypeOneLMM - 0.05"), data = sub))
 
 
 cex_legend = 0.7
 
-plot(NULL, NULL, ylim = c(0, 1), xlim = c(-0.015, 0.015), yaxt="n",xaxt="n", las = 1)
+plot(NULL, NULL, ylim = c(0, 1), xlim = c(-0.1, 0.1), yaxt="n",xaxt="n", las = 1)
 coefsType = cbind(coef(TypeLMM), coef(TypeLM))
 seType = cbind(coef(summary(TypeLMM))[,2], coef(summary(TypeLM))[,2] )
 plotEffects(coefsType, seType, cols = cols, XX = -0.016, labels =labels_y)
@@ -1837,19 +1842,19 @@ text(-0.5*0.95, y = 1.0, pos = 2, xpd = NA, cex = 1.1, labels = "B", font = 2 )
 text(0.0, y = 1.2, pos = 3, labels = "Effect on power", xpd = NA)
 
 ## All mountain > 10 
-sub = test[test$moutain > 10, ]
+sub = test[test$moutain > 10 & test$min > pp, ]
 sub$sd = scale(sub$sd)
 sub$nobs = scale(sub$nobs)
 sub$moutain = scale((sub$moutain)) 
-sub$balanced = scale((sub$balanced)) 
-form = function(resp) paste0(resp, "~ sd + moutain + nobs + balanced + sd:moutain + sd:nobs + moutain:nobs")
-form = function(resp) paste0(resp, "~ .^2")
-powerLM = (lm( form("PowerLM") , data = sub[,c(1:4, 8)]))
-powerLMM = (lm(form("PowerLMM") , data = sub[,c(1:4, 7)] ))
-TypeLM = (lm(form("TypeOneLM - 0.05"), data = sub[,c(1:4, 6)] ))
-TypeLMM = (lm(form("TypeOneLMM - 0.05"), data = sub[,c(1:4, 5)] ))
+sub$balanced2 = scales::rescale((sub$balanced2)) 
+#form = function(resp) paste0(resp, "~ sd + moutain + nobs + balanced2+ sd:moutain + sd:nobs + moutain:nobs")
+#form = function(resp) paste0(resp, "~ .^2")
+powerLM = (lm( form("PowerLM") , data = sub))
+powerLMM = (lm(form("PowerLMM") , data = sub ))
+TypeLM = (lm(form("TypeOneLM - 0.05"), data = sub ))
+TypeLMM = (lm(form("TypeOneLMM - 0.05"), data = sub))
 
-plot(NULL, NULL, ylim = c(0, 1), xlim = c(-0.015, 0.015), yaxt="n", las = 1)
+plot(NULL, NULL, ylim = c(0, 1), xlim = c(-0.1, 0.1), yaxt="n", las = 1)
 coefsType = cbind(coef(TypeLMM), coef(TypeLM))
 seType = cbind(coef(summary(TypeLMM))[,2], coef(summary(TypeLM))[,2] )
 plotEffects(coefsType, seType, cols = cols,XX = -0.016, labels =labels_y)
@@ -1867,7 +1872,9 @@ text(0.0, y = -0.2, pos = 1, labels = "Effect on power", xpd = NA)
 dev.off()
 
 
-
+plot(TypeOneLM~balanced2, data = test[test$min>10& test$sd > 0.5 & test$nobs > 30 & test$moutain >10,])
+test$nobs
+test[test$TypeOneLM < 0.001,]
 
 ########## _________________________________  ##########
 ########## Singular fit proportions  ##########

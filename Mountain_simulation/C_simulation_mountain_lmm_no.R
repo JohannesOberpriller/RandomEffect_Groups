@@ -47,7 +47,7 @@ grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE)
   effect = summary(fit)$coefficients[ind, 1]
   
   if(!weighted) weights = rep(1/mountain, mountain)
-  else weights = (1/apply(covariance, 1,sum))/ (sum(1/apply(covariance,1,sum)))
+  else weights = ((1/apply(covariance, 1,sum))/ (sum(1/apply(covariance,1,sum))))
   effect_sizes = effect
   eff = weighted.mean(effect_sizes, weights)
   var1 = 0
@@ -63,29 +63,36 @@ grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE)
     p_value = 2*pnorm(abs(eff/se), lower.tail = FALSE)
     confs = cbind( eff -1.96*se, eff + 1.96*se)
   } else {
-    p_value = 2*pt(abs(eff/se),df=mountain-1, lower.tail = FALSE)
-    bound = qt(0.975, df = mountain-1)
+    p_value = 2*pt(abs(eff/se),df=1, lower.tail = FALSE)
+    bound = qt(0.975, df = 1)
     confs = cbind( eff - bound*se, eff + bound*se) 
   }
   # c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf")
   return(c(eff, p_value, se, as.integer(beta > confs[1,1] & beta < confs[1,2])))
 }
 
+
+grand_mean_metafor = function(fit, mountain, beta) {
+  ind = (n_groups+1):(2*n_groups)
+  meta = metafor::rma.mv(coef(fit)[ind], V = vcov(fit)[ind, ind], test = "t")
+  return(c(meta$beta, meta$pval, meta$se, as.integer(beta > meta$ci.lb & beta < meta$ci.ub)))
+}
+
 # set up the cluster and export variables as well as functions to the cluster 
 
 
-sds = runif(300, 0.01, 2.0)
-mountains = sample.int(19, 300, replace = TRUE)+1
-nobs = sample.int(491, 300, replace = TRUE)+9
-balanced = runif(300, 0, 0.9)
+sds = runif(100, 0.01, 2.0)
+mountains = sample.int(19, 100, replace = TRUE)+1
+nobs = sample.int(491, 100, replace = TRUE)+9
+balanced = runif(100, 0, 0.9)
 
 
 parameter = data.frame(sd = sds, moutain = mountains, nobs = nobs, balanced = balanced, min = NA, max = NA)
 
 
-cl = snow::makeCluster(30L)
+cl = snow::makeCluster(50L)
 snow::clusterEvalQ(cl, {library(lme4); library(lmerTest)})
-snow::clusterExport(cl, list("extract_results","extract_results_t", "grand_mean", "parameter"), envir = environment())
+snow::clusterExport(cl, list("extract_results","extract_results_t", "grand_mean", "parameter", "grand_mean_metafor"), envir = environment())
 
 
 result_list = 
@@ -111,8 +118,8 @@ result_list =
     parameter[p,]$max = min_max[2]
     
     # set up matrices to store the results of the different runs 
-    
-    results_w_lme4_reml = results_wo_lme4_reml = matrix(nrow = 1000, ncol = 11)
+    n_tries = 500
+    results_w_lme4_reml = results_wo_lme4_reml = matrix(nrow = n_tries, ncol = 11)
     colnames(results_w_lme4_reml) = c("estimate_intercept","estimate_effect", 
                                     "p_value_intercept", "p_value_effect",
                                     "se_intercept", "se_effect",
@@ -121,7 +128,7 @@ result_list =
     colnames(results_wo_lme4_reml) = colnames(results_w_lme4_reml)
     
     
-    results_w_lm = results_wo_lm = matrix(nrow = 1000, ncol = 4)
+    results_w_lm = results_wo_lm = matrix(nrow = n_tries, ncol = 4)
     colnames(results_w_lm) = c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf")
     colnames(results_wo_lm) = colnames(results_w_lm)
     
@@ -130,7 +137,7 @@ result_list =
     nonSing2 = 1
     abort1 = 1
     abort2 = 1
-    while((nonSing1 < 1001 ) & nonSing2 < 1001){
+    while((nonSing1 < (n_tries+1) ) & nonSing2 < (n_tries+1)){
       abort1 = abort1 + 1
       abort2 = abort2 + 1
       if((abort1 == 20000) & (abort2 == 20000)) break
@@ -169,7 +176,7 @@ result_list =
       # we tested MLE (maximum likelihood estimation) and REML (restricted maximum likelihood estimation) for glmmTMB and lme4
       
       # lme4 - REML
-      if(nonSing1 < 1001) {
+      if(nonSing1 < (n_tries+1)) {
         try({
           fit_lmm <- lmer(y ~ x  + (1|group) + (0+x | group), REML = TRUE) 
           summ = summary(fit_lmm)
@@ -190,7 +197,7 @@ result_list =
           # linear model w/ mountain range as grouping variable
           try({
             fit_lm = lm(y ~ 0+x*group-x)
-            results_w_lm[nonSing1, ] = grand_mean(fit_lm, n_groups, beta = beta)
+            results_w_lm[nonSing1, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta)
           }, silent = TRUE)
           
           nonSing1 = nonSing1+1
@@ -239,7 +246,7 @@ result_list =
           if(results_wo_lme4_reml[nonSing2, ][9] < 1.0) {
             try({
               fit_lm = lm(y ~ 0+x*group-x)
-              results_wo_lm[nonSing2, ] = grand_mean(fit_lm, n_groups, beta)
+              results_wo_lm[nonSing2, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta)
             }, silent = TRUE)
             
             nonSing2 = nonSing2 + 1
