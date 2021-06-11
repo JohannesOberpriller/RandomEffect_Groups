@@ -40,35 +40,7 @@ extract_results = function(fit_lmm, confs, beta, beta0) {
       as.integer(beta > confs["x",1] & beta < confs["x",2])))
 }
 
-grand_mean = function(fit, mountain, beta, weighted = TRUE, z_statistic = FALSE) {
-  
-  ind = (mountain+1):(2*mountain)
-  covariance = vcov(fit)[ind,ind]
-  effect = summary(fit)$coefficients[ind, 1]
-  
-  if(!weighted) weights = rep(1/mountain, mountain)
-  else weights = apply(covariance, 1,sum)/sum(apply(covariance, 1,sum))
-  effect_sizes = effect
-  eff = weighted.mean(effect_sizes, weights)
-  var1 = 0
-  for(i in 1:mountain){
-    for(j in 1:mountain){
-      var1 = var1 + covariance[i,j]*weights[i]*weights[j]  
-    }
-  }
-  var2 = sum((weights/(mountain-1))*(effect_sizes-eff)^2)   
-  se = sqrt(var1 + var2)
-  
-  if(z_statistic) {
-    p_value = 2*pnorm(abs(eff/se), lower.tail = FALSE)
-    confs = cbind( eff -1.96*se, eff + 1.96*se)
-  } else {
-    p_value = 2*pt(abs(eff/se),df=mountain-1, lower.tail = FALSE)
-    bound = qt(0.975, df = mountain-1)
-    confs = cbind( eff - bound*se, eff + bound*se) 
-  }
-  return(c(eff, p_value, se, as.integer(beta > confs[1,1] & beta < confs[1,2])))
-}
+source("Mountain_simulation/grand_mean_function.R")
 # set up the cluster and export variables as well as functions to the cluster 
 
 

@@ -1511,9 +1511,6 @@ dev.off()
 
 
 
-
-
-
 ########## __Figure S5 Variance estimates lmm REML imbalanced vs REML balanced ########## 
 cols = viridis::viridis(5)
 
@@ -1817,9 +1814,9 @@ sub$balanced = ((sub$balanced))
 sub$balanced2 = scales::rescale(sub$balanced2)
 form = function(resp) paste0(resp, "~ sd + moutain + nobs + balanced2 + sd:moutain + sd:nobs + moutain:nobs")
 form = function(resp) paste0(resp, "~ sd + moutain + nobs + balanced2 + sd:moutain + sd:nobs + moutain:nobs + balanced2:sd + balanced2:moutain + balanced2:nobs")
-powerLM = (lm( form("PowerLM") , data = sub))
+powerLM = (lm( form("PowerLM_MLE") , data = sub))
 powerLMM = (lm(form("PowerLMM") , data = sub))
-TypeLM = (lm(form("TypeOneLM - 0.05"), data = sub))
+TypeLM = (lm(form("TypeOneLM_MLE - 0.05"), data = sub))
 TypeLMM = (lm(form("TypeOneLMM - 0.05"), data = sub))
 
 
@@ -1849,12 +1846,12 @@ sub$moutain = scale((sub$moutain))
 sub$balanced2 = scales::rescale((sub$balanced2)) 
 #form = function(resp) paste0(resp, "~ sd + moutain + nobs + balanced2+ sd:moutain + sd:nobs + moutain:nobs")
 #form = function(resp) paste0(resp, "~ .^2")
-powerLM = (lm( form("PowerLM") , data = sub))
+powerLM = (lm( form("PowerLM_MLE") , data = sub))
 powerLMM = (lm(form("PowerLMM") , data = sub ))
-TypeLM = (lm(form("TypeOneLM - 0.05"), data = sub ))
+TypeLM = (lm(form("TypeOneLM_MLE - 0.05"), data = sub ))
 TypeLMM = (lm(form("TypeOneLMM - 0.05"), data = sub))
 
-plot(NULL, NULL, ylim = c(0, 1), xlim = c(-0.1, 0.1), yaxt="n", las = 1)
+plot(NULL, NULL, ylim = c(0, 1), xlim = c(-0.015, 0.015), yaxt="n", las = 1)
 coefsType = cbind(coef(TypeLMM), coef(TypeLM))
 seType = cbind(coef(summary(TypeLMM))[,2], coef(summary(TypeLM))[,2] )
 plotEffects(coefsType, seType, cols = cols,XX = -0.016, labels =labels_y)
@@ -1887,3 +1884,18 @@ sapply(results_lmm, function(l )mean(l$results_w_lme4_reml$Singularity, na.rm=TR
 sapply(results_lmm, function(l )mean(l$results_w_lme4_ml$Singularity, na.rm=TRUE)),
 sapply(results_glmm, function(l )mean(l$results_w_lme4_ml$Singularity, na.rm=TRUE))
 )
+
+
+
+par(mfrow = c(1,3))
+plot(TypeOneLM~balanced2, data = test, ylim = c(0.0, 1.0))
+plot(TypeOneLM_GM~balanced2, data = test, ylim = c(0.0, 1.0))
+plot(TypeOneLM_Uni~balanced2, data = test, ylim = c(0.0, 1.0))
+
+plot(CoverLM~balanced2, data = test, ylim = c(0.0, 1.0))
+plot(CoverLM_GM~balanced2, data = test, ylim = c(0.0, 1.0))
+plot(CoverLM_Uni~balanced2, data = test, ylim = c(0.0, 1.0))
+
+plot(PowerLM~balanced2, data = test, ylim = c(0.0, 1.0))
+plot(PowerLM_GM~balanced2, data = test, ylim = c(0.0, 1.0))
+plot(PowerLM_Uni~balanced2, data = test, ylim = c(0.0, 1.0))
