@@ -2686,14 +2686,14 @@ library(tidymv)
 library(purrr)
 sub = test
 sub$total = sub$moutain*sub$nobs
-typeI_LM = qgam(TypeOneLM_GM~s(var)+s(moutain)+s(total)+s(balanced2),
+typeI_LM = qgam(TypeOneLM_GM~ s(var)+s(moutain)+s(total)+s(balanced2),
                 data = sub, qu = 0.5, control = list(link = "identity"))
 
-typeI_LMM = qgam(TypeOneLMM~s(var)+s(moutain)+s(total)+s(balanced2),
+typeI_LMM = qgam(TypeOneLMM~  s(var)+s(moutain)+s(total)+s(balanced2),
                    data = sub, qu = 0.5, control = list(link = "identity"))
-power_LM = qgam(PowerLM_GM~s(var)+s(moutain)+s(total)+s(balanced2),
+power_LM = qgam(PowerLM_GM~ s(var)+s(moutain)+s(total)+s(balanced2),
                 data = sub, qu = 0.5, control = list(link = "identity"))
-power_LMM = qgam(PowerLMM~s(var)+s(moutain)+s(total)+s(balanced2),
+power_LMM = qgam(PowerLMM~  s(var)+s(moutain)+s(total)+s(balanced2),
                  data = sub, qu = 0.5, control = list(link = "identity"))
 mods = list(typeI_LM, typeI_LMM)
 mods_power = list(power_LM, power_LMM)
@@ -2711,7 +2711,7 @@ get_ses = function(model){
   return(se)
 }
 
-plot(sm(getViz(power_LM),1))
+
 se_typeI_lm = get_ses(typeI_LM)
 se_typeI_lmm = get_ses(typeI_LMM)
 se_power_lm = get_ses(power_LM)
@@ -2750,43 +2750,64 @@ build_plot = function(ggplot_obj, ylim, name, xlab = "", se_fixed, se_random){
   y_values_random = ggplot_obj$data$fit$y[ggplot_obj$data$fit$id == 'Random Effect' ]
   plot(x_values_fixed,
        y_values_fixed,
-       type = "l", ylim = ylim, col = "red", ylab = paste("spline",name) ,
-       xlab = xlab, lwd = 2, cex.lab = 1.18, las = 1)
+       type = "l", ylim = ylim, col = "red", ylab = name,
+       xlab = xlab, lwd = 2, cex.lab = 1.3, las = 1)
   polygon(c(rev(x_values_fixed), x_values_fixed),
           c(rev(y_values_fixed -2*se_fixed), y_values_fixed+ 2*se_fixed)
           , col = t_col('red',80), border = NA)
-  lines(ggplot_obj$data$fit$x[ggplot_obj$data$fit$id == 'Random Effect' ],
-        ggplot_obj$data$fit$y[ggplot_obj$data$fit$id == 'Random Effect' ],
+  lines(x_values_random,
+        y_values_random,
         type = "l", ylim = ylim, col = "blue", lwd =2)
   polygon(c(rev(x_values_random), x_values_random),
           c(rev(y_values_random -2*se_random), y_values_random+ 2*se_random)
           , col = t_col('blue',80), border = NA)
 }
+
+make_bar_plot = function(coefficient_fixed, coefficient_random, 
+                         ylab, ylim){
+barplot(height = c(coefficient_fixed,
+          coefficient_random),
+        names = c("Fixed","Random"),
+        col = c(t_col('red',80),t_col('blue',80)),
+        ylab = ylab, cex.lab = 1.3,
+        cex.names = 1.2, las =1, ylim =ylim)
+
+}
+
+make_bar_plot(typeI_LM$coefficients[1],typeI_LMM$coefficients[1],"Average Type I error rate",
+              c(0,0.05))
+
 pdf("Figures/Fig_5.pdf", width = 12, height = 6.2)
-par(mfrow = c(2,4))
+par(mfrow = c(2,5))
 par(mar = c(4.2,4,0.1,1.2), oma = c(2, 2, 3, 2))
 ylim = c(-0.03,0.01)
 
-build_plot(typeI_var,ylim = ylim, "variance", se_fixed = se_typeI_lm[[1]], se_random =se_typeI_lmm[[1]])
-add_label(i = 1)
-build_plot(typeI_mountain,ylim = ylim, "mountain", se_fixed = se_typeI_lm[[2]], se_random =se_typeI_lmm[[2]])
-add_label(x = -2.5,i = 2)
-build_plot(typeI_total,ylim = ylim, "observations", se_fixed = se_typeI_lm[[3]], se_random =se_typeI_lmm[[3]])
-add_label(x=-1250,i = 3)
-build_plot(typeI_balance,ylim = ylim, "balance", se_fixed = se_typeI_lm[[4]], se_random =se_typeI_lmm[[4]])
-add_label(x=-0.125,i = 4)
+make_bar_plot(typeI_LM$coefficients[1],typeI_LMM$coefficients[1],"Average Type I error rate",
+              c(0,0.05))
+add_label(i =1, y = 0.051)
+build_plot(typeI_var,ylim = ylim, "Type I error rate change", se_fixed = se_typeI_lm[[1]], se_random =se_typeI_lmm[[1]])
+add_label(i = 2)
+build_plot(typeI_mountain,ylim = ylim, "Type I error rate change", se_fixed = se_typeI_lm[[2]], se_random =se_typeI_lmm[[2]])
+add_label(x = -2.5,i = 3)
+build_plot(typeI_total,ylim = ylim, "Type I error rate change", se_fixed = se_typeI_lm[[3]], se_random =se_typeI_lmm[[3]])
+add_label(x=-1250,i = 4)
+build_plot(typeI_balance,ylim = ylim, "Type I error rate change", se_fixed = se_typeI_lm[[4]], se_random =se_typeI_lmm[[4]])
+add_label(x=-0.125,i = 5)
 
 #par(mar = c(6,4,rep(1.2,2)))
-build_plot(power_var,ylim = c(-0.1,0.8), "variance", xlab = "variance", se_fixed = se_power_lm[[1]], se_random =se_power_lmm[[1]])
-add_label(i = 5, y = 0.87)
-build_plot(power_mountain,ylim = c(-0.1,0.8), "mountain", xlab = "number of mountains", se_fixed = se_power_lm[[2]], se_random =se_power_lmm[[2]])
-add_label(x = -2.5,i = 6, y = 0.87)
+make_bar_plot(power_LM$coefficients[1],power_LMM$coefficients[1],"Average Power",
+              c(0,0.3))
+add_label(i = 6, y = 0.31)
+build_plot(power_var,ylim = c(-0.1,0.8), "Power change", xlab = "variance", se_fixed = se_power_lm[[1]], se_random =se_power_lmm[[1]])
+add_label(i = 7, y = 0.87)
+build_plot(power_mountain,ylim = c(-0.1,0.8), "Power change", xlab = "number of mountains", se_fixed = se_power_lm[[2]], se_random =se_power_lmm[[2]])
+add_label(x = -2.5,i = 8, y = 0.87)
 
-build_plot(power_total,ylim = c(-0.1,0.8), "observations", xlab = "total number of observations", se_fixed = se_power_lm[[3]], se_random =se_power_lmm[[3]])
-add_label(x=-1250,i = 7, y = 0.87)
+build_plot(power_total,ylim = c(-0.1,0.8), "Power change", xlab = "total number of observations", se_fixed = se_power_lm[[3]], se_random =se_power_lmm[[3]])
+add_label(x=-1250,i = 9, y = 0.87)
 
-build_plot(power_balance,ylim = c(-0.1,0.8), "balance", xlab = "balance between groups", se_fixed = se_power_lm[[4]], se_random =se_power_lmm[[4]])
-add_label(x=-0.125,i = 8, y = 0.87)
+build_plot(power_balance,ylim = c(-0.1,0.8), "Power change", xlab = "balance between groups", se_fixed = se_power_lm[[4]], se_random =se_power_lmm[[4]])
+add_label(x=-0.125,i = 10, y = 0.87)
 
 legend( "topright",legend=c("Fixed Effect", "Random Effect"),
         col=c("red", "blue"), lty=1, cex=1.3, bty = "n")
