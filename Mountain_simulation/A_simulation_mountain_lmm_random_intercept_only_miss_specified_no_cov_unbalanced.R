@@ -109,7 +109,7 @@ for(sd_re in c(0.1, 0.01, 0.5, 2.0)) {
           ################ Simulation of LMM with Temperature effect  ################ 
           # fixed effects
           beta = 0.4    # Temperature effect
-          beta0 = 10.0  # Intercept
+          beta0 = 0.4  # Intercept
           
           # random effects are sampled around the fixed effects
           g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
@@ -198,7 +198,7 @@ for(sd_re in c(0.1, 0.01, 0.5, 2.0)) {
           
           ################ Simulation of LMM without Temperature effect  ################ 
           # fixed effects
-          beta0 = 10.0  # Intercept
+          beta0 = 0.0  # Intercept
           beta = 0.0    # Temperature, now set to zero
           
           # random effects

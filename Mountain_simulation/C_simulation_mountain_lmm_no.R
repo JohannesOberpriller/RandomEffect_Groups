@@ -62,16 +62,16 @@ grand_mean_metafor_uni = function(fit, mountain, beta, fixed = FALSE, method = "
 
 source("Mountain_simulation/grand_mean_function.R")
 
-sds = runif(120, 0.01, 2.0)
-mountains = sample.int(19, 120, replace = TRUE)+1
-nobs = sample.int(491, 120, replace = TRUE)+9
-balanced = runif(120, 0, 0.9)
+var = runif(1000, 0.0001, 4.0)
+mountains = sample.int(19, 1000, replace = TRUE)+1
+nobs = sample.int(491, 1000, replace = TRUE)+9
+balanced = runif(1000, 0, 0.9)
 
 
-parameter = data.frame(sd = sds, moutain = mountains, nobs = nobs, balanced = balanced, min = NA, max = NA)
+parameter = data.frame(var = var, moutain = mountains, nobs = nobs, balanced = balanced, min = NA, max = NA)
 
 
-cl = snow::makeCluster(40L)
+cl = snow::makeCluster(64L)
 snow::clusterEvalQ(cl, {library(lme4); library(lmerTest)})
 snow::clusterExport(cl, list("extract_results","extract_results_t", "grand_mean", "parameter", "grand_mean_metafor", "grand_mean_metafor_uni"), envir = environment())
 
@@ -80,7 +80,7 @@ result_list =
   snow::parLapply(cl, 1:nrow(parameter), function(p)  {
     
     
-    sd_re = parameter[p,]$sd
+    sd_re = sqrt(parameter[p,]$var)
     n_each <- parameter[p,]$nobs
     n_groups = number_groups = parameter[p,]$moutain
     balanced = parameter[p,]$balanced
@@ -99,7 +99,7 @@ result_list =
     parameter[p,]$max = min_max[2]
     
     # set up matrices to store the results of the different runs 
-    n_tries = 500
+    n_tries = 1000
     results_w_lme4_reml = results_wo_lme4_reml = matrix(nrow = n_tries, ncol = 11)
     colnames(results_w_lme4_reml) = c("estimate_intercept","estimate_effect", 
                                     "p_value_intercept", "p_value_effect",
@@ -131,6 +131,7 @@ result_list =
     nonSing2 = 1
     abort1 = 1
     abort2 = 1
+    counter = 1
     while((nonSing1 < (n_tries+1) ) & nonSing2 < (n_tries+1)){
       abort1 = abort1 + 1
       abort2 = abort2 + 1
@@ -186,23 +187,23 @@ result_list =
         }, silent = TRUE)
         
         if(results_w_lme4_reml[nonSing1, ][9] < 1.0) {
-        
-          
           # linear model w/ mountain range as grouping variable
-          try({
-            fit_lm = lm(y ~ 0+x*group-x)
-            results_w_lm[nonSing1, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta)
-            results_w_lm_MLE[nonSing1, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta, method = "ML", fixed = FALSE)
-            results_w_lm_FE[nonSing1, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta, fixed = TRUE)
-            results_w_lm_GM[nonSing1, ] = grand_mean(fit_lm, n_groups, beta = beta)
-            results_w_lm_Uni[nonSing1, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta)
-            results_w_lm_Uni_MLE[nonSing1, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta, method = "ML")
-            results_w_lm_Uni_FE[nonSing1, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta, method = "FE")
-          }, silent = TRUE)
-          
           nonSing1 = nonSing1+1
           
         }
+      }
+      
+      if(counter <= n_tries) {
+        try({
+          fit_lm = lm(y ~ 0+x*group-x)
+          results_w_lm[counter, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta)
+          results_w_lm_MLE[counter, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta, method = "ML", fixed = FALSE)
+          results_w_lm_FE[counter, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta, fixed = TRUE)
+          results_w_lm_GM[counter, ] = grand_mean(fit_lm, n_groups, beta = beta)
+          results_w_lm_Uni[counter, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta)
+          results_w_lm_Uni_MLE[counter, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta, method = "ML")
+          results_w_lm_Uni_FE[counter, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta, method = "FE")
+        }, silent = TRUE)
       }
         
         
@@ -244,21 +245,25 @@ result_list =
           
           # linear model w mountain range as grouping variable
           if(results_wo_lme4_reml[nonSing2, ][9] < 1.0) {
-            try({
-              fit_lm = lm(y ~ 0+x*group-x)
-              results_wo_lm[nonSing2, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta)
-              results_wo_lm_MLE[nonSing2, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta, fixed = FALSE, method = "ML")
-              results_wo_lm_FE[nonSing2, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta, fixed = TRUE)
-              results_wo_lm_GM[nonSing2, ] = grand_mean(fit_lm, n_groups, beta = beta)
-              results_wo_lm_Uni[nonSing2, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta)
-              results_wo_lm_Uni_MLE[nonSing2, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta, method = "ML")
-              results_wo_lm_Uni_FE[nonSing2, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta, method = "FE")
-            }, silent = FALSE)
-            
             nonSing2 = nonSing2 + 1
           }
         }
+          if(counter <= n_tries) {
+            try({
+              fit_lm = lm(y ~ 0+x*group-x)
+              results_wo_lm[counter, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta)
+              results_wo_lm_MLE[counter, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta, fixed = FALSE, method = "ML")
+              results_wo_lm_FE[counter, ] = grand_mean_metafor(fit_lm, n_groups, beta = beta, fixed = TRUE)
+              results_wo_lm_GM[counter, ] = grand_mean(fit_lm, n_groups, beta = beta)
+              results_wo_lm_Uni[counter, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta)
+              results_wo_lm_Uni_MLE[counter, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta, method = "ML")
+              results_wo_lm_Uni_FE[counter, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta, method = "FE")
+            }, silent = FALSE)
+          }
+        counter = counter + 1
+        
     }
+    
     results_wo_lme4_reml = data.frame(results_wo_lme4_reml)
     results_w_lme4_reml = data.frame(results_w_lme4_reml)
     results_wo_lm = data.frame(results_wo_lm)

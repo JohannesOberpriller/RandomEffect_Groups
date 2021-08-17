@@ -1,6 +1,7 @@
-grand_mean = function(fit, mountain, beta, t = TRUE) {
+grand_mean = function(fit, mountain, beta, t = TRUE, intercept=FALSE) {
   
-  ind = (mountain+1):(2*(mountain))
+  if(!intercept)ind = (mountain+1):(2*(mountain))
+  else ind = 1:mountain
   mean = coef(fit)[ind]
   V = vcov(fit)[ind, ind]
   

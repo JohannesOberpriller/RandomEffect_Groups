@@ -188,7 +188,7 @@ for(n_each in c(200, 25, 50, 100, 500)) {
               # linear model w/ mountain range as grouping variable  
               try({
                 fit_lm = glm(y ~ 0+x*group-x, family = binomial)
-                results_w_lm[experiment, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta)
+                results_w_lm[experiment, ] = grand_mean(fit_lm, n_groups, beta = beta)
               }, silent = TRUE)
               
               # linear model w/o mountain range as grouping variable
@@ -273,7 +273,7 @@ for(n_each in c(200, 25, 50, 100, 500)) {
               # linear model w/ mountain range as grouping effect
               try({
                 fit_lm = glm(y ~ 0+x*group-x, family = binomial)
-                results_wo_lm[experiment, ] = grand_mean_metafor_uni(fit_lm, n_groups, beta = beta)
+                results_wo_lm[experiment, ] = grand_mean(fit_lm, n_groups, beta = beta)
               }, silent = TRUE)
               
               # linear model w/o  mountain range as grouping effect
