@@ -89,8 +89,10 @@ for(n_each in c(50, 100, 200, 500)) {
           colnames(results_wo_glmmTMB_reml) = colnames(results_w_glmmTMB_ml)
           
           
-          results_w_lm = results_wo_lm = results_wo_lm_wo_grouping = results_w_lm_wo_grouping = matrix(nrow = number_experiments, ncol = 4)
-          colnames(results_w_lm) = c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf")
+          results_w_lm = results_wo_lm = results_wo_lm_wo_grouping = results_w_lm_wo_grouping = matrix(nrow = number_experiments, ncol = 8)
+          colnames(results_w_lm) = c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf",
+                                     "estimate_inter", "p_value_inter","se_inter", "Inter_in_conf"
+                                     )
           colnames(results_wo_lm) = colnames(results_w_lm)
           colnames(results_wo_lm_wo_grouping) = colnames(results_w_lm)
           colnames(results_w_lm_wo_grouping) = colnames(results_w_lm)
@@ -115,7 +117,7 @@ for(n_each in c(50, 100, 200, 500)) {
             ################ Simulation of LMM with Temperature effect  ################ 
             # fixed effects
             beta = 0.4    # Temperature effect meaning when the temperature increases 1 degree the respective variable also does 
-            beta0 = 10.0   # Intercept: the mean height of a reporductive plant  
+            beta0 = 0.4   # Intercept: the mean height of a reporductive plant  
             
             # random effect sizes are sampled around the fixed effects with no correlation between the 
             # random intercept and random slope
@@ -204,8 +206,10 @@ for(n_each in c(50, 100, 200, 500)) {
             # linear model w/ mountain range as grouping variable
             try({
               fit_lm = lm(y ~ 0+x*group-x)
-              results_w_lm[experiment, ] = grand_mean(fit_lm, n_groups, beta = beta)
+              results_w_lm[experiment, 1:4] = grand_mean(fit_lm, n_groups, beta = beta)
+              results_w_lm[experiment, 5:8] = grand_mean(fit_lm, n_groups, beta = beta0, intercept = TRUE)
             }, silent = TRUE)
+            
             
             
             # linear model w/o mountain range as grouping variable
@@ -213,7 +217,8 @@ for(n_each in c(50, 100, 200, 500)) {
               fit_lm = lm(y ~ x)
               summ = summary(fit_lm)
               confs = confint(fit_lm)
-              results_w_lm_wo_grouping[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+              results_w_lm_wo_grouping[experiment,1:4] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+              results_w_lm_wo_grouping[experiment,5:8 ] = c(summ$coefficients["(Intercept)", 1], summ$coefficients["(Intercept)", 4], summ$coefficients["(Intercept)", 2], as.integer(beta0 > confs["(Intercept)",1] & beta0 < confs["(Intercept)",2]))
             }, silent = TRUE)
             
             
@@ -222,7 +227,7 @@ for(n_each in c(50, 100, 200, 500)) {
             
             ################ Simulation of LMM without Temperature effect  ################ 
             # fixed effects
-            beta0 = 10.0  # Intercept
+            beta0 = 0.0  # Intercept
             beta = 0.0    # Temperature, now set to zero
             
             # random intercept
@@ -307,16 +312,20 @@ for(n_each in c(50, 100, 200, 500)) {
             # linear model w mountain range as grouping variable
             try({
               fit_lm = lm(y ~ 0+x*group-x)
-              results_wo_lm[experiment, ] = grand_mean(fit_lm, n_groups, beta)
+              results_wo_lm[experiment, 1:4] = grand_mean(fit_lm, n_groups, beta = beta)
+              results_wo_lm[experiment, 5:8] = grand_mean(fit_lm, n_groups, beta = beta0, intercept = TRUE)
             }, silent = TRUE)
+            
+            
             
             # linear model w/o mountain range as grouping variable
             try({
               fit_lm = lm(y ~ x)
               summ = summary(fit_lm)
               confs = confint(fit_lm)
-              results_wo_lm_wo_grouping[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-            }, silent = TRUE)  
+              results_wo_lm_wo_grouping[experiment,1:4] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+              results_wo_lm_wo_grouping[experiment,5:8 ] = c(summ$coefficients["(Intercept)", 1], summ$coefficients["(Intercept)", 4], summ$coefficients["(Intercept)", 2], as.integer(beta0 > confs["(Intercept)",1] & beta0 < confs["(Intercept)",2]))
+            }, silent = TRUE)
           }
           
           return(list(results_w_lme4_ml = data.frame(results_w_lme4_ml), 

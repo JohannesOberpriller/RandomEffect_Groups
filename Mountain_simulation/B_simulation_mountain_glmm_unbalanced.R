@@ -89,8 +89,10 @@ for(n_each in c(200, 25, 50, 100, 500)) {
             colnames(results_wo_glmmTMB_reml) = colnames(results_w_glmmTMB_ml)
             
             
-            results_w_lm = results_wo_lm = results_wo_lm_wo_grouping  = results_w_lm_wo_grouping= matrix(nrow = number_experiments, ncol = 4)
-            colnames(results_w_lm) = c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf")
+            results_w_lm = results_wo_lm = results_wo_lm_wo_grouping  = results_w_lm_wo_grouping= matrix(nrow = number_experiments, ncol = 8)
+            colnames(results_w_lm) = c("estimate_effect", "p_value_effect","se_effect", "Slope_in_conf",
+                                       "estimate_inter", "p_value_inter","se_inter", "Inter_in_conf"
+                                       )
             colnames(results_wo_lm) = colnames(results_w_lm)
             colnames(results_wo_lm_wo_grouping) = colnames(results_w_lm)
             colnames(results_w_lm_wo_grouping) = colnames(results_w_lm)
@@ -188,7 +190,8 @@ for(n_each in c(200, 25, 50, 100, 500)) {
               # linear model w/ mountain range as grouping variable  
               try({
                 fit_lm = glm(y ~ 0+x*group-x, family = binomial)
-                results_w_lm[experiment, ] = grand_mean(fit_lm, n_groups, beta = beta)
+                results_w_lm[experiment, 1:4] = grand_mean(fit_lm, n_groups, beta = beta, t = FALSE)
+                results_w_lm[experiment, 5:8] = grand_mean(fit_lm, n_groups, beta = beta0, intercept = TRUE, t = FALSE)
               }, silent = TRUE)
               
               # linear model w/o mountain range as grouping variable
@@ -196,13 +199,13 @@ for(n_each in c(200, 25, 50, 100, 500)) {
                 fit_lm = glm(y ~ x, family = binomial)
                 summ = summary(fit_lm)
                 confs = confint(fit_lm)
-                results_w_lm_wo_grouping[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4],
-                                                           summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+                results_w_lm_wo_grouping[experiment,1:4] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+                results_w_lm_wo_grouping[experiment,5:8 ] = c(summ$coefficients["(Intercept)", 1], summ$coefficients["(Intercept)", 4], summ$coefficients["(Intercept)", 2], as.integer(beta0 > confs["(Intercept)",1] & beta0 < confs["(Intercept)",2]))
               }, silent = TRUE)
               
               ################ Simulation of GLMM without Temperature effect  ################ 
               # fixed effects
-              beta0 = 0.4  # Intercept
+              beta0 = 0.0  # Intercept
               beta = 0.0   # possible deviations from meean temperature now set to zero
               
               # random effects
@@ -273,15 +276,17 @@ for(n_each in c(200, 25, 50, 100, 500)) {
               # linear model w/ mountain range as grouping effect
               try({
                 fit_lm = glm(y ~ 0+x*group-x, family = binomial)
-                results_wo_lm[experiment, ] = grand_mean(fit_lm, n_groups, beta = beta)
+                results_wo_lm[experiment, 1:4] = grand_mean(fit_lm, n_groups, beta = beta, t = FALSE)
+                results_wo_lm[experiment, 5:8] = grand_mean(fit_lm, n_groups, beta = beta0, intercept = TRUE, t = FALSE)
               }, silent = TRUE)
               
-              # linear model w/o  mountain range as grouping effect
+              # linear model w/o mountain range as grouping variable
               try({
                 fit_lm = glm(y ~ x, family = binomial)
                 summ = summary(fit_lm)
                 confs = confint(fit_lm)
-                results_wo_lm_wo_grouping[experiment, ] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+                results_wo_lm_wo_grouping[experiment,1:4] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
+                results_wo_lm_wo_grouping[experiment,5:8 ] = c(summ$coefficients["(Intercept)", 1], summ$coefficients["(Intercept)", 4], summ$coefficients["(Intercept)", 2], as.integer(beta0 > confs["(Intercept)",1] & beta0 < confs["(Intercept)",2]))
               }, silent = TRUE)
             }
             

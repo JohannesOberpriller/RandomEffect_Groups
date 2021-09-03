@@ -23,9 +23,7 @@ simulate_lm_re = function(groups = c(20, 20, 20), group_center = TRUE, sd_re = 0
   d$y = y  
   fit_lm = lm(y ~ 0+id+iv.cwc:id, data = d)
   } else { fit_lm = lm(y ~ 0+x:g + g) }
-  ind = (length(groups)+1):(2*length(groups))
-  sim = list(means = coef(fit_lm)[ind], V = vcov(fit_lm)[ind, ind])
-  return(sim)
+  return(fit_lm)
 }
 
 
@@ -36,6 +34,7 @@ t = c(TRUE, FALSE)
 center = c(TRUE, FALSE)
 parameter = expand.grid(mountains, sd_re, unbalanced, t, center)
 colnames(parameter) = c("mountains", "sd_re","unbalanced","t","center")
+source("Mountain_simulation/grand_mean_function.R")
 
 
 cl = snow::makeCluster(36L)
@@ -50,7 +49,7 @@ results =
     results = 
       sapply(1:10000, function(k) {
         sim = simulate_lm_re(c(rep(30, pars$mountains), last), group_center = pars$center, sd_re = pars$sd_re)
-        return(grand_mean(sim$means, sim$V, 0, t = pars$t))
+        return(grand_mean(sim, length(c(rep(30, pars$mountains), last)), beta=0, t = pars$t, intercept = FALSE))
       })
     res = t(results)
     

@@ -109,7 +109,7 @@ for(n_each in c( 50, 100, 200, 500)) {
             ################ Simulation of LMM with Temperature effect  ################ 
             # fixed effects
             beta = 0.4    # Temperature effect meaning when the temperature increases 1 degree the respective variable also does 
-            beta0 = 10.0   # Intercept: the mean height of a reporductive plant  
+            beta0 = 0.4   # Intercept: the mean height of a reporductive plant  
             
             # random effects are sampled around the fixed effects
             #g <- rep(1:n_groups, n_each) # Grouping variable (mountain range)
@@ -198,7 +198,7 @@ for(n_each in c( 50, 100, 200, 500)) {
             
             ################ Simulation of LMM without Temperature effect  ################ 
             # fixed effects
-            beta0 = 10.0  # Intercept
+            beta0 = 0.0  # Intercept
             beta = 0.0    # Temperature, now set to zero
             
             # random effects

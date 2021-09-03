@@ -53,7 +53,7 @@ pch = c(15, 16:18)
 cex_legend = 0.9
 labels = c("Height ~ T + (1|mountain)", 
            "Height ~ T + (1|mountain) + (0 + T|mountain)", 
-           "Height ~ T + mountain", 
+           "Height ~ 0 + T + mountain", 
            "Height ~ T ")
 
 
@@ -135,7 +135,7 @@ matplot(type_one_int, type="o", ylim = c(0, 0.5), pch = 15:18, las = 1, lty = lt
 text(x=0.5, pos = 2, y = 0.55, labels = "c", cex = 1.2, xpd = NA, font = 2)
 
 axis(1, at = 1:7, labels = 2:8)
-legend("topright", legend = c("RS ~ T + (1|mountain)", "RS ~ T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
+legend("topright", legend = c("RS ~ T + (1|mountain)", "RS ~ 0 + T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
 abline(h = 0.05, lty = 3, col = "darkgrey")
 sd = 
   cbind(
@@ -162,7 +162,7 @@ matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = 15:18, las = 1, lty = 
         ylab = "", xaxt="n", main = "", xlab = "Number of mountains", xpd = NA)
 axis(1, at = 1:7, labels = 2:8)
 text(x=0.5, pos = 2, y = 1.1, labels = "d", cex = 1.2, xpd = NA, font = 2)
-legend("bottomright", legend = c("RS ~ T + (1|mountain)", "RS ~ T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
+legend("bottomright", legend = c("RS ~ T + (1|mountain)", "RS ~ 0 + T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
 sd = 
   cbind(
     sapply(results_glmm, function(l) sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si]  < 0.05)/sqrt( sum(!is.na( l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] )))), #lme4
@@ -189,7 +189,7 @@ pch = c(15, 16:18)
 cex_legend = 0.9
 labels = c("Height ~ T + (1|mountain)", 
            "Height ~ T + (1|mountain) + (0 + T|mountain)", 
-           "Height ~ T + mountain", 
+           "Height ~ 0 + T + mountain", 
            "Height ~ T ")
 
 
@@ -271,7 +271,7 @@ matplot(type_one_int, type="o", ylim = c(0, 0.5), pch = 15:18, las = 1, lty = lt
 text(x=0.5, pos = 2, y = 0.55, labels = "c", cex = 1.2, xpd = NA, font = 2)
 
 axis(1, at = 1:7, labels = 2:8)
-legend("topright", legend = c("RS ~ T + (1|mountain)", "RS ~ T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
+legend("topright", legend = c("RS ~ T + (1|mountain)", "RS ~ 0 + T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
 abline(h = 0.05, lty = 3, col = "darkgrey")
 sd = 
   cbind(
@@ -298,7 +298,7 @@ matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = 15:18, las = 1, lty = 
         ylab = "", xaxt="n", main = "", xlab = "Number of mountains", xpd = NA)
 axis(1, at = 1:7, labels = 2:8)
 text(x=0.5, pos = 2, y = 1.1, labels = "d", cex = 1.2, xpd = NA, font = 2)
-legend("bottomright", legend = c("RS ~ T + (1|mountain)", "RS ~ T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
+legend("bottomright", legend = c("RS ~ T + (1|mountain)", "RS ~ 0 + T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
 sd = 
   cbind(
     sapply(results_glmm, function(l) sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si]  < 0.05)/sqrt( sum(!is.na( l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] )))), #lme4
@@ -325,7 +325,7 @@ pch = c(15, 16:18)
 cex_legend = 0.9
 labels = c("Height ~ T + (1|mountain)", 
            "Height ~ T + (1|mountain) + (0 + T|mountain)", 
-           "Height ~ T + mountain", 
+           "Height ~ 0 + T + mountain", 
            "Height ~ T ")
 
 
@@ -336,10 +336,10 @@ si2 = c(0, 1)
 par(mfrow = c(2,2), mar = c(2.1, 2.4, 1.5, 1), oma = c(4, 3, 3, 1)-1)
 type_one_int = 
   cbind(
-    sapply(results_lmm, function(l) mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_miss, function(l) mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si] < 0.05)),
-    sapply(results_lmm, function(l) mean(l$results_wo_lm$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
-    sapply(results_lmm, function(l) mean(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si2] < 0.05, na.rm=TRUE)) #lm w/go goruping
+    sapply(results_lmm, function(l) mean(l$results_wo_lme4_reml$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si] < 0.05)), #lme4
+    sapply(results_miss, function(l) mean(l$results_wo_lme4_reml$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si] < 0.05)),
+    sapply(results_lmm, function(l) mean(l$results_wo_lm$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
+    sapply(results_lmm, function(l) mean(l$results_wo_lm_wo_grouping$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si2] < 0.05, na.rm=TRUE)) #lm w/go goruping
   )
 
 matplot(type_one_int, type="o", ylim = c(0, 0.5), pch = pch, las = 1, lty = lty, col = cols, 
@@ -351,10 +351,10 @@ legend("topright", legend = labels,
 abline(h = 0.05, lty = 3, col = "darkgrey")
 sd = 
   cbind(
-    sapply(results_lmm, function(l) get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-    sapply(results_miss, function(l)get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-    sapply(results_lmm, function(l) get_sd(l$results_wo_lm$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si2])),
-    sapply(results_lmm, function(l) get_sd(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si2]))
+    sapply(results_lmm, function(l) get_sd(l$results_wo_lme4_reml$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si])),
+    sapply(results_miss, function(l)get_sd(l$results_wo_lme4_reml$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si])),
+    sapply(results_lmm, function(l) get_sd(l$results_wo_lm$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si2])),
+    sapply(results_lmm, function(l) get_sd(l$results_wo_lm_wo_grouping$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si2]))
   )
 mm = type_one_int
 upper = sapply(1:4, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
@@ -366,10 +366,10 @@ sapply(1:4, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border
 ## Power ##
 type_two_int = 
   cbind(
-    sapply(results_lmm, function(l) 1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_miss, function(l) 1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si] < 0.05)), 
-    sapply(results_lmm, function(l) 1-mean(l$results_w_lm$p_value_effect[l$results_w_lme4_reml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
-    sapply(results_lmm, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_reml$Singularity %in% si2] < 0.05, na.rm=TRUE)) #lm
+    sapply(results_lmm, function(l) 1-mean(l$results_w_lme4_reml$p_value_inter[l$results_w_lme4_reml$Singularity %in% si] < 0.05)), #lme4
+    sapply(results_miss, function(l) 1-mean(l$results_w_lme4_reml$p_value_inter[l$results_w_lme4_reml$Singularity %in% si] < 0.05)), 
+    sapply(results_lmm, function(l) 1-mean(l$results_w_lm$p_value_inter[l$results_w_lme4_reml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
+    sapply(results_lmm, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_inter[l$results_w_lme4_reml$Singularity %in% si2] < 0.05, na.rm=TRUE)) #lm
   )
 matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = pch, las = 1, lty = lty, col = cols, 
         ylab = "", xaxt="n", main = "", xlab = "Number of levels")
@@ -380,10 +380,10 @@ legend("bottomright", legend = labels,
        col = cols, pch = pch, bty = "n", lty = lty, cex = cex_legend)
 sd = 
   cbind(
-    sapply(results_lmm, function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-    sapply(results_miss, function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-    sapply(results_lmm, function(l) get_sd(l$results_w_lm$p_value_effect[l$results_w_lme4_reml$Singularity %in% si2])),
-    sapply(results_lmm, function(l) get_sd(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_reml$Singularity %in% si2]))
+    sapply(results_lmm, function(l) get_sd(l$results_w_lme4_reml$p_value_inter[l$results_w_lme4_reml$Singularity %in% si])),
+    sapply(results_miss, function(l) get_sd(l$results_w_lme4_reml$p_value_inter[l$results_w_lme4_reml$Singularity %in% si])),
+    sapply(results_lmm, function(l) get_sd(l$results_w_lm$p_value_inter[l$results_w_lme4_reml$Singularity %in% si2])),
+    sapply(results_lmm, function(l) get_sd(l$results_w_lm_wo_grouping$p_value_inter[l$results_w_lme4_reml$Singularity %in% si2]))
   )
 mm =1-type_two_int
 upper = sapply(1:4, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
@@ -397,9 +397,9 @@ cols = c(cols[-2])
 lty = c(1, 1, 2)
 type_one_int = 
   cbind(
-    sapply(results_glmm, function(l) mean(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_glmm, function(l) mean(l$results_wo_lm[[2]][l$results_wo_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)), #lm
-    sapply(results_glmm, function(l) mean(l$results_wo_lm_wo_grouping[[2]][l$results_wo_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)) #lm
+    sapply(results_glmm, function(l) mean(l$results_wo_lme4_ml$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
+    sapply(results_glmm, function(l) mean(l$results_wo_lm$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)), #lm
+    sapply(results_glmm, function(l) mean(l$results_wo_lm_wo_grouping$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)) #lm
   )
 
 matplot(type_one_int, type="o", ylim = c(0, 0.5), pch = 15:18, las = 1, lty = lty, col = cols, 
@@ -407,7 +407,7 @@ matplot(type_one_int, type="o", ylim = c(0, 0.5), pch = 15:18, las = 1, lty = lt
 text(x=0.5, pos = 2, y = 0.55, labels = "c", cex = 1.2, xpd = NA, font = 2)
 
 axis(1, at = 1:7, labels = 2:8)
-legend("topright", legend = c("RS ~ T + (1|mountain)", "RS ~ T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
+legend("topright", legend = c("RS ~ T + (1|mountain)", "RS ~ 0 + T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
 abline(h = 0.05, lty = 3, col = "darkgrey")
 sd = 
   cbind(
@@ -434,7 +434,7 @@ matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = 15:18, las = 1, lty = 
         ylab = "", xaxt="n", main = "", xlab = "Number of mountains", xpd = NA)
 axis(1, at = 1:7, labels = 2:8)
 text(x=0.5, pos = 2, y = 1.1, labels = "d", cex = 1.2, xpd = NA, font = 2)
-legend("bottomright", legend = c("RS ~ T + (1|mountain)", "RS ~ T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
+legend("bottomright", legend = c("RS ~ T + (1|mountain)", "RS ~ 0 + T + mountain", "RS ~ T "), col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
 sd = 
   cbind(
     sapply(results_glmm, function(l) sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si]  < 0.05)/sqrt( sum(!is.na( l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] )))), #lme4
@@ -488,7 +488,7 @@ for(i in 1:4){
           ylab = "Rate", xaxt="n", main = "", xlab = xlab, xpd = NA)
   text(x=-0.2, pos = 2, y = 0.55, labels = labels[i], cex = 1.2, xpd = NA, font = 2)
   if(i == 1) text(x= 4, pos = 3, y = 0.52, xpd = NA, labels = "Type I error")
-  legend("topright", legend = c("Height ~ T + (1|mountain)", "Height ~ T + (1|mountain) + (0 + T|mountain)", "Height ~ T + mountain", "Height ~ T "), 
+  legend("topright", legend = c("Height ~ T + (1|mountain)", "Height ~ T + (1|mountain) + (0 + T|mountain)", "Height ~ 0 + T + mountain", "Height ~ T "), 
          col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
   abline(h = 0.05, lty = 3, col = "darkgrey")
   sd = 
@@ -517,7 +517,7 @@ for(i in 1:4){
           ylab = "", xaxt="n", main = "", xlab = xlab, xpd=NA)
   if(i == 1) text(x= 4, pos = 3, y = 1.04, xpd = NA, labels = "Power")
   
-  legend("bottomright", legend = c("Height ~ T + (1|mountain)", "Height ~ T + (1|mountain) + (0 + T|mountain)", "Height ~ T + mountain", "Height ~ T "), 
+  legend("bottomright", legend = c("Height ~ T + (1|mountain)", "Height ~ T + (1|mountain) + (0 + T|mountain)", "Height ~ 0 + T + mountain", "Height ~ T "), 
          col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
   sd = 
     cbind(
@@ -545,7 +545,7 @@ for(i in 1:4){
           ylab = "", xaxt="n", main = "", xlab = xlab, xpd=NA)
   if(i == 1) text(x= 4, pos = 3, y = 1.02, xpd = NA, labels = "Coverage")
   
-  legend("bottomright", legend = c("Height ~ T + (1|mountain)", "Height ~ T + (1|mountain) + (0 + T|mountain)", "Height ~ T + mountain", "Height ~ T "), 
+  legend("bottomright", legend = c("Height ~ T + (1|mountain)", "Height ~ T + (1|mountain) + (0 + T|mountain)", "Height ~ 0 + T + mountain", "Height ~ T "), 
          col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
   abline(h = 0.95, lty = 3, col = "darkgrey")
   
@@ -612,7 +612,7 @@ for(i in 1:4) {
   if(i == 1) text(x= 4, pos = 3, y = 0.52, xpd = NA, labels = "Type I error")
   
   if(i == 4) axis(1, at = 1:7, labels = 2:8)
-  legend("topright", legend = c("RS ~ T + (1|mountain)", "RS ~ T + mountain", "RS ~ T "), 
+  legend("topright", legend = c("RS ~ T + (1|mountain)", "RS ~ 0 + T + mountain", "RS ~ T "), 
          col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
   abline(h = 0.05, lty = 3, col = "darkgrey")
   sd = 
@@ -643,7 +643,7 @@ for(i in 1:4) {
   
   pos = "topright"
   if(i >2) pos = "bottomright"
-  legend(pos, legend = c("RS ~ T + (1|mountain)", "RS ~ T + mountain", "RS ~ T "), 
+  legend(pos, legend = c("RS ~ T + (1|mountain)", "RS ~ 0 + T + mountain", "RS ~ T "), 
          col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
   sd = 
     cbind(
@@ -672,7 +672,7 @@ for(i in 1:4) {
   abline(h = 0.95, lty = 3, col = "darkgrey")
   
   if(i == 4)  axis(1, at = 1:7, labels = 2:8)
-  legend("bottomright", legend = c("RS ~ T + (1|mountain)", "RS ~ T + mountain", "RS ~ T "), 
+  legend("bottomright", legend = c("RS ~ T + (1|mountain)", "RS ~ 0 + T + mountain", "RS ~ T "), 
          col = cols, pch = 15:19, bty = "n", lty = lty, cex = cex_legend)
   sd = 
     cbind(
@@ -800,7 +800,7 @@ type_one_int =
   cbind(
     sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
     sapply(results_glmm,        function(l) mean(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_glmm_no_cov, function(l) mean(change_to_z(l$results_wo_lm, 0.0)[[2]][l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
+    sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lm$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
     sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lm_wo_grouping[[2]][l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)) #lm
   )
 
@@ -817,7 +817,7 @@ sd =
   cbind(
     sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] )),
     sapply(results_glmm,        function(l) get_sd(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] )),
-    sapply(results_glmm_no_cov, function(l) get_sd(change_to_z(l$results_wo_lm,0.0)[[2]][l$results_wo_lme4_ml$Singularity %in% si2] )),
+    sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lm$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si2] )),
     sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lm_wo_grouping[[2]][l$results_wo_lme4_ml$Singularity %in% si2] ))
   )
 mm =type_one_int
@@ -832,7 +832,7 @@ type_two_int =
   cbind(
     sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] < 0.05)), #lme4
     sapply(results_glmm,        function(l) 1-mean(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_glmm_no_cov, function(l) 1-mean(change_to_z(l$results_w_lm)$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)), #lm
+    sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lm$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)), #lm
     sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)) #lm
   )
 
@@ -847,7 +847,7 @@ sd =
   cbind(
     sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si])),
     sapply(results_glmm,        function(l) get_sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si])),
-    sapply(results_glmm_no_cov, function(l) get_sd(change_to_z(l$results_w_lm)$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2])),
+    sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lm$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2])),
     sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2] ))
   )
 mm =1-type_two_int
@@ -957,14 +957,13 @@ cols = c(cols2[1], cols2[5], cols2[2:4])
 cols = cols[-3]
 lty = c(1, 1, 2, 2)
 pch = c(15, 20, 17:18)
-si = c(0)
 labels = c("RS ~ T + (1|mountain) + (0 + T|mountain)", 
            "RS ~ T + (T|mountain)","RS ~ 0 + mountain + T : mountain", "RS ~ T ")
 type_one_int = 
   cbind(
     sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
     sapply(results_glmm,        function(l) mean(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_glmm_no_cov, function(l) mean(change_to_z(l$results_wo_lm, 0.0)[[2]][l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
+    sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lm$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
     sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lm_wo_grouping[[2]][l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)) #lm
   )
 
@@ -981,7 +980,7 @@ sd =
   cbind(
     sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] )),
     sapply(results_glmm,        function(l) get_sd(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] )),
-    sapply(results_glmm_no_cov, function(l) get_sd(change_to_z(l$results_wo_lm,0.0)[[2]][l$results_wo_lme4_ml$Singularity %in% si2] )),
+    sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lm$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si2] )),
     sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lm_wo_grouping[[2]][l$results_wo_lme4_ml$Singularity %in% si2] ))
   )
 mm =type_one_int
@@ -996,7 +995,7 @@ type_two_int =
   cbind(
     sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] < 0.05)), #lme4
     sapply(results_glmm,        function(l) 1-mean(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_glmm_no_cov, function(l) 1-mean(change_to_z(l$results_w_lm)$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)), #lm
+    sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lm$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)), #lm
     sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)) #lm
   )
 
@@ -1011,7 +1010,7 @@ sd =
   cbind(
     sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si])),
     sapply(results_glmm,        function(l) get_sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si])),
-    sapply(results_glmm_no_cov, function(l) get_sd(change_to_z(l$results_w_lm)$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2])),
+    sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lm$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2])),
     sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2] ))
   )
 mm =1-type_two_int
@@ -1036,7 +1035,7 @@ get_sd = function(v) sd(v < 0.05, na.rm=TRUE) / sum(!is.na(v))
 pdf(file = "Figures/Fig_S11.pdf", width = 9.2, height = 7.8)
 
 
-si = c(0,1)
+si = c(0)
 si2 = c(0, 1)
 cols2 = RColorBrewer::brewer.pal(5, "Set1")
 cols = c(cols2[1], cols2[5], cols2[2:4])
@@ -1056,11 +1055,11 @@ labels = c("Height ~ T + (1|mountain) + (0 + T|mountain)",
            "Height ~ T ")
 type_one_int = 
   cbind(
-    sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si]< 0.05)), #lme4
-    sapply(results_lmm, function(l)        mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si]< 0.05)), #lme4
-    sapply(results_miss, function(l)       mean(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si]< 0.05)),
-    sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lm$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si2] < 0.05, na.rm=TRUE)), #lm
-    sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity%in% si2] < 0.05, na.rm=TRUE)) #lm w/go goruping
+    sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lme4_reml$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si]< 0.05)), #lme4
+    sapply(results_lmm, function(l)        mean(l$results_wo_lme4_reml$p_value_inter[l$results_wo_lme4_reml$Singularity%in% si]< 0.05)), #lme4
+    sapply(results_miss, function(l)       mean(l$results_wo_lme4_reml$p_value_inter[l$results_wo_lme4_reml$Singularity%in% si]< 0.05)),
+    sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lm$p_value_inter[l$results_wo_lme4_reml$Singularity%in% si2] < 0.05, na.rm=TRUE)), #lm
+    sapply(results_lmm_no_cov, function(l) mean(l$results_wo_lm_wo_grouping$p_value_inter[l$results_wo_lme4_reml$Singularity%in% si2] < 0.05, na.rm=TRUE)) #lm w/go goruping
   )
 
 matplot(type_one_int, type="o", ylim = c(0, 0.5), pch = pch, las = 1, lty = lty, col = cols, 
@@ -1072,11 +1071,11 @@ legend("topright", legend = labels,
 abline(h = 0.05, lty = 3, col = "darkgrey")
 sd = 
   cbind(
-    sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-    sapply(results_lmm, function(l)        get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-    sapply(results_miss, function(l)       get_sd(l$results_wo_lme4_reml$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si])),
-    sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lm$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si2])),
-    sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_reml$Singularity %in% si2]))
+    sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lme4_reml$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si])),
+    sapply(results_lmm, function(l)        get_sd(l$results_wo_lme4_reml$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si])),
+    sapply(results_miss, function(l)       get_sd(l$results_wo_lme4_reml$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si])),
+    sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lm$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si2])),
+    sapply(results_lmm_no_cov, function(l) get_sd(l$results_wo_lm_wo_grouping$p_value_inter[l$results_wo_lme4_reml$Singularity %in% si2]))
   )
 mm = type_one_int
 upper = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
@@ -1086,11 +1085,11 @@ sapply(1:5, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border
 ## Power ##
 type_two_int = 
   cbind(
-    sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), #lme4
-    sapply(results_lmm, function(l)        1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), #lme4
-    sapply(results_miss, function(l) 1-mean(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), 
-    sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lm$p_value_effect[l$results_w_lme4_reml$Singularity%in% si2] < 0.05, na.rm=TRUE)), #lm
-    sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_reml$Singularity%in% si2] < 0.05, na.rm=TRUE)) #lm
+    sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lme4_reml$p_value_inter[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), #lme4
+    sapply(results_lmm, function(l)        1-mean(l$results_w_lme4_reml$p_value_inter[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), #lme4
+    sapply(results_miss, function(l) 1-mean(l$results_w_lme4_reml$p_value_inter[l$results_w_lme4_reml$Singularity%in% si] < 0.05)), 
+    sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lm$p_value_inter[l$results_w_lme4_reml$Singularity%in% si2] < 0.05, na.rm=TRUE)), #lm
+    sapply(results_lmm_no_cov, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_inter[l$results_w_lme4_reml$Singularity%in% si2] < 0.05, na.rm=TRUE)) #lm
   )
 matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = pch, las = 1, lty = lty, col = cols, 
         ylab = "", xaxt="n", main = "", xlab = "Number of levels")
@@ -1102,11 +1101,11 @@ legend("bottomright", legend = labels,
        col = cols, pch = pch, bty = "n", lty = lty, cex = cex_legend)
 sd = 
   cbind(
-    sapply(results_lmm_no_cov, function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-    sapply(results_lmm,        function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-    sapply(results_miss,       function(l) get_sd(l$results_w_lme4_reml$p_value_effect[l$results_w_lme4_reml$Singularity %in% si])),
-    sapply(results_lmm, function(l) get_sd(l$results_w_lm$p_value_effect[l$results_w_lme4_reml$Singularity %in% si2])),
-    sapply(results_lmm, function(l) get_sd(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_reml$Singularity %in% si2]))
+    sapply(results_lmm_no_cov, function(l) get_sd(l$results_w_lme4_reml$p_value_inter[l$results_w_lme4_reml$Singularity %in% si])),
+    sapply(results_lmm,        function(l) get_sd(l$results_w_lme4_reml$p_value_inter[l$results_w_lme4_reml$Singularity %in% si])),
+    sapply(results_miss,       function(l) get_sd(l$results_w_lme4_reml$p_value_inter[l$results_w_lme4_reml$Singularity %in% si])),
+    sapply(results_lmm, function(l) get_sd(l$results_w_lm$p_value_inter[l$results_w_lme4_reml$Singularity %in% si2])),
+    sapply(results_lmm, function(l) get_sd(l$results_w_lm_wo_grouping$p_value_inter[l$results_w_lme4_reml$Singularity %in% si2]))
   )
 mm =1-type_two_int
 upper = sapply(1:5, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
@@ -1121,15 +1120,14 @@ cols = c(cols2[1], cols2[5], cols2[2:4])
 cols = cols[-3]
 lty = c(1, 1, 2, 2)
 pch = c(15, 20, 17:18)
-si = c(0)
 labels = c("RS ~ T + (1|mountain) + (0 + T|mountain)", 
            "RS ~ T + (T|mountain)","RS ~ 0 + mountain + T : mountain", "RS ~ T ")
 type_one_int = 
   cbind(
-    sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_glmm,        function(l) mean(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_glmm_no_cov, function(l) mean(change_to_z(l$results_wo_lm, 0.0)[[2]][l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
-    sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lm_wo_grouping[[2]][l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)) #lm
+    sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lme4_ml$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
+    sapply(results_glmm,        function(l) mean(l$results_wo_lme4_ml$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
+    sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lm$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
+    sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lm_wo_grouping$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)) #lm
   )
 
 matplot(type_one_int, type="o", ylim = c(0, 0.5), pch = pch, las = 1, lty = lty, col = cols, 
@@ -1143,10 +1141,10 @@ legend("topright", legend = labels,
 abline(h = 0.05, lty = 3, col = "darkgrey")
 sd = 
   cbind(
-    sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] )),
-    sapply(results_glmm,        function(l) get_sd(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] )),
-    sapply(results_glmm_no_cov, function(l) get_sd(change_to_z(l$results_wo_lm,0.0)[[2]][l$results_wo_lme4_ml$Singularity %in% si2] )),
-    sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lm_wo_grouping[[2]][l$results_wo_lme4_ml$Singularity %in% si2] ))
+    sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lme4_ml$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si] )),
+    sapply(results_glmm,        function(l) get_sd(l$results_wo_lme4_ml$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si] )),
+    sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lm$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si2] )),
+    sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lm_wo_grouping$p_value_inter[l$results_wo_lme4_ml$Singularity %in% si2] ))
   )
 mm =type_one_int
 upper = sapply(1:4, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
@@ -1158,10 +1156,10 @@ sapply(1:4, function(i) polygon(c(1:7, 7:1), c(upper[,i], rev(lower[,i])),border
 ## Power ##
 type_two_int = 
   cbind(
-    sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_glmm,        function(l) 1-mean(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-    sapply(results_glmm_no_cov, function(l) 1-mean(change_to_z(l$results_w_lm)$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)), #lm
-    sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)) #lm
+    sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lme4_ml$p_value_inter[l$results_w_lme4_ml$Singularity %in% si] < 0.05)), #lme4
+    sapply(results_glmm,        function(l) 1-mean(l$results_w_lme4_ml$p_value_inter[l$results_w_lme4_ml$Singularity %in% si] < 0.05)), #lme4
+    sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lm$p_value_inter[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)), #lm
+    sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_inter[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)) #lm
   )
 
 matplot(1-type_two_int, type="o", ylim = c(0, 1.0), pch = pch, las = 1, lty = lty, col = cols, 
@@ -1173,9 +1171,9 @@ legend("bottomright", legend = labels,
        col = cols, pch = pch, bty = "n", lty = lty, cex = cex_legend)
 sd = 
   cbind(
-    sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si])),
-    sapply(results_glmm,        function(l) get_sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si])),
-    sapply(results_glmm_no_cov, function(l) get_sd(change_to_z(l$results_w_lm)$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2])),
+    sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lme4_ml$p_value_inter[l$results_w_lme4_ml$Singularity %in% si])),
+    sapply(results_glmm,        function(l) get_sd(l$results_w_lme4_ml$p_value_inter[l$results_w_lme4_ml$Singularity %in% si])),
+    sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lm$p_value_inter[l$results_w_lme4_ml$Singularity %in% si2])),
     sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2] ))
   )
 mm =1-type_two_int
@@ -2803,6 +2801,11 @@ dev.off()
 ########## Grand mean simulations  ##########
 ########## _________________________________  ##########
 
+
+
+########## __Figure S18 Grand mean simulation ########## 
+# t+ non-centered
+
 mountains = c(1, 2, 5, 10, 50, 100)
 sd_re = c(0.1, 0.5, 1.0)
 unbalanced = c(TRUE, FALSE)
@@ -2812,11 +2815,8 @@ parameter = expand.grid(mountains, sd_re, unbalanced, t, center)
 colnames(parameter) = c("mountains", "sd_re","unbalanced","t","center")
 
 results = readRDS("Results/boot.RDS")
-
-
-########## __Figure S18 Grand mean simulation ########## 
-# t+ non-centered
 pdf("Figures/Fig_S18.pdf", height = 10.5, width = 10)
+
 par(mfrow = c(6, 6), mar = c(1, 2, 1, 1), oma = c(5, 4, 2, 1))
 mounts = c(1, 2, 5, 10, 50, 100) +1
 ylab = c("0.1", "0.5", "1.0")
@@ -2846,7 +2846,52 @@ legend(-2.5, y = -200, xpd = NA, legend = c("unbalanced", "balanced"), horiz = T
 dev.off()
 
 
-########## __Figure S19 Zero-sum simultion ########## 
+
+########## __Figure S19 Grand mean simulation ########## 
+# t+ non-centered
+
+mountains = c(1, 2, 5, 10, 50, 100)
+sd_re = c(0.1, 0.5, 1.0)
+unbalanced = c(TRUE, FALSE)
+t = c(TRUE)
+center = c(TRUE, FALSE)
+parameter = expand.grid(mountains, sd_re, unbalanced, t, center)
+colnames(parameter) = c("mountains", "sd_re","unbalanced","t","center")
+
+results = readRDS("Results/boot_glm.RDS")
+pdf("Figures/Fig_S19.pdf", height = 10.5, width = 10)
+
+par(mfrow = c(6, 6), mar = c(1, 2, 1, 1), oma = c(5, 4, 2, 1))
+mounts = c(1, 2, 5, 10, 50, 100) +1
+ylab = c("0.1", "0.5", "1.0")
+counter = 1
+for(sd in c(0.1, 0.5, 1.0)) {
+  vars = as.integer(rownames(parameter[parameter$sd_re==sd & parameter$t & !parameter$center & parameter$unbalanced,]))
+  yy = paste0("SD: ", ylab[counter])
+  counter = counter + 1
+  for(i in 1:6) {
+    if(i > 1) yy = ""
+    if(sd=="0.1") hist((results[[vars[i]]][[2]][,2]), main = paste0(mounts[i], " mountains"), xlab = "", col = "blue", ylab = yy, xpd = NA)
+    else hist((results[[vars[i]]][[2]][,2]), main = "", xlab = "", col = "blue", ylab = yy, xpd = NA)
+  }
+}
+counter = 1
+
+for(sd in c(0.1, 0.5, 1.0)) {
+  vars = as.integer(rownames(parameter[parameter$sd_re==sd & parameter$t & !parameter$center & !parameter$unbalanced,]))
+  yy = paste0("SD: ", ylab[counter])
+  counter = counter + 1
+  for(i in 1:6) {
+    if(i > 1) yy = ""
+    hist((results[[vars[i]]][[2]][,2]), main = "", xlab = "", col = "red", ylab = yy, xpd = NA)
+  }
+}
+legend(-2.5, y = -200, xpd = NA, legend = c("unbalanced", "balanced"), horiz = TRUE, pch = 15, col = c("blue", "red"), bty = "n")
+dev.off()
+
+
+
+########## __Figure S20 Zero-sum simultion ########## 
 
 
 mountains = c(1, 2, 5, 10, 50, 100)
@@ -2857,7 +2902,7 @@ colnames(parameter) = c("mountains", "sd_re","unbalanced")
 
 results = readRDS("Results/boot_zero_sum.RDS")
 # t+ non-centered
-pdf("Figures/Fig_S19.pdf", height = 10.5, width = 10)
+pdf("Figures/Fig_S20.pdf", height = 10.5, width = 10)
 par(mfrow = c(6, 6), mar = c(1, 2, 1, 1), oma = c(5, 4, 2, 1))
 mounts = c(1, 2, 5, 10, 50, 100) +1
 ylab = c("0.1", "0.5", "1.0")
@@ -2912,7 +2957,7 @@ sapply(results_glmm, function(l )mean(l$results_w_lme4_ml$Singularity, na.rm=TRU
 ########## Population estimate  ##########
 ########## _________________________________  ##########
 
-########## __Figure S20 Population estimate ########## 
+########## __Figure S21 Population slope estimate ########## 
 results_lmm_no_cov = readRDS("Results/results_mountain_lmm_no_cov_0.1_100_unbalanced.Rds")
 results_lmm = readRDS("Results/results_mountain_lmm_0.1_100_unbalanced.Rds")
 results_glmm = readRDS("Results/results_mountain_glmm_0.1_200_unbalanced.Rds")
@@ -2922,7 +2967,7 @@ results_miss = readRDS("Results/results_mountain_lmm_miss_specified_0.1_100_unba
 
 
 
-pdf("Figures/Fig_S20.pdf", width = 11, height = 12)
+pdf("Figures/Fig_S21.pdf", width = 11, height = 12)
 par(mfrow = c(4, 5), oma = c(4, 3, 2, 1), mar = c(2, 2, 1, 1))
 plot_hist = function(x, xlim, ...) {
   hist(x, breaks = 30, xlim = xlim, main = "", ylim = c(0, 670), xlab = "")
@@ -2949,6 +2994,56 @@ for(i in c(1, 2, 4, 7)) {
   plot_hist(results_lmm_no_cov[[i]]$results_w_lm$estimate_effect, breaks = 30, xlim = xlim, main = "")
   if(i == 1) text(x = 0.5, y = 650, pos = 3, xpd = NA, labels = labels[4])
   plot_hist(results_lmm_no_cov[[i]]$results_w_lm_wo_grouping$estimate_effect, breaks = 30, xlim = xlim, main = "")
+  if(i == 1) text(x = 0.5, y = 650, pos = 3, xpd = NA, labels = labels[5])
+  counter = counter + 1
+}
+dev.off()
+
+
+
+
+
+########## _________________________________  ##########
+########## Population estimate  ##########
+########## _________________________________  ##########
+
+########## __Figure S22 Population intercept estimate ########## 
+results_lmm_no_cov = readRDS("Results/results_mountain_lmm_no_cov_0.1_100_unbalanced.Rds")
+results_lmm = readRDS("Results/results_mountain_lmm_0.1_100_unbalanced.Rds")
+results_glmm = readRDS("Results/results_mountain_glmm_0.1_200_unbalanced.Rds")
+results_glmm_no_cov = readRDS("Results/results_mountain_glmm_no_cov_0.1_200_unbalanced.Rds")
+results_miss = readRDS("Results/results_mountain_lmm_miss_specified_0.1_100_unbalanced.Rds")
+
+
+
+
+pdf("Figures/Fig_S22.pdf", width = 11, height = 12)
+par(mfrow = c(4, 5), oma = c(4, 3, 2, 1), mar = c(2, 2, 1, 1))
+plot_hist = function(x, xlim, ...) {
+  hist(x, breaks = 30, xlim = xlim, main = "", ylim = c(0, 670), xlab = "")
+  text(0.7, 570, paste0("Mean: ", round(mean(x), digits = 3)), xpd = NA)
+  text(0.7, 500, paste0("Var: ", round((var(x)), digits = 3)), xpd = NA)
+}
+labels = c("Height ~ T + (1|mountain) + (0 + T|mountain)",
+           "Height ~ T + (T|mountain)", 
+           "Height ~ T + (1|mountain)", 
+           "Height ~ 0 + mountain + T : mountain", 
+           "Height ~ T ")
+
+counter = 1
+letters
+for(i in c(1, 2, 4, 7)) {
+  xlim = c(0.1, 0.8)
+  plot_hist(results_lmm_no_cov[[i]]$results_w_lme4_reml$estimate_inter, breaks = 30, xlim = xlim, main = "")
+  text(x = -0.08, y = 750, labels = letters[counter], xpd = NA, font = 2, cex = 1.3)
+  if(i == 1) text(x = 0.5, y = 650, pos = 3, xpd = NA, labels = labels[1])
+  plot_hist(results_lmm[[i]]$results_w_lme4_reml$estimate_inter, breaks = 30, xlim = xlim, main = "")
+  if(i == 1) text(x = 0.5, y = 650, pos = 3, xpd = NA, labels = labels[2])
+  plot_hist(results_miss[[i]]$results_w_lme4_reml$estimate_inter, breaks = 30, xlim = xlim, main = "")
+  if(i == 1) text(x = 0.5, y = 650, pos = 3, xpd = NA, labels = labels[3])
+  plot_hist(results_lmm_no_cov[[i]]$results_w_lm$estimate_inter, breaks = 30, xlim = xlim, main = "")
+  if(i == 1) text(x = 0.5, y = 650, pos = 3, xpd = NA, labels = labels[4])
+  plot_hist(results_lmm_no_cov[[i]]$results_w_lm_wo_grouping$estimate_inter, breaks = 30, xlim = xlim, main = "")
   if(i == 1) text(x = 0.5, y = 650, pos = 3, xpd = NA, labels = labels[5])
   counter = counter + 1
 }

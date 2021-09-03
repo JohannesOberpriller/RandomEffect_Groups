@@ -183,7 +183,7 @@ for(n_each in c(100, 25, 50, 200, 500)) {
             summ = summary(fit_lm)
             confs = confint(fit_lm)
             results_w_lm[experiment, 1:4] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-            results_w_lm[experiment, 5:8] = grand_mean(fit_lm, mountain = n_groups, beta = beta0, t = FALSE)
+            results_w_lm[experiment, 5:8] = grand_mean(fit_lm, mountain = n_groups, beta = beta0, t = FALSE, intercept = TRUE)
           }, silent = TRUE)
           
           # linear model w/o mountain range as grouping variable
@@ -269,7 +269,7 @@ for(n_each in c(100, 25, 50, 200, 500)) {
             summ = summary(fit_lm)
             confs = confint(fit_lm)
             results_wo_lm[experiment, 1:4] = c(summ$coefficients["x", 1], summ$coefficients["x", 4], summ$coefficients["x", 2], as.integer(beta > confs["x",1] & beta < confs["x",2]))
-            results_wo_lm[experiment, 5:8] = grand_mean(fit_lm, mountain = n_groups, beta = beta0, t = FALSE)
+            results_wo_lm[experiment, 5:8] = grand_mean(fit_lm, mountain = n_groups, beta = beta0, t = FALSE, intercept = TRUE)
           }, silent = TRUE)
           
           # linear model w/o mountain range as grouping variable
