@@ -1483,8 +1483,8 @@ for(i in 1:5) {
     cbind(
       sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
       sapply(results_glmm,        function(l) mean(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-      sapply(results_glmm_no_cov, function(l) mean(change_to_z(l$results_wo_lm)[[2]][l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
-      sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lm_wo_grouping[[2]][l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)) #lm
+      sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lm$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)), #lm
+      sapply(results_glmm_no_cov, function(l) mean(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si2] < 0.05, na.rm=TRUE)) #lm
     )
   matplot(type_one_int, type="o", ylim = c(0, 0.5), pch = 15:18, las = 1, lty = lty, col = cols, 
           ylab = "Rate", xaxt="n", main = "", xlab = xlab, xpd = NA)
@@ -1498,8 +1498,8 @@ for(i in 1:5) {
     cbind(
       sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] )),
       sapply(results_glmm,        function(l) get_sd(l$results_wo_lme4_ml$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si] )),
-      sapply(results_glmm_no_cov, function(l) get_sd(change_to_z(l$results_wo_lm)[[2]][l$results_wo_lme4_ml$Singularity %in% si2] )),
-      sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lm_wo_grouping[[2]][l$results_wo_lme4_ml$Singularity %in% si2] ))
+      sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lm$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si2] )),
+      sapply(results_glmm_no_cov, function(l) get_sd(l$results_wo_lm_wo_grouping$p_value_effect[l$results_wo_lme4_ml$Singularity %in% si2] ))
     )
   mm =type_one_int
   upper = sapply(1:4, function(i) smooth.spline(x=1:7, y = (mm+sd)[,i], spar = 0.1)$y)
@@ -1513,7 +1513,7 @@ for(i in 1:5) {
     cbind(
       sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] < 0.05)), #lme4
       sapply(results_glmm,        function(l) 1-mean(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si] < 0.05)), #lme4
-      sapply(results_glmm_no_cov, function(l) 1-mean(change_to_z(l$results_w_lm)$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)), #lm
+      sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lm$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)), #lm
       sapply(results_glmm_no_cov, function(l) 1-mean(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2]  < 0.05, na.rm=TRUE)) #lm
     )
   
@@ -1530,7 +1530,7 @@ for(i in 1:5) {
     cbind(
       sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si])),
       sapply(results_glmm,        function(l) get_sd(l$results_w_lme4_ml$p_value_effect[l$results_w_lme4_ml$Singularity %in% si])),
-      sapply(results_glmm_no_cov, function(l) get_sd(change_to_z(l$results_w_lm)$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2])),
+      sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lm$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2])),
       sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lm_wo_grouping$p_value_effect[l$results_w_lme4_ml$Singularity %in% si2] ))
     )
   mm =1-type_two_int
@@ -1544,7 +1544,7 @@ for(i in 1:5) {
     cbind(
       sapply(results_glmm_no_cov, function(l) mean(l$results_w_lme4_ml$Slope_in_conf[l$results_w_lme4_ml$Singularity %in% si] )), #lme4
       sapply(results_glmm,        function(l) mean(l$results_w_lme4_ml$Slope_in_conf[l$results_w_lme4_ml$Singularity %in% si] )), #lme4
-      sapply(results_glmm_no_cov, function(l) mean(change_to_z(l$results_w_lm)$Slope_in_conf[l$results_w_lme4_ml$Singularity %in% si2]  , na.rm=TRUE)), #lm
+      sapply(results_glmm_no_cov, function(l) mean(l$results_w_lm$Slope_in_conf[l$results_w_lme4_ml$Singularity %in% si2]  , na.rm=TRUE)), #lm
       sapply(results_glmm_no_cov, function(l) mean(l$results_w_lm_wo_grouping$Slope_in_conf[l$results_w_lme4_ml$Singularity %in% si2]  , na.rm=TRUE)) #lm
     )
   
@@ -1562,7 +1562,7 @@ for(i in 1:5) {
     cbind(
       sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lme4_ml$Slope_in_conf[l$results_w_lme4_ml$Singularity %in% si] )),
       sapply(results_glmm,        function(l) get_sd(l$results_w_lme4_ml$Slope_in_conf[l$results_w_lme4_ml$Singularity %in% si] )),
-      sapply(results_glmm_no_cov, function(l) get_sd(change_to_z(l$results_w_lm)$Slope_in_conf[l$results_w_lme4_ml$Singularity %in% si2] )),
+      sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lm$Slope_in_conf[l$results_w_lme4_ml$Singularity %in% si2] )),
       sapply(results_glmm_no_cov, function(l) get_sd(l$results_w_lm_wo_grouping$Slope_in_conf[l$results_w_lme4_ml$Singularity %in% si2]))
     )
   mm =type_two_int
@@ -2803,7 +2803,7 @@ dev.off()
 
 
 
-########## __Figure S18 Grand mean simulation ########## 
+########## __Figure S17 Grand mean simulation ########## 
 # t+ non-centered
 
 mountains = c(1, 2, 5, 10, 50, 100)
@@ -2815,6 +2815,50 @@ parameter = expand.grid(mountains, sd_re, unbalanced, t, center)
 colnames(parameter) = c("mountains", "sd_re","unbalanced","t","center")
 
 results = readRDS("Results/boot.RDS")
+pdf("Figures/Fig_S17.pdf", height = 10.5, width = 10)
+
+par(mfrow = c(6, 6), mar = c(1, 2, 1, 1), oma = c(5, 4, 2, 1))
+mounts = c(1, 2, 5, 10, 50, 100) +1
+ylab = c("0.1", "0.5", "1.0")
+counter = 1
+for(sd in c(0.1, 0.5, 1.0)) {
+  vars = as.integer(rownames(parameter[parameter$sd_re==sd & parameter$t & !parameter$center & parameter$unbalanced,]))
+  yy = paste0("SD: ", ylab[counter])
+  counter = counter + 1
+  for(i in 1:6) {
+    if(i > 1) yy = ""
+    if(sd=="0.1") hist((results[[vars[i]]][[2]][,2]), main = paste0(mounts[i], " mountains"), xlab = "", col = "blue", ylab = yy, xpd = NA)
+    else hist((results[[vars[i]]][[2]][,2]), main = "", xlab = "", col = "blue", ylab = yy, xpd = NA)
+  }
+}
+counter = 1
+
+for(sd in c(0.1, 0.5, 1.0)) {
+  vars = as.integer(rownames(parameter[parameter$sd_re==sd & parameter$t & !parameter$center & !parameter$unbalanced,]))
+  yy = paste0("SD: ", ylab[counter])
+  counter = counter + 1
+  for(i in 1:6) {
+    if(i > 1) yy = ""
+    hist((results[[vars[i]]][[2]][,2]), main = "", xlab = "", col = "red", ylab = yy, xpd = NA)
+  }
+}
+legend(-2.5, y = -200, xpd = NA, legend = c("unbalanced", "balanced"), horiz = TRUE, pch = 15, col = c("blue", "red"), bty = "n")
+dev.off()
+
+
+
+########## __Figure S18 Grand mean simulation ########## 
+# t+ non-centered
+
+mountains = c(1, 2, 5, 10, 50, 100)
+sd_re = c(0.1, 0.5, 1.0)
+unbalanced = c(TRUE, FALSE)
+t = c(TRUE)
+center = c(TRUE, FALSE)
+parameter = expand.grid(mountains, sd_re, unbalanced, t, center)
+colnames(parameter) = c("mountains", "sd_re","unbalanced","t","center")
+
+results = readRDS("Results/boot_glm.RDS")
 pdf("Figures/Fig_S18.pdf", height = 10.5, width = 10)
 
 par(mfrow = c(6, 6), mar = c(1, 2, 1, 1), oma = c(5, 4, 2, 1))
@@ -2842,56 +2886,12 @@ for(sd in c(0.1, 0.5, 1.0)) {
     hist((results[[vars[i]]][[2]][,2]), main = "", xlab = "", col = "red", ylab = yy, xpd = NA)
   }
 }
-legend(-2.5, y = -200, xpd = NA, legend = c("unbalanced", "balanced"), horiz = TRUE, pch = 15, col = c("blue", "red"), bty = "n")
+legend(-2.5, y = -800, xpd = NA, legend = c("unbalanced", "balanced"), horiz = TRUE, pch = 15, col = c("blue", "red"), bty = "n")
 dev.off()
 
 
 
-########## __Figure S19 Grand mean simulation ########## 
-# t+ non-centered
-
-mountains = c(1, 2, 5, 10, 50, 100)
-sd_re = c(0.1, 0.5, 1.0)
-unbalanced = c(TRUE, FALSE)
-t = c(TRUE)
-center = c(TRUE, FALSE)
-parameter = expand.grid(mountains, sd_re, unbalanced, t, center)
-colnames(parameter) = c("mountains", "sd_re","unbalanced","t","center")
-
-results = readRDS("Results/boot_glm.RDS")
-pdf("Figures/Fig_S19.pdf", height = 10.5, width = 10)
-
-par(mfrow = c(6, 6), mar = c(1, 2, 1, 1), oma = c(5, 4, 2, 1))
-mounts = c(1, 2, 5, 10, 50, 100) +1
-ylab = c("0.1", "0.5", "1.0")
-counter = 1
-for(sd in c(0.1, 0.5, 1.0)) {
-  vars = as.integer(rownames(parameter[parameter$sd_re==sd & parameter$t & !parameter$center & parameter$unbalanced,]))
-  yy = paste0("SD: ", ylab[counter])
-  counter = counter + 1
-  for(i in 1:6) {
-    if(i > 1) yy = ""
-    if(sd=="0.1") hist((results[[vars[i]]][[2]][,2]), main = paste0(mounts[i], " mountains"), xlab = "", col = "blue", ylab = yy, xpd = NA)
-    else hist((results[[vars[i]]][[2]][,2]), main = "", xlab = "", col = "blue", ylab = yy, xpd = NA)
-  }
-}
-counter = 1
-
-for(sd in c(0.1, 0.5, 1.0)) {
-  vars = as.integer(rownames(parameter[parameter$sd_re==sd & parameter$t & !parameter$center & !parameter$unbalanced,]))
-  yy = paste0("SD: ", ylab[counter])
-  counter = counter + 1
-  for(i in 1:6) {
-    if(i > 1) yy = ""
-    hist((results[[vars[i]]][[2]][,2]), main = "", xlab = "", col = "red", ylab = yy, xpd = NA)
-  }
-}
-legend(-2.5, y = -200, xpd = NA, legend = c("unbalanced", "balanced"), horiz = TRUE, pch = 15, col = c("blue", "red"), bty = "n")
-dev.off()
-
-
-
-########## __Figure S20 Zero-sum simultion ########## 
+########## __Figure S19 Zero-sum simultion ########## 
 
 
 mountains = c(1, 2, 5, 10, 50, 100)
@@ -2901,6 +2901,48 @@ parameter = expand.grid(mountains, sd_re, unbalanced)
 colnames(parameter) = c("mountains", "sd_re","unbalanced")
 
 results = readRDS("Results/boot_zero_sum.RDS")
+# t+ non-centered
+pdf("Figures/Fig_S19.pdf", height = 10.5, width = 10)
+par(mfrow = c(6, 6), mar = c(1, 2, 1, 1), oma = c(5, 4, 2, 1))
+mounts = c(1, 2, 5, 10, 50, 100) +1
+ylab = c("0.1", "0.5", "1.0")
+counter = 1
+for(sd in c(0.1, 0.5, 1.0)) {
+  vars = as.integer(rownames(parameter[parameter$sd_re==sd  & parameter$unbalanced,]))
+  yy = paste0("SD: ", ylab[counter])
+  counter = counter + 1
+  for(i in 1:6) {
+    if(i > 1) yy = ""
+    if(sd=="0.1") hist(unlist(results[[vars[i]]][[2]][,2]), main = paste0(mounts[i], " mountains"), xlab = "", col = "blue", ylab = yy, xpd = NA)
+    else hist(unlist(results[[vars[i]]][[2]][,2]), main = "", xlab = "", col = "blue", ylab = yy, xpd = NA)
+  }
+}
+counter = 1
+
+for(sd in c(0.1, 0.5, 1.0)) {
+  vars = as.integer(rownames(parameter[parameter$sd_re==sd & !parameter$unbalanced,]))
+  yy = paste0("SD: ", ylab[counter])
+  counter = counter + 1
+  for(i in 1:6) {
+    if(i > 1) yy = ""
+    hist(unlist(results[[vars[i]]][[2]][,2]), main = "", xlab = "", col = "red", ylab = yy, xpd = NA)
+  }
+}
+legend(-2.5, y = -2000, xpd = NA, legend = c("unbalanced", "balanced"), horiz = TRUE, pch = 15, col = c("blue", "red"), bty = "n")
+dev.off()
+
+
+
+########## __Figure S20 Zero-sum simultion glm ########## 
+
+
+mountains = c(1, 2, 5, 10, 50, 100)
+sd_re = c(0.1, 0.5, 1.0)
+unbalanced = c(TRUE, FALSE)
+parameter = expand.grid(mountains, sd_re, unbalanced)
+colnames(parameter) = c("mountains", "sd_re","unbalanced")
+
+results = readRDS("Results/boot_zero_sum_glm.RDS")
 # t+ non-centered
 pdf("Figures/Fig_S20.pdf", height = 10.5, width = 10)
 par(mfrow = c(6, 6), mar = c(1, 2, 1, 1), oma = c(5, 4, 2, 1))
@@ -2928,7 +2970,7 @@ for(sd in c(0.1, 0.5, 1.0)) {
     hist(unlist(results[[vars[i]]][[2]][,2]), main = "", xlab = "", col = "red", ylab = yy, xpd = NA)
   }
 }
-legend(-2.5, y = -2000, xpd = NA, legend = c("unbalanced", "balanced"), horiz = TRUE, pch = 15, col = c("blue", "red"), bty = "n")
+legend(-2.5, y = -1800, xpd = NA, legend = c("unbalanced", "balanced"), horiz = TRUE, pch = 15, col = c("blue", "red"), bty = "n")
 dev.off()
 
 
