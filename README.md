@@ -21,7 +21,9 @@ for(i in 1:length(scripts)) source(scripts[i])
 ## Figures
 Script to build Figures:
 ```r
-source("Figures.R")
+source("Figures_Main.R")
+source("Figures_SI.R")
+source("Figures_SI_glmmTMB.R")
 ```
 
 Figures are saved in the "Figures" folder.
